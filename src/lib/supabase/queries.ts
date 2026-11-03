@@ -26,7 +26,13 @@ export const getStoreCatalog = cache(
       .eq("slug", slug)
       .single();
 
-    if (storeError || !store) {
+    if (storeError) {
+      console.error("[getStoreCatalog] Error al consultar la tienda en Supabase:", storeError);
+      return null;
+    }
+
+    if (!store) {
+      console.warn(`[getStoreCatalog] Tienda no encontrada para el slug: "${slug}"`);
       return null;
     }
 
@@ -57,6 +63,16 @@ export const getStoreCatalog = cache(
           )
           .eq("store_id", store.id),
       ]);
+
+    if (categoriesResult.error) {
+      console.error("[getStoreCatalog] Error al consultar categorías:", categoriesResult.error);
+    }
+    if (productsResult.error) {
+      console.error("[getStoreCatalog] Error al consultar productos:", productsResult.error);
+    }
+    if (optionGroupsResult.error) {
+      console.error("[getStoreCatalog] Error al consultar grupos de opciones:", optionGroupsResult.error);
+    }
 
     const rawCategories = categoriesResult.data ?? [];
     const rawProducts = productsResult.data ?? [];

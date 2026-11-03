@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import Link from "next/link";
 import Image from "next/image";
-import { Clock, Bike, AlertCircle } from "lucide-react";
+import { Clock, Bike, AlertCircle, Shield } from "lucide-react";
 import { getStoreCatalog } from "@/lib/supabase/queries";
 import { StoreCatalogView } from "@/components/public/StoreCatalogView";
 import type { StoreThemeColors } from "@/types/store";
@@ -68,6 +69,18 @@ export default async function StorePage({ params }: PageProps) {
     >
       {/* 1. Header con Banner y Datos del Local (Server Rendered) */}
       <header className="relative bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 shadow-sm">
+        {/* Botón flotante para acceder al Panel de Administración sin tener que escribir URLs */}
+        <div className="absolute top-3 right-3 z-30">
+          <Link
+            href="/admin"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-zinc-900/90 hover:bg-black text-zinc-100 border border-zinc-700/80 backdrop-blur-md transition-all shadow-md hover:scale-105 active:scale-95"
+            title="Ir al Panel de Administración"
+          >
+            <Shield className="w-3.5 h-3.5 text-rose-400" />
+            <span>Panel Admin</span>
+          </Link>
+        </div>
+
         {/* Banner superior opcional */}
         {store.banner_url ? (
           <div className="relative w-full h-36 sm:h-48 overflow-hidden bg-zinc-200 dark:bg-zinc-800">
