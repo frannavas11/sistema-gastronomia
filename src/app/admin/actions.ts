@@ -276,3 +276,358 @@ export async function updateStoreSettings(payload: {
   }
 }
 
+/**
+ * Sube una imagen al bucket público 'store-assets' de Supabase Storage.
+ * Valida sesión de usuario, pertenencia del comercio, tamaño (máx 5MB) y tipo MIME.
+ */
+export async function uploadStoreImage(formData: FormData) {
+  try {
+    const storeId = formData.get("storeId") as string;
+    const file = formData.get("file") as File | null;
+
+    if (!storeId || typeof storeId !== "string") {
+      throw new Error("ID de comercio no especificado.");
+    }
+    if (!file || !(file instanceof File)) {
+      throw new Error("No se seleccionó ningún archivo para subir.");
+    }
+
+    // Validar propiedad del local
+    await verifyStoreOwnership(storeId);
+
+    // Validar tipo MIME
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+    if (!allowedTypes.includes(file.type)) {
+      throw new Error(
+        "Tipo de archivo no permitido. Solo se aceptan imágenes JPG, PNG, WEBP o GIF.",
+      );
+    }
+
+    // Validar tamaño (máximo 5MB)
+    const MAX_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      throw new Error("La imagen supera el límite de 5 MB permitido.");
+    }
+
+    const serviceClient = createServiceClient();
+    const fileExt = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const sanitizedFileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
+    const storagePath = `${storeId}/${sanitizedFileName}`;
+
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    const { error: uploadError } = await serviceClient.storage
+      .from("store-assets")
+      .upload(storagePath, buffer, {
+        contentType: file.type,
+        upsert: true,
+      });
+
+    if (uploadError) {
+      throw new Error(`Error al subir la imagen: ${uploadError.message}`);
+    }
+
+    const { data: publicUrlData } = serviceClient.storage
+      .from("store-assets")
+      .getPublicUrl(storagePath);
+
+    return {
+      success: true,
+      url: publicUrlData.publicUrl,
+    };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Error desconocido";
+    return { success: false, error: message };
+  }
+}
+
+/**
+ * Obtiene los grupos de opciones e ítems vinculados a un producto.
+ */
+export async function getProductOptionGroups(storeId: string, productId: string) {
+  try {
+    await verifyStoreOwnership(storeId);
+
+    const serviceClient = createServiceClient();
+    const { data: groups, error: groupsError } = await serviceClient
+      .from("product_option_groups")
+      .select(`
+        id,
+        name,
+        is_required,
+        max_selectable,
+        product_id,
+        store_id,
+        product_option_items (
+          id,
+          name,
+          price,
+          is_available,
+          group_id
+        )
+      `)
+      .eq("store_id", storeId)
+      .eq("product_id", productId);
+
+    if (groupsError) {
+      throw new Error(`Error al cargar opciones: ${groupsError.message}`);
+    }
+
+    return {
+      success: true,
+      groups: (groups || []).map((g) => ({
+        id: g.id,
+        name: g.name,
+        is_required: Boolean(g.is_required),
+        max_selectable: g.max_selectable,
+        product_id: g.product_id,
+        store_id: g.store_id,
+        items: (g.product_option_items || []).map((item) => ({
+          id: item.id,
+          name: item.name,
+          price: item.price ?? 0,
+          is_available: item.is_available ?? true,
+          group_id: item.group_id,
+        })),
+      })),
+    };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Error desconocido";
+    return { success: false, error: message, groups: [] };
+  }
+}
+
+/**
+ * Crea un grupo de opciones (variante) para un producto.
+ */
+export async function createOptionGroup(payload: {
+  storeId: string;
+  productId: string;
+  name: string;
+  isRequired: boolean;
+  maxSelectable: number | null;
+}) {
+  try {
+    if (!payload.name.trim()) {
+      throw new Error("El nombre del grupo de opciones es obligatorio.");
+    }
+
+    const { store } = await verifyStoreOwnership(payload.storeId);
+
+    const serviceClient = createServiceClient();
+
+    // Validar que el producto pertenezca al local
+    const { data: product } = await serviceClient
+      .from("products")
+      .select("id")
+      .eq("id", payload.productId)
+      .eq("store_id", payload.storeId)
+      .maybeSingle();
+
+    if (!product) {
+      throw new Error("El producto no pertenece a este comercio.");
+    }
+
+    const { data: group, error } = await serviceClient
+      .from("product_option_groups")
+      .insert({
+        store_id: payload.storeId,
+        product_id: payload.productId,
+        name: payload.name.trim(),
+        is_required: payload.isRequired,
+        max_selectable: payload.maxSelectable,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error(`Error al crear grupo: ${error.message}`);
+    }
+
+    revalidatePath("/admin/menu");
+    revalidatePath(`/${store.slug}`);
+
+    return { success: true, group };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Error desconocido";
+    return { success: false, error: message };
+  }
+}
+
+/**
+ * Elimina un grupo de opciones y todos sus ítems relacionados.
+ */
+export async function deleteOptionGroup(payload: {
+  storeId: string;
+  groupId: string;
+}) {
+  try {
+    const { store } = await verifyStoreOwnership(payload.storeId);
+
+    const serviceClient = createServiceClient();
+
+    // 1. Eliminar ítems del grupo
+    await serviceClient
+      .from("product_option_items")
+      .delete()
+      .eq("group_id", payload.groupId);
+
+    // 2. Eliminar grupo
+    const { error } = await serviceClient
+      .from("product_option_groups")
+      .delete()
+      .eq("id", payload.groupId)
+      .eq("store_id", payload.storeId);
+
+    if (error) {
+      throw new Error(`Error al eliminar grupo: ${error.message}`);
+    }
+
+    revalidatePath("/admin/menu");
+    revalidatePath(`/${store.slug}`);
+
+    return { success: true };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Error desconocido";
+    return { success: false, error: message };
+  }
+}
+
+/**
+ * Crea una opción o adicional dentro de un grupo existente.
+ */
+export async function createOptionItem(payload: {
+  storeId: string;
+  groupId: string;
+  name: string;
+  price: number;
+}) {
+  try {
+    if (!payload.name.trim()) {
+      throw new Error("El nombre de la opción es obligatorio.");
+    }
+    if (isNaN(payload.price) || payload.price < 0) {
+      throw new Error("El precio de la opción no puede ser negativo.");
+    }
+
+    const { store } = await verifyStoreOwnership(payload.storeId);
+
+    const serviceClient = createServiceClient();
+
+    // Validar que el grupo pertenezca al local
+    const { data: group } = await serviceClient
+      .from("product_option_groups")
+      .select("id")
+      .eq("id", payload.groupId)
+      .eq("store_id", payload.storeId)
+      .maybeSingle();
+
+    if (!group) {
+      throw new Error("El grupo no pertenece a este comercio.");
+    }
+
+    const { data: item, error } = await serviceClient
+      .from("product_option_items")
+      .insert({
+        group_id: payload.groupId,
+        name: payload.name.trim(),
+        price: payload.price,
+        is_available: true,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error(`Error al crear opción: ${error.message}`);
+    }
+
+    revalidatePath("/admin/menu");
+    revalidatePath(`/${store.slug}`);
+
+    return { success: true, item };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Error desconocido";
+    return { success: false, error: message };
+  }
+}
+
+/**
+ * Elimina una opción puntual.
+ */
+export async function deleteOptionItem(payload: {
+  storeId: string;
+  itemId: string;
+}) {
+  try {
+    const { store } = await verifyStoreOwnership(payload.storeId);
+
+    const serviceClient = createServiceClient();
+
+    // Validar pertenencia del item a través del grupo
+    const { data: item } = await serviceClient
+      .from("product_option_items")
+      .select("id, group_id, product_option_groups!inner(store_id)")
+      .eq("id", payload.itemId)
+      .maybeSingle();
+
+    if (!item) {
+      throw new Error("La opción no existe.");
+    }
+
+    const itemStoreId = (item.product_option_groups as { store_id?: string })?.store_id;
+    if (itemStoreId !== payload.storeId) {
+      throw new Error("No tenés permiso para eliminar esta opción.");
+    }
+
+    const { error } = await serviceClient
+      .from("product_option_items")
+      .delete()
+      .eq("id", payload.itemId);
+
+    if (error) {
+      throw new Error(`Error al eliminar opción: ${error.message}`);
+    }
+
+    revalidatePath("/admin/menu");
+    revalidatePath(`/${store.slug}`);
+
+    return { success: true };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Error desconocido";
+    return { success: false, error: message };
+  }
+}
+
+/**
+ * Alterna la disponibilidad de una opción (Disponible / Agotada).
+ */
+export async function toggleOptionItemAvailability(payload: {
+  storeId: string;
+  itemId: string;
+  newIsAvailable: boolean;
+}) {
+  try {
+    const { store } = await verifyStoreOwnership(payload.storeId);
+
+    const serviceClient = createServiceClient();
+
+    const { error } = await serviceClient
+      .from("product_option_items")
+      .update({ is_available: payload.newIsAvailable })
+      .eq("id", payload.itemId);
+
+    if (error) {
+      throw new Error(`Error al actualizar disponibilidad: ${error.message}`);
+    }
+
+    revalidatePath("/admin/menu");
+    revalidatePath(`/${store.slug}`);
+
+    return { success: true, is_available: payload.newIsAvailable };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Error desconocido";
+    return { success: false, error: message };
+  }
+}
+

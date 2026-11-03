@@ -9,6 +9,7 @@ import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { ProductAvailabilityToggle } from "@/components/admin/ProductAvailabilityToggle";
 import { QuickPriceEditor } from "@/components/admin/QuickPriceEditor";
 import { CreateProductModal } from "@/components/admin/CreateProductModal";
+import { ProductOptionsManagerModal } from "@/components/admin/ProductOptionsManagerModal";
 
 export const dynamic = "force-dynamic";
 
@@ -157,8 +158,19 @@ export default async function AdminMenuPage() {
                     </div>
                   </div>
 
-                  {/* Acciones Rápidas: Precio y Disponibilidad */}
-                  <div className="flex items-center justify-between sm:justify-end gap-3.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-zinc-800/60">
+                  {/* Acciones Rápidas: Opciones, Precio y Disponibilidad */}
+                  <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-zinc-800/60 flex-wrap">
+                    <div className="flex flex-col items-start sm:items-end">
+                      <span className="text-[10px] uppercase font-semibold text-zinc-500 mb-1">
+                        Variantes
+                      </span>
+                      <ProductOptionsManagerModal
+                        storeId={store.id}
+                        productId={product.id}
+                        productName={product.name}
+                      />
+                    </div>
+
                     <div className="flex flex-col items-start sm:items-end">
                       <span className="text-[10px] uppercase font-semibold text-zinc-500">
                         Precio Base

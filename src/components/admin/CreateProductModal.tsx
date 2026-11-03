@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Plus, X, Loader2, Utensils, FolderPlus } from "lucide-react";
 import { createProduct, createCategory } from "@/app/admin/actions";
+import { ImageUploadInput } from "@/components/admin/ImageUploadInput";
 
 interface Category {
   id: string;
@@ -268,20 +269,13 @@ export function CreateProductModal({
                         className="w-full px-3.5 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-rose-500/40 focus:border-rose-500"
                       />
                     </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
-                        URL de Imagen (opcional)
-                      </label>
-                      <input
-                        type="url"
-                        placeholder="https://..."
-                        value={imageUrl}
-                        onChange={(e) => setImageUrl(e.target.value)}
-                        className="w-full px-3.5 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-rose-500/40 focus:border-rose-500"
-                      />
-                    </div>
                   </div>
+
+                  <ImageUploadInput
+                    storeId={storeId}
+                    value={imageUrl}
+                    onChange={setImageUrl}
+                  />
                 </>
               )}
 

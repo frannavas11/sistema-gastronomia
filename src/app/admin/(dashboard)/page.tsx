@@ -40,24 +40,20 @@ export default async function AdminDashboardPage() {
   let totalOrders = 0;
 
   if (store) {
-    const [productsResult, availableResult, ordersResult] = await Promise.all([
+    const [productsResult, ordersResult] = await Promise.all([
       supabase
         .from("products")
-        .select("id", { count: "exact", head: true })
+        .select("id, is_available")
         .eq("store_id", store.id),
-      supabase
-        .from("products")
-        .select("id", { count: "exact", head: true })
-        .eq("store_id", store.id)
-        .eq("is_available", true),
       supabase
         .from("orders")
         .select("id", { count: "exact", head: true })
         .eq("store_id", store.id),
     ]);
 
-    totalProducts = productsResult.count ?? 0;
-    availableProducts = availableResult.count ?? 0;
+    const products = productsResult.data ?? [];
+    totalProducts = products.length;
+    availableProducts = products.filter((p) => p.is_available).length;
     totalOrders = ordersResult.count ?? 0;
   }
 
