@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sistema Gastronómico - Carta Digital y Pedidos por WhatsApp
 
-## Getting Started
+Plataforma SaaS para comercios gastronómicos orientada a resolver pedidos con cero fricción y sin intermediarios:
+- **Catálogo público mobile-first** por comercio (`/[storeSlug]`).
+- **Personalización dinámica de productos**, modificadores, adicionales y opciones obligatorias/opcionales.
+- **Carrito persistente** sincronizado en el dispositivo (`Zustand` + `localStorage`).
+- **Checkout seguro y recálculo de precios en el servidor** (`POST /api/orders` con `service_role`).
+- **Disparo automático de pedidos formateados a WhatsApp** (`wa.me`).
 
-First, run the development server:
+## Stack Tecnológico
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Framework:** [Next.js](https://nextjs.org/) (App Router, Server Components, Route Handlers)
+- **Lenguaje:** TypeScript estricto
+- **Estilos:** [Tailwind CSS](https://tailwindcss.com/)
+- **Base de datos & Auth:** [Supabase](https://supabase.com/) (PostgreSQL + RLS)
+- **Gestión de estado:** [Zustand](https://github.com/pmndrs/zustand)
+- **Iconos:** [Lucide React](https://lucide.dev/)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Configuración y Desarrollo
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Clonar repositorio e instalar dependencias:**
+   ```bash
+   npm install
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. **Configurar variables de entorno:**
+   Copia el archivo `.env.example` como `.env.local` y completa con las credenciales de tu proyecto Supabase:
+   ```bash
+   cp .env.example .env.local
+   ```
 
-## Learn More
+3. **Ejecutar en desarrollo:**
+   ```bash
+   npm run dev
+   ```
+   Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+4. **Compilar para producción:**
+   ```bash
+   npm run build
+   ```
