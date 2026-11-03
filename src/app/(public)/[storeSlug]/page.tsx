@@ -1,8 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import Link from "next/link";
 import Image from "next/image";
-import { Clock, Bike, AlertCircle, Shield } from "lucide-react";
+import { Clock, Bike, AlertCircle } from "lucide-react";
 import { getStoreCatalog } from "@/lib/supabase/queries";
 import { StoreCatalogView } from "@/components/public/StoreCatalogView";
 import type { StoreThemeColors } from "@/types/store";
@@ -52,7 +51,7 @@ export default async function StorePage({ params }: PageProps) {
 
   const { store, categories } = catalog;
   const theme = (store.theme_colors as unknown as StoreThemeColors) || {};
-  const primaryColor = theme.primary || "#e11d48"; // Color base por defecto
+  const primaryColor = theme.primary || "#D62828";
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("es-AR", {
@@ -64,26 +63,14 @@ export default async function StorePage({ params }: PageProps) {
 
   return (
     <div
-      className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 pb-28"
+      className="min-h-screen bg-[#fafafa] text-zinc-900 pb-32"
       style={{ "--store-primary": primaryColor } as React.CSSProperties}
     >
-      {/* 1. Header con Banner y Datos del Local (Server Rendered) */}
-      <header className="relative bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 shadow-sm">
-        {/* Botón flotante para acceder al Panel de Administración sin tener que escribir URLs */}
-        <div className="absolute top-3 right-3 z-30">
-          <Link
-            href="/admin"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-zinc-900/90 hover:bg-black text-zinc-100 border border-zinc-700/80 backdrop-blur-md transition-all shadow-md hover:scale-105 active:scale-95"
-            title="Ir al Panel de Administración"
-          >
-            <Shield className="w-3.5 h-3.5 text-rose-400" />
-            <span>Panel Admin</span>
-          </Link>
-        </div>
-
-        {/* Banner superior opcional */}
+      {/* Header con información del local */}
+      <header className="relative bg-white border-b border-zinc-200">
+        {/* Banner superior o franja de acento con el color del local */}
         {store.banner_url ? (
-          <div className="relative w-full h-36 sm:h-48 overflow-hidden bg-zinc-200 dark:bg-zinc-800">
+          <div className="relative w-full h-36 sm:h-48 overflow-hidden bg-zinc-100">
             <Image
               src={store.banner_url}
               alt={`Banner de ${store.name}`}
@@ -94,14 +81,14 @@ export default async function StorePage({ params }: PageProps) {
             />
           </div>
         ) : (
-          <div className="h-16 bg-gradient-to-r from-zinc-800 to-zinc-900" />
+          <div className="h-20 sm:h-24 bg-[var(--store-primary,#D62828)] w-full" />
         )}
 
         <div className="max-w-3xl mx-auto px-4 pt-3 pb-4">
-          <div className="flex items-start gap-3.5">
+          <div className="flex items-start gap-4">
             {/* Logo */}
             {store.logo_url ? (
-              <div className="relative -mt-8 sm:-mt-10 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border-2 border-white dark:border-zinc-900 shadow-md bg-white flex-shrink-0">
+              <div className="relative -mt-8 sm:-mt-10 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border-2 border-white shadow-sm bg-white shrink-0">
                 <Image
                   src={store.logo_url}
                   alt={store.name}
@@ -111,23 +98,23 @@ export default async function StorePage({ params }: PageProps) {
                 />
               </div>
             ) : (
-              <div className="relative -mt-8 sm:-mt-10 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl border-2 border-white dark:border-zinc-900 shadow-md bg-zinc-800 text-white flex items-center justify-center font-bold text-xl flex-shrink-0">
+              <div className="relative -mt-8 sm:-mt-10 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl border-2 border-white shadow-sm bg-zinc-900 text-white flex items-center justify-center font-bold text-xl shrink-0">
                 {store.name.substring(0, 2).toUpperCase()}
               </div>
             )}
 
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-xl sm:text-2xl font-bold tracking-tight truncate">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 truncate">
                   {store.name}
                 </h1>
 
                 {/* Badge de estado: Abierto / Cerrado */}
                 <span
-                  className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${
                     store.is_open
-                      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
-                      : "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20"
+                      ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                      : "bg-rose-50 text-rose-700 border border-rose-200"
                   }`}
                 >
                   <span
@@ -140,12 +127,12 @@ export default async function StorePage({ params }: PageProps) {
               </div>
 
               {/* Información operativa */}
-              <div className="flex items-center gap-4 mt-2 text-xs text-zinc-500 dark:text-zinc-400 flex-wrap">
+              <div className="flex items-center gap-4 mt-2 text-xs text-zinc-500 flex-wrap">
                 <div className="flex items-center gap-1">
-                  <Bike className="w-3.5 h-3.5" />
+                  <Bike className="w-3.5 h-3.5 text-zinc-400" />
                   <span>
                     Envío:{" "}
-                    <strong className="text-zinc-700 dark:text-zinc-300">
+                    <strong className="text-zinc-800 font-semibold tabular-nums">
                       {store.delivery_cost && store.delivery_cost > 0
                         ? formatPrice(store.delivery_cost)
                         : "A convenir"}
@@ -155,10 +142,10 @@ export default async function StorePage({ params }: PageProps) {
 
                 {store.min_order_amount && store.min_order_amount > 0 ? (
                   <div className="flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5" />
+                    <Clock className="w-3.5 h-3.5 text-zinc-400" />
                     <span>
                       Mínimo:{" "}
-                      <strong className="text-zinc-700 dark:text-zinc-300">
+                      <strong className="text-zinc-800 font-semibold tabular-nums">
                         {formatPrice(store.min_order_amount)}
                       </strong>
                     </span>
@@ -169,18 +156,18 @@ export default async function StorePage({ params }: PageProps) {
           </div>
 
           {!store.is_open && (
-            <div className="mt-3 flex items-center gap-2 p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-300 text-xs font-medium">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            <div className="mt-3 flex items-center gap-2 p-3 rounded-xl bg-amber-50 border border-amber-200/80 text-amber-800 text-xs">
+              <AlertCircle className="w-4 h-4 shrink-0 text-amber-600" />
               <span>
-                El local se encuentra actualmente cerrado. Podés explorar la
-                carta, pero el pedido se confirmará cuando abra.
+                El local se encuentra cerrado en este momento. Podés recorrer la
+                carta y armar tu pedido.
               </span>
             </div>
           )}
         </div>
       </header>
 
-      {/* 2. Catálogo Interactivo (CategoryPills, ProductCards y VariantModal) */}
+      {/* Catálogo Interactivo */}
       <StoreCatalogView store={store} categories={categories} />
     </div>
   );

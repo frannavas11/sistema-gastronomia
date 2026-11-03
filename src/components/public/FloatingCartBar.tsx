@@ -1,6 +1,7 @@
 "use client";
 
-import { ShoppingBag, ArrowRight } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { ArrowRight, ShoppingBag } from "lucide-react";
 
 interface FloatingCartBarProps {
   totalItems: number;
@@ -15,10 +16,7 @@ export function FloatingCartBar({
   hasHydrated = true,
   onOpenCheckout,
 }: FloatingCartBarProps) {
-  // Evitar desajustes de hidratación antes de que Zustand cargue de localStorage
-  if (!hasHydrated || totalItems === 0) {
-    return null;
-  }
+  const isVisible = hasHydrated && totalItems > 0;
 
   const formattedSubtotal = new Intl.NumberFormat("es-AR", {
     style: "currency",
@@ -27,42 +25,56 @@ export function FloatingCartBar({
   }).format(subtotal);
 
   return (
-    <aside
-      aria-label="Resumen del carrito"
-      className="fixed bottom-0 inset-x-0 z-40 p-3 sm:p-4 pointer-events-none"
-    >
-      <div className="max-w-lg mx-auto pointer-events-auto">
-        <button
-          type="button"
-          onClick={onOpenCheckout}
-          className="w-full flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-[var(--store-primary,#e11d48)] text-white shadow-2xl hover:opacity-95 active:scale-[0.99] transition-all duration-200 select-none animate-in slide-in-from-bottom-5 duration-300"
+    <AnimatePresence>
+      {isVisible && (
+        <aside
+          aria-label="Resumen del pedido"
+          className="fixed bottom-0 inset-x-0 z-40 p-4 pointer-events-none"
         >
-          {/* Contador y Badge */}
-          <div className="flex items-center gap-3">
-            <div className="relative w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
-              <ShoppingBag className="w-5 h-5 text-white" />
-              <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white text-[var(--store-primary,#e11d48)] text-[11px] font-extrabold flex items-center justify-center shadow-sm">
-                {totalItems}
-              </span>
-            </div>
+          <div className="max-w-lg mx-auto pointer-events-auto">
+            <motion.button
+              type="button"
+              onClick={onOpenCheckout}
+              initial={{ y: 60, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 60, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 350, damping: 30 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full min-h-[56px] px-5 py-3.5 rounded-2xl bg-[var(--store-primary,#D62828)] text-white shadow-xl flex items-center justify-between select-none focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-zinc-900 focus-visible:ring-offset-2"
+            >
+              {/* Indicador de ítems */}
+              <div className="flex items-center gap-3">
+                <div className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-white/20 text-white shrink-0">
+                  <ShoppingBag className="w-5 h-5" />
+                  <motion.span
+                    key={totalItems}
+                    initial={{ scale: 0.6 }}
+                    animate={{ scale: 1 }}
+                    className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 rounded-full bg-white text-[var(--store-primary,#D62828)] text-[11px] font-extrabold flex items-center justify-center tabular-nums shadow-sm"
+                  >
+                    {totalItems}
+                  </motion.span>
+                </div>
 
-            <div className="text-left">
-              <span className="block text-xs font-medium text-white/80 leading-none">
-                Ver pedido ({totalItems} {totalItems === 1 ? "ítem" : "ítems"})
-              </span>
-              <span className="block text-base sm:text-lg font-bold leading-tight mt-0.5">
-                {formattedSubtotal}
-              </span>
-            </div>
-          </div>
+                <div className="text-left">
+                  <span className="block text-xs font-medium text-white/90 leading-tight">
+                    Ver pedido ({totalItems} {totalItems === 1 ? "ítem" : "ítems"})
+                  </span>
+                  <span className="block text-base font-bold tabular-nums leading-tight mt-0.5">
+                    {formattedSubtotal}
+                  </span>
+                </div>
+              </div>
 
-          {/* Botón de acción */}
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/15 text-xs sm:text-sm font-semibold tracking-wide">
-            <span>Continuar</span>
-            <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+              {/* Botón de acción */}
+              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-semibold tracking-wide bg-white/20 hover:bg-white/30 px-3.5 py-1.5 rounded-xl transition-colors">
+                <span>Continuar</span>
+                <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+              </div>
+            </motion.button>
           </div>
-        </button>
-      </div>
-    </aside>
+        </aside>
+      )}
+    </AnimatePresence>
   );
 }

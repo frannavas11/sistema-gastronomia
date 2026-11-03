@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { ShoppingBag, CheckCircle2 } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
+import { toast } from "sonner";
 import type {
   Store,
   CategoryWithProducts,
@@ -24,7 +25,6 @@ export function StoreCatalogView({
   store,
   categories,
 }: StoreCatalogViewProps) {
-  // Store de carrito Zustand con persistencia en localStorage por comercio
   const {
     items,
     totalItems,
@@ -40,24 +40,19 @@ export function StoreCatalogView({
     useState<ProductWithOptions | null>(null);
   const [isVariantModalOpen, setIsVariantModalOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [lastAddedName, setLastAddedName] = useState<string | null>(null);
 
-  // Apertura del modal de personalización
   const handleSelectProduct = (product: ProductWithOptions) => {
     setSelectedProduct(product);
     setIsVariantModalOpen(true);
   };
 
-  // Añadir al carrito desde el modal de variantes
   const handleConfirmItem = (payload: ConfiguredItemPayload) => {
     addItem(payload);
-    setLastAddedName(`${payload.quantity}x ${payload.product.name}`);
-    setTimeout(() => {
-      setLastAddedName(null);
-    }, 2500);
+    toast.success(`${payload.quantity}x ${payload.product.name}`, {
+      description: "Agregado a tu pedido",
+    });
   };
 
-  // Añadido rápido directo desde la tarjeta (para productos sin opciones obligatorias)
   const handleQuickAdd = (product: ProductWithOptions) => {
     addItem({
       product,
@@ -67,18 +62,15 @@ export function StoreCatalogView({
       unit_price: product.base_price,
       subtotal: product.base_price,
     });
-    setLastAddedName(`1x ${product.name}`);
-    setTimeout(() => {
-      setLastAddedName(null);
-    }, 2500);
+    toast.success(`1x ${product.name}`, {
+      description: "Agregado a tu pedido",
+    });
   };
 
-  // Confirmación del pedido en el modal de checkout (Fase 4 completada)
   const handleConfirmOrder = () => {
     // Pedido registrado exitosamente en el backend
   };
 
-  // Filtrar categorías que contengan al menos un producto activo
   const activeCategories = categories.filter((cat) => cat.products.length > 0);
 
   const totalProducts = activeCategories.reduce(
@@ -88,7 +80,7 @@ export function StoreCatalogView({
 
   return (
     <>
-      {/* Barra horizontal táctil pegajosa de categorías */}
+      {/* Barra pegajosa de categorías */}
       {activeCategories.length > 0 && (
         <CategoryPills
           categories={activeCategories.map((c) => ({
@@ -99,26 +91,15 @@ export function StoreCatalogView({
         />
       )}
 
-      {/* Toast flotante de confirmación de ítem agregado */}
-      {lastAddedName && (
-        <aside
-          aria-live="polite"
-          className="fixed bottom-20 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 px-4 py-2.5 rounded-full bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 shadow-2xl text-xs font-semibold animate-in fade-in slide-in-from-bottom-2 duration-200"
-        >
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 dark:text-emerald-600" />
-          <span>¡{lastAddedName} agregado al carrito!</span>
-        </aside>
-      )}
-
-      {/* Listado vertical de categorías y productos */}
-      <main className="max-w-3xl mx-auto px-4 mt-5 space-y-8">
+      {/* Listado en vertical de categorías y productos */}
+      <main className="max-w-3xl mx-auto px-4 mt-4 space-y-10">
         {totalProducts === 0 ? (
-          <div className="text-center py-16 bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200/80 dark:border-zinc-800 p-8 shadow-sm">
-            <ShoppingBag className="w-12 h-12 mx-auto text-zinc-400 mb-3" />
-            <h2 className="text-base font-semibold text-zinc-800 dark:text-zinc-200">
+          <div className="text-center py-16 bg-white rounded-2xl border border-zinc-200 p-8">
+            <ShoppingBag className="w-10 h-10 mx-auto text-zinc-400 mb-2" />
+            <h2 className="text-base font-semibold text-zinc-800">
               No hay productos disponibles por el momento
             </h2>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+            <p className="text-xs text-zinc-500 mt-1">
               Pronto se publicará el menú actualizado del local.
             </p>
           </div>
@@ -127,21 +108,21 @@ export function StoreCatalogView({
             <section
               key={category.id}
               id={`cat-${category.id}`}
-              className="scroll-mt-16 sm:scroll-mt-20"
+              className="scroll-mt-16"
             >
               {/* Encabezado de la categoría */}
-              <div className="flex items-center justify-between mb-3 px-1">
-                <h2 className="text-lg font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+              <div className="flex items-baseline justify-between pb-2 border-b-2 border-zinc-900 mb-2">
+                <h2 className="text-lg font-bold text-zinc-900 tracking-tight">
                   {category.name}
                 </h2>
-                <span className="text-xs text-zinc-400 font-medium">
+                <span className="text-xs text-zinc-500 font-medium tabular-nums">
                   {category.products.length}{" "}
                   {category.products.length === 1 ? "ítem" : "ítems"}
                 </span>
               </div>
 
-              {/* Grid de productos responsive mobile-first */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Lista de productos sin tarjetas ni sombras */}
+              <div className="flex flex-col">
                 {category.products.map((product) => (
                   <ProductCard
                     key={product.id}
@@ -156,7 +137,7 @@ export function StoreCatalogView({
         )}
       </main>
 
-      {/* Modal de personalización y selección de variantes con reinicio declarativo por key={product.id} */}
+      {/* Modal de producto usando Vaul / Bottom Sheet */}
       {selectedProduct && (
         <VariantModal
           key={selectedProduct.id}
@@ -167,7 +148,7 @@ export function StoreCatalogView({
         />
       )}
 
-      {/* Barra flotante inferior fija con total y llamada al checkout */}
+      {/* Barra flotante del carrito: el único elemento memorable */}
       <FloatingCartBar
         totalItems={totalItems}
         subtotal={subtotal}
@@ -175,7 +156,7 @@ export function StoreCatalogView({
         onOpenCheckout={() => setIsCheckoutOpen(true)}
       />
 
-      {/* Modal de checkout y confirmación de pedido */}
+      {/* Modal de checkout usando Vaul / Bottom Sheet */}
       <CheckoutModal
         store={store}
         items={items}
