@@ -63,107 +63,117 @@ export default async function StorePage({ params }: PageProps) {
 
   return (
     <div
-      className="min-h-screen bg-[#fafafa] text-zinc-900 pb-32"
+      className="min-h-screen bg-slate-50 text-slate-900 pb-32"
       style={{ "--store-primary": primaryColor } as React.CSSProperties}
     >
-      {/* Header con información del local */}
-      <header className="relative bg-white border-b border-zinc-200">
-        {/* Banner superior o franja de acento con el color del local */}
-        {store.banner_url ? (
-          <div className="relative w-full h-36 sm:h-48 overflow-hidden bg-zinc-100">
+      {/* Header estilo Portada */}
+      <header className="relative bg-white border-b border-slate-200">
+        {/* Banner de fondo */}
+        <div className="relative w-full h-44 sm:h-56 overflow-hidden bg-slate-100">
+          {store.banner_url ? (
             <Image
               src={store.banner_url}
-              alt={`Banner de ${store.name}`}
+              alt={`Portada de ${store.name}`}
               fill
               priority
               className="object-cover"
               sizes="100vw"
             />
-          </div>
-        ) : (
-          <div className="h-20 sm:h-24 bg-[var(--store-primary,#D62828)] w-full" />
-        )}
+          ) : (
+            <div
+              className="w-full h-full"
+              style={{
+                background: `linear-gradient(135deg, ${primaryColor} 0%, color-mix(in srgb, ${primaryColor} 75%, black) 100%)`,
+              }}
+            />
+          )}
+        </div>
 
-        <div className="max-w-3xl mx-auto px-4 pt-3 pb-4">
-          <div className="flex items-start gap-4">
-            {/* Logo */}
+        {/* Contenedor relativo para logo superpuesto e info */}
+        <div className="max-w-3xl mx-auto px-4 relative">
+          {/* Logo superpuesto: circular, con borde blanco grueso, solapa mitad inferior del banner y mitad superior del fondo */}
+          <div className="absolute -top-12 sm:-top-14 left-4 sm:left-6 w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-white shadow-md bg-white overflow-hidden z-20 flex items-center justify-center">
             {store.logo_url ? (
-              <div className="relative -mt-8 sm:-mt-10 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border-2 border-white shadow-sm bg-white shrink-0">
-                <Image
-                  src={store.logo_url}
-                  alt={store.name}
-                  fill
-                  className="object-cover"
-                  sizes="80px"
-                />
-              </div>
+              <Image
+                src={store.logo_url}
+                alt={store.name}
+                fill
+                priority
+                className="object-cover"
+                sizes="(max-width: 640px) 96px, 112px"
+              />
             ) : (
-              <div className="relative -mt-8 sm:-mt-10 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl border-2 border-white shadow-sm bg-zinc-900 text-white flex items-center justify-center font-bold text-xl shrink-0">
+              <div className="w-full h-full bg-slate-900 text-white flex items-center justify-center font-bold text-2xl sm:text-3xl">
                 {store.name.substring(0, 2).toUpperCase()}
               </div>
             )}
+          </div>
 
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 truncate">
-                  {store.name}
-                </h1>
+          {/* Información del local: con padding-top para dejar espacio al logo superpuesto */}
+          <div className="pt-14 sm:pt-16 pb-5">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+                    {store.name}
+                  </h1>
 
-                {/* Badge de estado: Abierto / Cerrado */}
-                <span
-                  className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    store.is_open
-                      ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                      : "bg-rose-50 text-rose-700 border border-rose-200"
-                  }`}
-                >
+                  {/* Badge de estado: Abierto / Cerrado */}
                   <span
-                    className={`w-1.5 h-1.5 rounded-full ${
-                      store.is_open ? "bg-emerald-500" : "bg-rose-500"
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      store.is_open
+                        ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                        : "bg-rose-50 text-rose-700 border border-rose-200"
                     }`}
-                  />
-                  {store.is_open ? "Abierto" : "Cerrado"}
-                </span>
-              </div>
-
-              {/* Información operativa */}
-              <div className="flex items-center gap-4 mt-2 text-xs text-zinc-500 flex-wrap">
-                <div className="flex items-center gap-1">
-                  <Bike className="w-3.5 h-3.5 text-zinc-400" />
-                  <span>
-                    Envío:{" "}
-                    <strong className="text-zinc-800 font-semibold tabular-nums">
-                      {store.delivery_cost && store.delivery_cost > 0
-                        ? formatPrice(store.delivery_cost)
-                        : "A convenir"}
-                    </strong>
+                  >
+                    <span
+                      className={`w-1.5 h-1.5 rounded-full ${
+                        store.is_open ? "bg-emerald-500" : "bg-rose-500"
+                      }`}
+                    />
+                    {store.is_open ? "Abierto" : "Cerrado"}
                   </span>
                 </div>
 
-                {store.min_order_amount && store.min_order_amount > 0 ? (
+                {/* Información operativa */}
+                <div className="flex items-center gap-4 mt-2 text-xs text-slate-500 flex-wrap">
                   <div className="flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-zinc-400" />
+                    <Bike className="w-3.5 h-3.5 text-slate-400" />
                     <span>
-                      Mínimo:{" "}
-                      <strong className="text-zinc-800 font-semibold tabular-nums">
-                        {formatPrice(store.min_order_amount)}
+                      Envío:{" "}
+                      <strong className="text-slate-800 font-semibold tabular-nums">
+                        {store.delivery_cost && store.delivery_cost > 0
+                          ? formatPrice(store.delivery_cost)
+                          : "A convenir"}
                       </strong>
                     </span>
                   </div>
-                ) : null}
+
+                  {store.min_order_amount && store.min_order_amount > 0 ? (
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-3.5 h-3.5 text-slate-400" />
+                      <span>
+                        Mínimo:{" "}
+                        <strong className="text-slate-800 font-semibold tabular-nums">
+                          {formatPrice(store.min_order_amount)}
+                        </strong>
+                      </span>
+                    </div>
+                  ) : null}
+                </div>
               </div>
             </div>
-          </div>
 
-          {!store.is_open && (
-            <div className="mt-3 flex items-center gap-2 p-3 rounded-xl bg-amber-50 border border-amber-200/80 text-amber-800 text-xs">
-              <AlertCircle className="w-4 h-4 shrink-0 text-amber-600" />
-              <span>
-                El local se encuentra cerrado en este momento. Podés recorrer la
-                carta y armar tu pedido.
-              </span>
-            </div>
-          )}
+            {!store.is_open && (
+              <div className="mt-3.5 flex items-center gap-2 p-3 rounded-xl bg-amber-50 border border-amber-200/80 text-amber-800 text-xs">
+                <AlertCircle className="w-4 h-4 shrink-0 text-amber-600" />
+                <span>
+                  El local se encuentra cerrado en este momento. Podés recorrer la
+                  carta y armar tu pedido.
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 

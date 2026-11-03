@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Store, Phone, Bike, Clock, Save, Loader2, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { updateStoreSettings } from "@/app/admin/actions";
+import { ImageUploadInput } from "@/components/admin/ImageUploadInput";
 
 interface StoreSettingsFormProps {
   store: {
@@ -13,6 +14,8 @@ interface StoreSettingsFormProps {
     phone_whatsapp: string;
     delivery_cost: number | null;
     min_order_amount: number | null;
+    logo_url?: string | null;
+    banner_url?: string | null;
   };
 }
 
@@ -25,6 +28,8 @@ export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
   const [minOrder, setMinOrder] = useState(
     store.min_order_amount?.toString() || "0",
   );
+  const [logoUrl, setLogoUrl] = useState(store.logo_url || "");
+  const [bannerUrl, setBannerUrl] = useState(store.banner_url || "");
 
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
@@ -45,6 +50,8 @@ export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
       phoneWhatsapp: phone,
       deliveryCost: costNum,
       minOrderAmount: minNum,
+      logoUrl: logoUrl.trim() || null,
+      bannerUrl: bannerUrl.trim() || null,
     });
 
     if (res.success) {
@@ -62,7 +69,7 @@ export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 space-y-5 shadow-xs"
+      className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 space-y-6 shadow-xs"
     >
       {successMsg && (
         <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-emerald-700 flex items-center gap-2">
@@ -77,83 +84,123 @@ export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {/* Datos operativos */}
+      <div className="space-y-4">
         <div>
-          <label className="block text-xs font-medium text-slate-700 mb-1">
-            Nombre del Comercio
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-              <Store className="w-4 h-4" />
-            </div>
-            <input
-              type="text"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-xs font-medium text-slate-700 mb-1">
-            WhatsApp para Pedidos (con código de país)
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-              <Phone className="w-4 h-4" />
-            </div>
-            <input
-              type="text"
-              required
-              placeholder="Ej. 5491122334455"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
-            />
-          </div>
-          <p className="text-[11px] text-slate-400 mt-1">
-            A este número se enviarán los pedidos vía wa.me
+          <h2 className="text-sm font-semibold text-slate-900">
+            Datos Operativos
+          </h2>
+          <p className="text-xs text-slate-500">
+            Nombre, contacto para pedidos y montos comerciales.
           </p>
         </div>
 
-        <div>
-          <label className="block text-xs font-medium text-slate-700 mb-1">
-            Costo de Envío Estándar ($)
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-              <Bike className="w-4 h-4" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-medium text-slate-700 mb-1">
+              Nombre del Comercio
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <Store className="w-4 h-4" />
+              </div>
+              <input
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
+              />
             </div>
-            <input
-              type="number"
-              min="0"
-              step="50"
-              value={deliveryCost}
-              onChange={(e) => setDeliveryCost(e.target.value)}
-              className="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 tabular-nums focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
-            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-slate-700 mb-1">
+              WhatsApp para Pedidos (con código de país)
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <Phone className="w-4 h-4" />
+              </div>
+              <input
+                type="text"
+                required
+                placeholder="Ej. 5491122334455"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
+              />
+            </div>
+            <p className="text-[11px] text-slate-400 mt-1">
+              A este número se enviarán los pedidos vía wa.me
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-slate-700 mb-1">
+              Costo de Envío Estándar ($)
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <Bike className="w-4 h-4" />
+              </div>
+              <input
+                type="number"
+                min="0"
+                step="50"
+                value={deliveryCost}
+                onChange={(e) => setDeliveryCost(e.target.value)}
+                className="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 tabular-nums focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-slate-700 mb-1">
+              Monto Mínimo de Pedido ($)
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <Clock className="w-4 h-4" />
+              </div>
+              <input
+                type="number"
+                min="0"
+                step="100"
+                value={minOrder}
+                onChange={(e) => setMinOrder(e.target.value)}
+                className="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 tabular-nums focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
+              />
+            </div>
           </div>
         </div>
+      </div>
 
+      {/* Imágenes de Portada e Identidad */}
+      <div className="pt-4 border-t border-slate-100 space-y-4">
         <div>
-          <label className="block text-xs font-medium text-slate-700 mb-1">
-            Monto Mínimo de Pedido ($)
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-              <Clock className="w-4 h-4" />
-            </div>
-            <input
-              type="number"
-              min="0"
-              step="100"
-              value={minOrder}
-              onChange={(e) => setMinOrder(e.target.value)}
-              className="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 tabular-nums focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
-            />
-          </div>
+          <h2 className="text-sm font-semibold text-slate-900">
+            Imágenes del Local
+          </h2>
+          <p className="text-xs text-slate-500">
+            Personalizá el logo circular y la foto de portada (banner) del catálogo público.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <ImageUploadInput
+            storeId={store.id}
+            value={logoUrl}
+            onChange={setLogoUrl}
+            label="Logo del Local"
+          />
+
+          <ImageUploadInput
+            storeId={store.id}
+            value={bannerUrl}
+            onChange={setBannerUrl}
+            label="Foto de Portada (Banner)"
+          />
         </div>
       </div>
 

@@ -91,15 +91,15 @@ export function StoreCatalogView({
         />
       )}
 
-      {/* Listado en vertical de categorías y productos */}
-      <main className="max-w-3xl mx-auto px-4 mt-4 space-y-10">
+      {/* Listado en vertical de categorías y productos con tarjetas limpias */}
+      <main className="max-w-3xl mx-auto px-4 mt-6 space-y-10">
         {totalProducts === 0 ? (
-          <div className="text-center py-16 bg-white rounded-2xl border border-zinc-200 p-8">
-            <ShoppingBag className="w-10 h-10 mx-auto text-zinc-400 mb-2" />
-            <h2 className="text-base font-semibold text-zinc-800">
+          <div className="text-center py-16 bg-white rounded-2xl border border-slate-200 p-8 shadow-xs">
+            <ShoppingBag className="w-10 h-10 mx-auto text-slate-400 mb-2" />
+            <h2 className="text-base font-semibold text-slate-800">
               No hay productos disponibles por el momento
             </h2>
-            <p className="text-xs text-zinc-500 mt-1">
+            <p className="text-xs text-slate-500 mt-1">
               Pronto se publicará el menú actualizado del local.
             </p>
           </div>
@@ -111,18 +111,18 @@ export function StoreCatalogView({
               className="scroll-mt-16"
             >
               {/* Encabezado de la categoría */}
-              <div className="flex items-baseline justify-between pb-2 border-b-2 border-zinc-900 mb-2">
-                <h2 className="text-lg font-bold text-zinc-900 tracking-tight">
+              <div className="flex items-baseline justify-between pb-2 mb-3.5 border-b border-slate-200">
+                <h2 className="text-lg font-bold text-slate-900 tracking-tight">
                   {category.name}
                 </h2>
-                <span className="text-xs text-zinc-500 font-medium tabular-nums">
+                <span className="text-xs text-slate-400 font-medium tabular-nums">
                   {category.products.length}{" "}
                   {category.products.length === 1 ? "ítem" : "ítems"}
                 </span>
               </div>
 
-              {/* Lista de productos sin tarjetas ni sombras */}
-              <div className="flex flex-col">
+              {/* Grid de tarjetas limpias con bordes suaves y sombra sutil */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
                 {category.products.map((product) => (
                   <ProductCard
                     key={product.id}
@@ -148,7 +148,7 @@ export function StoreCatalogView({
         />
       )}
 
-      {/* Barra flotante del carrito: el único elemento memorable */}
+      {/* Barra flotante del carrito */}
       <FloatingCartBar
         totalItems={totalItems}
         subtotal={subtotal}

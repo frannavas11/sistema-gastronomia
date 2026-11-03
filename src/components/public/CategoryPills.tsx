@@ -95,7 +95,7 @@ export function CategoryPills({
   return (
     <nav
       aria-label="Categorías del menú"
-      className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-zinc-200"
+      className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200"
     >
       <div
         ref={containerRef}
@@ -116,10 +116,10 @@ export function CategoryPills({
               }}
               onClick={() => handlePillClick(cat.id)}
               type="button"
-              className={`shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-colors select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2 ${
+              className={`shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-colors select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2 ${
                 isActive
-                  ? "bg-zinc-900 text-white font-semibold"
-                  : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200 hover:text-zinc-900"
+                  ? "bg-slate-900 text-white font-semibold"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"
               }`}
             >
               <span>{cat.name}</span>
@@ -127,8 +127,8 @@ export function CategoryPills({
                 <span
                   className={`text-[10px] px-1.5 py-0.2 rounded-full tabular-nums font-semibold ${
                     isActive
-                      ? "bg-zinc-800 text-zinc-200"
-                      : "bg-zinc-200 text-zinc-600"
+                      ? "bg-slate-800 text-slate-200"
+                      : "bg-slate-200 text-slate-600"
                   }`}
                 >
                   {cat.productsCount}

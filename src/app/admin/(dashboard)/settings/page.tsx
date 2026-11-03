@@ -15,7 +15,7 @@ export default async function AdminSettingsPage() {
 
   const { data: store } = await supabase
     .from("stores")
-    .select("id, name, slug, phone_whatsapp, delivery_cost, min_order_amount")
+    .select("id, name, slug, phone_whatsapp, delivery_cost, min_order_amount, logo_url, banner_url")
     .eq("owner_id", user.id)
     .maybeSingle();
 

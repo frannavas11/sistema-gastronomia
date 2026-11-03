@@ -290,19 +290,37 @@ export async function updateStoreSettings(payload: {
   phoneWhatsapp: string;
   deliveryCost: number;
   minOrderAmount: number;
+  logoUrl?: string | null;
+  bannerUrl?: string | null;
 }) {
   try {
     const { store } = await verifyStoreOwnership(payload.storeId);
 
     const serviceClient = createServiceClient();
+    const updateData: {
+      name: string;
+      phone_whatsapp: string;
+      delivery_cost: number;
+      min_order_amount: number;
+      logo_url?: string | null;
+      banner_url?: string | null;
+    } = {
+      name: payload.name.trim(),
+      phone_whatsapp: payload.phoneWhatsapp.trim().replace(/\D/g, ""),
+      delivery_cost: payload.deliveryCost,
+      min_order_amount: payload.minOrderAmount,
+    };
+
+    if (payload.logoUrl !== undefined) {
+      updateData.logo_url = payload.logoUrl ? payload.logoUrl.trim() : null;
+    }
+    if (payload.bannerUrl !== undefined) {
+      updateData.banner_url = payload.bannerUrl ? payload.bannerUrl.trim() : null;
+    }
+
     const { error } = await serviceClient
       .from("stores")
-      .update({
-        name: payload.name.trim(),
-        phone_whatsapp: payload.phoneWhatsapp.trim().replace(/\D/g, ""),
-        delivery_cost: payload.deliveryCost,
-        min_order_amount: payload.minOrderAmount,
-      })
+      .update(updateData)
       .eq("id", payload.storeId);
 
     if (error) {
@@ -312,6 +330,42 @@ export async function updateStoreSettings(payload: {
     revalidatePath("/admin");
     revalidatePath("/admin/settings");
     revalidatePath(`/${store.slug}`);
+
+    return { success: true };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Error desconocido";
+    return { success: false, error: message };
+  }
+}
+
+/**
+ * Elimina un pedido y sus ítems asociados de forma segura.
+ */
+export async function deleteOrder(storeId: string, orderId: number) {
+  try {
+    const { store } = await verifyStoreOwnership(storeId);
+
+    const serviceClient = createServiceClient();
+
+    // 1. Eliminar ítems asociados primero
+    await serviceClient
+      .from("order_items")
+      .delete()
+      .eq("order_id", orderId);
+
+    // 2. Eliminar el pedido validando que pertenezca al local
+    const { error } = await serviceClient
+      .from("orders")
+      .delete()
+      .eq("id", orderId)
+      .eq("store_id", storeId);
+
+    if (error) {
+      throw new Error(`Error al eliminar pedido: ${error.message}`);
+    }
+
+    revalidatePath("/admin/orders");
+    revalidatePath("/admin");
 
     return { success: true };
   } catch (err: unknown) {
