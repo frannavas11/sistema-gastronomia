@@ -173,6 +173,50 @@ export async function createCategory(storeId: string, name: string) {
 }
 
 /**
+ * Elimina una categoría del menú (solo si no contiene productos activos).
+ */
+export async function deleteCategory(storeId: string, categoryId: string) {
+  try {
+    const { store } = await verifyStoreOwnership(storeId);
+
+    const serviceClient = createServiceClient();
+
+    // Validar que no tenga productos asociados
+    const { count, error: countError } = await serviceClient
+      .from("products")
+      .select("id", { count: "exact", head: true })
+      .eq("category_id", categoryId)
+      .eq("store_id", storeId);
+
+    if (countError) {
+      throw new Error(`Error al verificar productos de la categoría: ${countError.message}`);
+    }
+
+    if (count && count > 0) {
+      throw new Error(`No podés eliminar esta categoría porque contiene ${count} producto(s). Reubicá o eliminá los productos primero.`);
+    }
+
+    const { error } = await serviceClient
+      .from("categories")
+      .delete()
+      .eq("id", categoryId)
+      .eq("store_id", storeId);
+
+    if (error) {
+      throw new Error(`Error al eliminar categoría: ${error.message}`);
+    }
+
+    revalidatePath("/admin/menu");
+    revalidatePath(`/${store.slug}`);
+
+    return { success: true };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Error desconocido";
+    return { success: false, error: message };
+  }
+}
+
+/**
  * Crea un nuevo producto básico.
  */
 export async function createProduct(payload: {

@@ -20,7 +20,7 @@ export default async function AdminDashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col md:flex-row antialiased">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col md:flex-row antialiased selection:bg-slate-200">
       {/* Sidebar de navegación responsive */}
       <AdminSidebar userEmail={user.email} />
 

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { toggleProductAvailability } from "@/app/admin/actions";
 
 interface ProductAvailabilityToggleProps {
@@ -30,8 +31,14 @@ export function ProductAvailabilityToggle({
     );
 
     if (!result.success) {
-      // Revertir si falló
       setIsAvailable(!nextState);
+      toast.error(result.error || "No se pudo actualizar el estado.");
+    } else {
+      toast.success(
+        nextState
+          ? "Producto habilitado en la carta."
+          : "Producto pausado de la carta.",
+      );
     }
 
     setLoading(false);
@@ -42,10 +49,10 @@ export function ProductAvailabilityToggle({
       type="button"
       onClick={handleToggle}
       disabled={loading}
-      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all focus:outline-none focus:ring-2 disabled:opacity-50 ${
+      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2 disabled:opacity-50 ${
         isAvailable
-          ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25 focus:ring-emerald-500/30"
-          : "bg-zinc-800 text-zinc-400 border border-zinc-700 hover:bg-zinc-750 hover:text-zinc-300 focus:ring-zinc-600"
+          ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100"
+          : "bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200"
       }`}
       title={
         isAvailable
@@ -54,16 +61,15 @@ export function ProductAvailabilityToggle({
       }
     >
       {loading ? (
-        <Loader2 className="w-3.5 h-3.5 animate-spin text-current" />
+        <Loader2 className="w-3 h-3 animate-spin text-current" />
       ) : (
         <span
-          className={`w-2 h-2 rounded-full transition-colors ${
-            isAvailable ? "bg-emerald-400" : "bg-rose-500"
+          className={`w-1.5 h-1.5 rounded-full transition-colors ${
+            isAvailable ? "bg-emerald-500" : "bg-slate-400"
           }`}
         />
       )}
-      <span>{isAvailable ? "Disponible" : "Agotado"}</span>
+      <span>{isAvailable ? "Disponible" : "Pausado"}</span>
     </button>
   );
 }
-

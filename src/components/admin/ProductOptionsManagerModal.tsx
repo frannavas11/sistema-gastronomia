@@ -61,7 +61,7 @@ export function ProductOptionsManagerModal({
   const [newGroupMaxSelectable, setNewGroupMaxSelectable] = useState<string>("");
   const [creatingGroup, setCreatingGroup] = useState(false);
 
-  // Estado para agregar un ítem dentro de un grupo (mapeado por groupId)
+  // Estado para agregar un ítem dentro de un grupo
   const [activeAddItemGroupId, setActiveAddItemGroupId] = useState<string | null>(null);
   const [newItemName, setNewItemName] = useState("");
   const [newItemPrice, setNewItemPrice] = useState("");
@@ -75,10 +75,10 @@ export function ProductOptionsManagerModal({
       if (res.success) {
         setGroups(res.groups);
       } else {
-        setError(res.error || "No se pudieron cargar las variantes.");
+        setError(res.error || "No se pudieron cargar las opciones.");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al cargar variantes");
+      setError(err instanceof Error ? err.message : "Error al cargar opciones");
     } finally {
       setLoading(false);
     }
@@ -126,7 +126,7 @@ export function ProductOptionsManagerModal({
   };
 
   const handleDeleteGroup = async (groupId: string, groupName: string) => {
-    if (!confirm(`¿Estás seguro de eliminar el grupo "${groupName}" y todas sus opciones?`)) {
+    if (!confirm(`¿Estás seguro de eliminar el grupo "${groupName}" y sus opciones?`)) {
       return;
     }
 
@@ -213,7 +213,7 @@ export function ProductOptionsManagerModal({
   };
 
   const formatPrice = (amount: number) => {
-    if (amount === 0) return "Sin costo adicional";
+    if (amount === 0) return "Sin costo";
     return new Intl.NumberFormat("es-AR", {
       style: "currency",
       currency: "ARS",
@@ -226,10 +226,10 @@ export function ProductOptionsManagerModal({
       <button
         type="button"
         onClick={handleOpen}
-        className="px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-zinc-800 hover:bg-zinc-750 text-zinc-300 hover:text-white border border-zinc-700/60 inline-flex items-center gap-1.5 transition-colors"
+        className="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 shadow-2xs inline-flex items-center gap-1.5 transition-colors"
         title="Gestionar grupos de opciones y adicionales"
       >
-        <SlidersHorizontal className="w-3.5 h-3.5 text-rose-400" />
+        <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" />
         <span>Opciones</span>
       </button>
 
@@ -237,20 +237,20 @@ export function ProductOptionsManagerModal({
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in"
         >
-          <div className="relative w-full max-w-2xl bg-zinc-900 border border-zinc-800 rounded-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+          <div className="relative w-full max-w-2xl bg-white border border-slate-200 rounded-2xl shadow-xl flex flex-col max-h-[90vh] overflow-hidden text-slate-900">
             {/* Header */}
-            <div className="flex items-center justify-between p-5 border-b border-zinc-800">
+            <div className="flex items-center justify-between p-5 border-b border-slate-100">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
-                  <Layers className="w-5 h-5" />
+                <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center text-slate-700">
+                  <Layers className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-zinc-100">
+                  <h3 className="text-base font-bold text-slate-900">
                     Opciones y Variantes
                   </h3>
-                  <p className="text-xs text-zinc-400 truncate max-w-sm">
+                  <p className="text-xs text-slate-500 truncate max-w-sm">
                     {productName}
                   </p>
                 </div>
@@ -259,39 +259,39 @@ export function ProductOptionsManagerModal({
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="w-8 h-8 rounded-full bg-zinc-800/80 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 flex items-center justify-center transition-colors"
+                className="w-8 h-8 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 flex items-center justify-center transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-5 space-y-5">
+            <div className="flex-1 overflow-y-auto p-5 space-y-4">
               {error && (
-                <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
                   <span>{error}</span>
                 </div>
               )}
 
               {loading ? (
-                <div className="py-12 flex flex-col items-center justify-center gap-2 text-zinc-500">
-                  <Loader2 className="w-6 h-6 animate-spin text-rose-500" />
-                  <span className="text-xs">Cargando opciones del producto...</span>
+                <div className="py-12 flex flex-col items-center justify-center gap-2 text-slate-400">
+                  <Loader2 className="w-5 h-5 animate-spin text-slate-600" />
+                  <span className="text-xs">Cargando opciones...</span>
                 </div>
               ) : groups.length === 0 && !showAddGroup ? (
-                <div className="py-10 text-center rounded-2xl bg-zinc-950/60 border border-zinc-800/80 p-6">
-                  <SlidersHorizontal className="w-8 h-8 text-zinc-600 mx-auto mb-2" />
-                  <h4 className="text-sm font-bold text-zinc-300">
+                <div className="py-8 text-center rounded-xl bg-slate-50 border border-slate-200 p-6">
+                  <SlidersHorizontal className="w-7 h-7 text-slate-400 mx-auto mb-2" />
+                  <h4 className="text-sm font-semibold text-slate-800">
                     Sin grupos de opciones configurados
                   </h4>
-                  <p className="text-xs text-zinc-500 mt-1 max-w-xs mx-auto mb-4">
+                  <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto mb-4">
                     Podés agregar grupos como &ldquo;Tamaño&rdquo;, &ldquo;Salsas&rdquo; o &ldquo;Adicionales&rdquo; para que el cliente elija al comprar.
                   </p>
                   <button
                     type="button"
                     onClick={() => setShowAddGroup(true)}
-                    className="px-4 py-2 rounded-xl text-xs font-semibold bg-rose-500 hover:bg-rose-600 text-white inline-flex items-center gap-1.5 transition-colors"
+                    className="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-slate-900 hover:bg-slate-800 text-white inline-flex items-center gap-1.5 transition-colors"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     Crear primer grupo
@@ -302,24 +302,24 @@ export function ProductOptionsManagerModal({
                   {groups.map((group) => (
                     <div
                       key={group.id}
-                      className="rounded-2xl bg-zinc-950/70 border border-zinc-800 p-4 space-y-3"
+                      className="rounded-xl bg-slate-50 border border-slate-200 p-4 space-y-3"
                     >
                       {/* Grupo Cabecera */}
                       <div className="flex items-center justify-between gap-2 flex-wrap">
                         <div className="flex items-center gap-2">
-                          <h4 className="text-sm font-bold text-zinc-100">
+                          <h4 className="text-sm font-bold text-slate-900">
                             {group.name}
                           </h4>
                           {group.is_required ? (
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-400 border border-rose-500/30">
+                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200">
                               Obligatorio
                             </span>
                           ) : (
-                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400">
+                            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-200 text-slate-600">
                               Opcional
                             </span>
                           )}
-                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-zinc-800/80 text-zinc-400">
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-200/80 text-slate-600">
                             {group.max_selectable === 1
                               ? "Selección única"
                               : group.max_selectable
@@ -338,16 +338,16 @@ export function ProductOptionsManagerModal({
                               setNewItemName("");
                               setNewItemPrice("");
                             }}
-                            className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-300 inline-flex items-center gap-1 transition-colors"
+                            className="px-2.5 py-1 rounded-lg text-xs font-medium bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 inline-flex items-center gap-1 transition-colors"
                           >
-                            <Plus className="w-3 h-3 text-rose-400" />
+                            <Plus className="w-3 h-3 text-slate-600" />
                             Agregar opción
                           </button>
 
                           <button
                             type="button"
                             onClick={() => handleDeleteGroup(group.id, group.name)}
-                            className="p-1 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                            className="p-1 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
                             title="Eliminar grupo"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -355,11 +355,11 @@ export function ProductOptionsManagerModal({
                         </div>
                       </div>
 
-                      {/* Formulario desplegable para agregar ítem a este grupo */}
+                      {/* Formulario para agregar ítem a este grupo */}
                       {activeAddItemGroupId === group.id && (
                         <form
                           onSubmit={(e) => handleCreateItem(e, group.id)}
-                          className="p-3 rounded-xl bg-zinc-900 border border-zinc-700/80 grid grid-cols-1 sm:grid-cols-12 gap-2 animate-in fade-in"
+                          className="p-3 rounded-lg bg-white border border-slate-300 grid grid-cols-1 sm:grid-cols-12 gap-2"
                         >
                           <div className="sm:col-span-6">
                             <input
@@ -368,7 +368,7 @@ export function ProductOptionsManagerModal({
                               placeholder="Nombre de la opción (ej. Cheddar)"
                               value={newItemName}
                               onChange={(e) => setNewItemName(e.target.value)}
-                              className="w-full px-3 py-1.5 bg-zinc-950 border border-zinc-700 rounded-lg text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-rose-500"
+                              className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900"
                             />
                           </div>
                           <div className="sm:col-span-4">
@@ -379,14 +379,14 @@ export function ProductOptionsManagerModal({
                               placeholder="Precio extra ($)"
                               value={newItemPrice}
                               onChange={(e) => setNewItemPrice(e.target.value)}
-                              className="w-full px-3 py-1.5 bg-zinc-950 border border-zinc-700 rounded-lg text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-rose-500"
+                              className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900 tabular-nums"
                             />
                           </div>
                           <div className="sm:col-span-2 flex items-center gap-1">
                             <button
                               type="submit"
                               disabled={creatingItem}
-                              className="flex-1 py-1.5 px-2 bg-rose-500 hover:bg-rose-600 disabled:opacity-50 text-white rounded-lg text-xs font-semibold flex items-center justify-center transition-colors"
+                              className="flex-1 py-1.5 px-2 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white rounded-lg text-xs font-medium flex items-center justify-center transition-colors"
                             >
                               {creatingItem ? (
                                 <Loader2 className="w-3 h-3 animate-spin" />
@@ -397,7 +397,7 @@ export function ProductOptionsManagerModal({
                             <button
                               type="button"
                               onClick={() => setActiveAddItemGroupId(null)}
-                              className="p-1.5 text-zinc-500 hover:text-zinc-300"
+                              className="p-1.5 text-slate-400 hover:text-slate-700"
                             >
                               <X className="w-3.5 h-3.5" />
                             </button>
@@ -407,11 +407,11 @@ export function ProductOptionsManagerModal({
 
                       {/* Lista de Opciones del Grupo */}
                       {group.items.length === 0 ? (
-                        <p className="text-xs text-zinc-500 italic pl-1">
+                        <p className="text-xs text-slate-400 italic pl-1">
                           No hay opciones en este grupo todavía. Hacé clic en &ldquo;Agregar opción&rdquo;.
                         </p>
                       ) : (
-                        <div className="divide-y divide-zinc-800/60 rounded-xl bg-zinc-900/60 border border-zinc-850 overflow-hidden">
+                        <div className="divide-y divide-slate-100 rounded-lg bg-white border border-slate-200 overflow-hidden">
                           {group.items.map((item) => (
                             <div
                               key={item.id}
@@ -419,15 +419,15 @@ export function ProductOptionsManagerModal({
                             >
                               <div className="flex items-center gap-2 min-w-0">
                                 <span
-                                  className={`w-2 h-2 rounded-full ${
-                                    item.is_available ? "bg-emerald-500" : "bg-rose-500"
+                                  className={`w-1.5 h-1.5 rounded-full ${
+                                    item.is_available ? "bg-emerald-500" : "bg-slate-300"
                                   }`}
                                 />
                                 <span
                                   className={`font-medium truncate ${
                                     item.is_available
-                                      ? "text-zinc-200"
-                                      : "text-zinc-500 line-through"
+                                      ? "text-slate-900"
+                                      : "text-slate-400 line-through"
                                   }`}
                                 >
                                   {item.name}
@@ -435,7 +435,7 @@ export function ProductOptionsManagerModal({
                               </div>
 
                               <div className="flex items-center gap-3">
-                                <span className="font-semibold text-zinc-400">
+                                <span className="font-semibold text-slate-600 tabular-nums">
                                   {formatPrice(item.price)}
                                 </span>
 
@@ -447,10 +447,10 @@ export function ProductOptionsManagerModal({
                                       item.is_available,
                                     )
                                   }
-                                  className={`px-2 py-0.5 rounded text-[10px] font-semibold transition-colors ${
+                                  className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors ${
                                     item.is_available
-                                      ? "bg-zinc-800 hover:bg-zinc-700 text-zinc-300"
-                                      : "bg-rose-500/20 text-rose-400 border border-rose-500/30"
+                                      ? "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                                      : "bg-rose-50 text-rose-700 border border-rose-200"
                                   }`}
                                 >
                                   {item.is_available ? "Pausar" : "Activar"}
@@ -459,7 +459,7 @@ export function ProductOptionsManagerModal({
                                 <button
                                   type="button"
                                   onClick={() => handleDeleteItem(item.id)}
-                                  className="text-zinc-500 hover:text-rose-400 transition-colors"
+                                  className="text-slate-400 hover:text-rose-600 transition-colors"
                                   title="Eliminar opción"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
@@ -472,79 +472,79 @@ export function ProductOptionsManagerModal({
                     </div>
                   ))}
 
-                  {/* Botón / Formulario para crear un nuevo grupo */}
+                  {/* Formulario / Botón para crear nuevo grupo */}
                   {showAddGroup ? (
                     <form
                       onSubmit={handleCreateGroup}
-                      className="p-4 rounded-2xl bg-zinc-950 border border-rose-500/40 space-y-3 animate-in fade-in"
+                      className="p-4 rounded-xl bg-slate-50 border border-slate-300 space-y-3"
                     >
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-rose-400">
+                      <h4 className="text-xs font-bold text-slate-900">
                         Nuevo Grupo de Opciones
                       </h4>
 
                       <div className="space-y-2">
                         <div>
-                          <label className="block text-[11px] font-semibold text-zinc-400 mb-1">
+                          <label className="block text-xs font-medium text-slate-700 mb-1">
                             Nombre del Grupo
                           </label>
                           <input
                             type="text"
                             required
-                            placeholder="Ej. Tamaño de la Pizza, Salsas, Puntos de cocción"
+                            placeholder="Ej. Tamaño, Salsas, Puntos de cocción"
                             value={newGroupName}
                             onChange={(e) => setNewGroupName(e.target.value)}
-                            className="w-full px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-xl text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-rose-500"
+                            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900"
                           />
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                          <label className="flex items-center gap-2 p-2 rounded-xl bg-zinc-900 border border-zinc-800 cursor-pointer">
+                          <label className="flex items-center gap-2 p-2 rounded-lg bg-white border border-slate-200 cursor-pointer">
                             <input
                               type="checkbox"
                               checked={newGroupRequired}
                               onChange={(e) => setNewGroupRequired(e.target.checked)}
-                              className="rounded border-zinc-700 text-rose-500 focus:ring-rose-500"
+                              className="rounded border-slate-300 text-slate-900 focus:ring-slate-900"
                             />
                             <div className="text-left">
-                              <span className="block text-xs font-semibold text-zinc-200">
+                              <span className="block text-xs font-medium text-slate-800">
                                 Selección obligatoria
                               </span>
-                              <span className="block text-[10px] text-zinc-400">
-                                El cliente debe elegir al menos una opción
+                              <span className="block text-[10px] text-slate-500">
+                                El cliente debe elegir al menos una
                               </span>
                             </div>
                           </label>
 
                           <div>
-                            <label className="block text-[11px] font-semibold text-zinc-400 mb-1">
-                              Máximo de opciones seleccionables
+                            <label className="block text-xs font-medium text-slate-700 mb-1">
+                              Máximo seleccionable
                             </label>
                             <input
                               type="number"
                               min="1"
-                              placeholder="1 = Radio único, o vacío para ilimitadas"
+                              placeholder="1 = Único, o vacío para ilimitadas"
                               value={newGroupMaxSelectable}
                               onChange={(e) =>
                                 setNewGroupMaxSelectable(e.target.value)
                               }
-                              className="w-full px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-xl text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-rose-500"
+                              className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900"
                             />
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-end gap-2 pt-2 border-t border-zinc-800">
+                      <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200">
                         <button
                           type="button"
                           onClick={() => setShowAddGroup(false)}
-                          className="px-3 py-1.5 text-xs text-zinc-400 hover:text-zinc-200 font-semibold"
+                          className="px-3 py-1.5 text-xs text-slate-600 hover:text-slate-900 font-medium"
                         >
                           Cancelar
                         </button>
                         <button
                           type="submit"
                           disabled={creatingGroup}
-                          className="px-4 py-1.5 rounded-xl text-xs font-semibold bg-rose-500 hover:bg-rose-600 disabled:opacity-50 text-white flex items-center gap-1.5 transition-colors"
+                          className="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white flex items-center gap-1.5 transition-colors"
                         >
                           {creatingGroup ? (
                             <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -559,9 +559,9 @@ export function ProductOptionsManagerModal({
                     <button
                       type="button"
                       onClick={() => setShowAddGroup(true)}
-                      className="w-full py-3 px-4 rounded-2xl border-2 border-dashed border-zinc-800 hover:border-zinc-700 text-xs font-semibold text-zinc-400 hover:text-zinc-200 flex items-center justify-center gap-2 transition-colors"
+                      className="w-full py-2.5 px-4 rounded-xl border border-dashed border-slate-300 hover:border-slate-400 text-xs font-medium text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-colors"
                     >
-                      <Plus className="w-4 h-4 text-rose-400" />
+                      <Plus className="w-3.5 h-3.5 text-slate-500" />
                       Agregar otro grupo de opciones
                     </button>
                   )}
@@ -570,11 +570,11 @@ export function ProductOptionsManagerModal({
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-zinc-800 flex justify-end">
+            <div className="p-4 border-t border-slate-100 flex justify-end">
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 transition-colors"
+                className="px-4 py-2 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
               >
                 Cerrar
               </button>

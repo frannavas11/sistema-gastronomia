@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Store, Phone, Bike, Clock, Save, Loader2, CheckCircle2 } from "lucide-react";
+import { toast } from "sonner";
 import { updateStoreSettings } from "@/app/admin/actions";
 
 interface StoreSettingsFormProps {
@@ -48,9 +49,11 @@ export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
 
     if (res.success) {
       setSuccessMsg(true);
+      toast.success("Configuración actualizada.");
       setTimeout(() => setSuccessMsg(false), 4000);
     } else {
       setErrorMsg(res.error || "Error al guardar cambios");
+      toast.error(res.error || "Error al guardar cambios");
     }
 
     setLoading(false);
@@ -59,28 +62,28 @@ export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm"
+      className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 space-y-5 shadow-xs"
     >
       {successMsg && (
-        <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300 flex items-center gap-2 animate-fade-in">
-          <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
-          <span>¡Configuración actualizada exitosamente!</span>
+        <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-emerald-700 flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 shrink-0" />
+          <span>Configuración guardada exitosamente.</span>
         </div>
       )}
 
       {errorMsg && (
-        <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-300">
+        <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-700">
           {errorMsg}
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+          <label className="block text-xs font-medium text-slate-700 mb-1">
             Nombre del Comercio
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
               <Store className="w-4 h-4" />
             </div>
             <input
@@ -88,17 +91,17 @@ export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 focus:outline-none focus:ring-2 focus:ring-rose-500/40 focus:border-rose-500"
+              className="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+          <label className="block text-xs font-medium text-slate-700 mb-1">
             WhatsApp para Pedidos (con código de país)
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
               <Phone className="w-4 h-4" />
             </div>
             <input
@@ -107,20 +110,20 @@ export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
               placeholder="Ej. 5491122334455"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 font-mono focus:outline-none focus:ring-2 focus:ring-rose-500/40 focus:border-rose-500"
+              className="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
             />
           </div>
-          <p className="text-[11px] text-zinc-500 mt-1">
-            A este número se enviarán los mensajes automáticos de wa.me
+          <p className="text-[11px] text-slate-400 mt-1">
+            A este número se enviarán los pedidos vía wa.me
           </p>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+          <label className="block text-xs font-medium text-slate-700 mb-1">
             Costo de Envío Estándar ($)
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
               <Bike className="w-4 h-4" />
             </div>
             <input
@@ -129,17 +132,17 @@ export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
               step="50"
               value={deliveryCost}
               onChange={(e) => setDeliveryCost(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 focus:outline-none focus:ring-2 focus:ring-rose-500/40 focus:border-rose-500"
+              className="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 tabular-nums focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+          <label className="block text-xs font-medium text-slate-700 mb-1">
             Monto Mínimo de Pedido ($)
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
               <Clock className="w-4 h-4" />
             </div>
             <input
@@ -148,17 +151,17 @@ export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
               step="100"
               value={minOrder}
               onChange={(e) => setMinOrder(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-100 focus:outline-none focus:ring-2 focus:ring-rose-500/40 focus:border-rose-500"
+              className="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 tabular-nums focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
             />
           </div>
         </div>
       </div>
 
-      <div className="pt-4 border-t border-zinc-800 flex justify-end">
+      <div className="pt-3 border-t border-slate-100 flex justify-end">
         <button
           type="submit"
           disabled={loading}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-xs text-white bg-rose-600 hover:bg-rose-500 disabled:opacity-50 transition-colors shadow-sm"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-xs sm:text-sm text-white bg-slate-900 hover:bg-slate-800 disabled:opacity-50 transition-colors shadow-2xs"
         >
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -171,4 +174,3 @@ export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
     </form>
   );
 }
-
