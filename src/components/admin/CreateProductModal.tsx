@@ -220,8 +220,7 @@ export function CreateProductModal({
                       </select>
                     ) : (
                       <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300">
-                        No tenés categorías creadas. Cambiá a la pestaña
-                        "Categoría" arriba para crear la primera.
+                        No tenés categorías creadas. Cambiá a la pestaña &quot;Categoría&quot; arriba para crear la primera.
                       </div>
                     )}
                   </div>

@@ -3,10 +3,9 @@ import Image from "next/image";
 import {
   UtensilsCrossed,
   Sparkles,
-  Search,
   PackageOpen,
 } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { ProductAvailabilityToggle } from "@/components/admin/ProductAvailabilityToggle";
 import { QuickPriceEditor } from "@/components/admin/QuickPriceEditor";
 import { CreateProductModal } from "@/components/admin/CreateProductModal";
@@ -14,15 +13,13 @@ import { CreateProductModal } from "@/components/admin/CreateProductModal";
 export const dynamic = "force-dynamic";
 
 export default async function AdminMenuPage() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await getCurrentUser();
 
   if (!user) {
     redirect("/admin/login");
   }
+
+  const supabase = await createClient();
 
   // Obtener el comercio del usuario
   const { data: store } = await supabase

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Store, Shield, ArrowRight, UtensilsCrossed, Smartphone, Sparkles, CheckCircle2 } from "lucide-react";
+import { Store, Shield, ArrowRight, UtensilsCrossed, Sparkles, CheckCircle2 } from "lucide-react";
 
 export default function Home() {
   return (

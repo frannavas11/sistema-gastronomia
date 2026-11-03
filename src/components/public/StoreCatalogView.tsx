@@ -7,7 +7,6 @@ import type {
   CategoryWithProducts,
   ProductWithOptions,
   ConfiguredItemPayload,
-  CheckoutPayload,
 } from "@/types/store";
 import { useCart } from "@/lib/store/useCartStore";
 import { CategoryPills } from "./CategoryPills";
@@ -30,6 +29,7 @@ export function StoreCatalogView({
     items,
     totalItems,
     subtotal,
+    hasHydrated,
     addItem,
     removeItem,
     updateQuantity,
@@ -74,9 +74,8 @@ export function StoreCatalogView({
   };
 
   // Confirmación del pedido en el modal de checkout (Fase 4 completada)
-  const handleConfirmOrder = (payload: CheckoutPayload) => {
-    // eslint-disable-next-line no-console
-    console.info("Pedido confirmado y registrado en backend:", payload);
+  const handleConfirmOrder = () => {
+    // Pedido registrado exitosamente en el backend
   };
 
   // Filtrar categorías que contengan al menos un producto activo
@@ -157,18 +156,22 @@ export function StoreCatalogView({
         )}
       </main>
 
-      {/* Modal de personalización y selección de variantes */}
-      <VariantModal
-        product={selectedProduct}
-        isOpen={isVariantModalOpen}
-        onClose={() => setIsVariantModalOpen(false)}
-        onConfirm={handleConfirmItem}
-      />
+      {/* Modal de personalización y selección de variantes con reinicio declarativo por key={product.id} */}
+      {selectedProduct && (
+        <VariantModal
+          key={selectedProduct.id}
+          product={selectedProduct}
+          isOpen={isVariantModalOpen}
+          onClose={() => setIsVariantModalOpen(false)}
+          onConfirm={handleConfirmItem}
+        />
+      )}
 
       {/* Barra flotante inferior fija con total y llamada al checkout */}
       <FloatingCartBar
         totalItems={totalItems}
         subtotal={subtotal}
+        hasHydrated={hasHydrated}
         onOpenCheckout={() => setIsCheckoutOpen(true)}
       />
 

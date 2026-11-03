@@ -9,20 +9,18 @@ import {
   Clock,
   Inbox,
 } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getCurrentUser } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminOrdersPage() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await getCurrentUser();
 
   if (!user) {
     redirect("/admin/login");
   }
+
+  const supabase = await createClient();
 
   // Obtener comercio del usuario
   const { data: store } = await supabase
@@ -250,7 +248,7 @@ export default async function AdminOrdersPage() {
                     <span className="font-semibold block text-[10px] uppercase text-amber-400 mb-0.5">
                       Aclaraciones para cocina
                     </span>
-                    "{order.notes}"
+                    &ldquo;{order.notes}&rdquo;
                   </div>
                 )}
 

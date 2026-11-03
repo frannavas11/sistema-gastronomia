@@ -5,7 +5,6 @@ import {
   ExternalLink,
   ShieldCheck,
   Mail,
-  Calendar,
   UtensilsCrossed,
   ShoppingBag,
   Sparkles,
@@ -13,22 +12,20 @@ import {
   PackageCheck,
   Clock,
 } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { LogoutButton } from "@/components/admin/LogoutButton";
 import { StoreStatusToggle } from "@/components/admin/StoreStatusToggle";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await getCurrentUser();
 
   if (!user) {
     redirect("/admin/login");
   }
+
+  const supabase = await createClient();
 
   // Consultar si el usuario ya tiene un comercio asignado
   const { data: store } = await supabase

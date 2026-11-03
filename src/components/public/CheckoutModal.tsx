@@ -109,6 +109,11 @@ export function CheckoutModal({
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
+    if (store.is_open === false) {
+      setSubmitError("El local se encuentra cerrado y no recibe pedidos en este momento.");
+      return false;
+    }
+
     if (!customerName.trim()) {
       newErrors.customerName = "Por favor ingresá tu nombre completo.";
     } else if (customerName.trim().length < 3) {

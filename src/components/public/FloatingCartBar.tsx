@@ -1,27 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { ShoppingBag, ArrowRight } from "lucide-react";
 
 interface FloatingCartBarProps {
   totalItems: number;
   subtotal: number;
+  hasHydrated?: boolean;
   onOpenCheckout: () => void;
 }
 
 export function FloatingCartBar({
   totalItems,
   subtotal,
+  hasHydrated = true,
   onOpenCheckout,
 }: FloatingCartBarProps) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Evitar desajustes de hidratación antes del montaje en cliente
-  if (!mounted || totalItems === 0) {
+  // Evitar desajustes de hidratación antes de que Zustand cargue de localStorage
+  if (!hasHydrated || totalItems === 0) {
     return null;
   }
 
@@ -71,4 +66,3 @@ export function FloatingCartBar({
     </aside>
   );
 }
-

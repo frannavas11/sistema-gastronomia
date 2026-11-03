@@ -1,20 +1,18 @@
 import { redirect } from "next/navigation";
-import { Settings, Sparkles } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { Sparkles } from "lucide-react";
+import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { StoreSettingsForm } from "@/components/admin/StoreSettingsForm";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminSettingsPage() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await getCurrentUser();
 
   if (!user) {
     redirect("/admin/login");
   }
+
+  const supabase = await createClient();
 
   const { data: store } = await supabase
     .from("stores")
@@ -51,4 +49,3 @@ export default async function AdminSettingsPage() {
     </div>
   );
 }
-

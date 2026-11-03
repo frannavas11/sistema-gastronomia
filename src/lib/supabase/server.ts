@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import type { Database } from "@/types/supabase";
@@ -39,3 +40,15 @@ export async function createClient() {
   );
 }
 
+/**
+ * Helper cacheado por ciclo de renderizado RSC para evitar múltiples llamadas de red
+ * a supabase.auth.getUser() entre layout y páginas dentro de la misma petición.
+ */
+export const getCurrentUser = cache(async () => {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+  return { user, error };
+});

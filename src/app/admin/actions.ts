@@ -194,6 +194,19 @@ export async function createProduct(payload: {
     const { store } = await verifyStoreOwnership(payload.storeId);
 
     const serviceClient = createServiceClient();
+
+    // Validar que la categoría pertenezca a este local
+    const { data: category } = await serviceClient
+      .from("categories")
+      .select("id")
+      .eq("id", payload.categoryId)
+      .eq("store_id", payload.storeId)
+      .maybeSingle();
+
+    if (!category) {
+      throw new Error("La categoría seleccionada no pertenece a este comercio.");
+    }
+
     const { data: product, error } = await serviceClient
       .from("products")
       .insert({
