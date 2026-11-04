@@ -5,8 +5,8 @@ import { AdminSidebar } from "@/components/admin/AdminSidebar";
 export const dynamic = "force-dynamic";
 
 /**
- * Layout protegido para las vistas del panel de administración (/admin, /admin/orders, etc.).
- * No afecta a /admin/login gracias al Route Group (dashboard).
+ * Layout protegido para el panel de administración (/admin, /admin/orders, /admin/menu, etc.).
+ * Sistema visual artesanal contemporáneo con fondo crema y sidebar bordó.
  */
 export default async function AdminDashboardLayout({
   children,
@@ -20,12 +20,12 @@ export default async function AdminDashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col md:flex-row antialiased selection:bg-slate-200">
-      {/* Sidebar de navegación responsive */}
+    <div className="min-h-screen bg-[#FBF5EF] text-[#211B19] flex flex-col md:flex-row antialiased selection:bg-[#F4E3E0] selection:text-[#541923]">
+      {/* Sidebar de navegación: bordó en desktop y barra adaptada en mobile */}
       <AdminSidebar userEmail={user.email} />
 
-      {/* Área de contenido principal */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+      {/* Área de contenido principal con padding inferior extra en mobile para no tapar la barra inferior */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto pb-24 md:pb-8">
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-6xl w-full mx-auto">
           {children}
         </main>

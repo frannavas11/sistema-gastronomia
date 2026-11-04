@@ -43,69 +43,69 @@ export function StoreStatusToggle({
   };
 
   return (
-    <div className="p-5 rounded-xl bg-white border border-slate-200 shadow-xs">
+    <div className="p-5 sm:p-6 rounded-2xl bg-[#FFFCF8] border border-[#E9DAD2] shadow-xs">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-start sm:items-center gap-3.5">
           <div
-            className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors shrink-0 ${
+            className={`w-11 h-11 rounded-xl flex items-center justify-center transition-colors shrink-0 ${
               isOpen
-                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                : "bg-slate-100 text-slate-500 border border-slate-200"
+                ? "bg-[#E5F4E7] text-[#249653] border border-[#C2E8C7]"
+                : "bg-[#F6EBE4] text-[#74645E] border border-[#E9DAD2]"
             }`}
           >
             <Power className="w-5 h-5" />
           </div>
 
           <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-sm sm:text-base font-semibold text-slate-900">
-                Estado Operativo del Local
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <h3 className="font-serif text-base sm:text-lg font-normal text-[#211B19]">
+                Estado del Local
               </h3>
               <span
-                className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors ${
+                className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-medium border transition-colors ${
                   isOpen
-                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                    : "bg-slate-100 text-slate-600 border border-slate-200"
+                    ? "bg-[#E5F4E7] text-[#249653] border-[#C2E8C7]"
+                    : "bg-[#FDE8E7] text-[#C74742] border-[#FAC5C2]"
                 }`}
               >
                 <span
-                  className={`w-1.5 h-1.5 rounded-full ${
-                    isOpen ? "bg-emerald-500" : "bg-slate-400"
+                  className={`w-2 h-2 rounded-full ${
+                    isOpen ? "bg-[#249653]" : "bg-[#C74742]"
                   }`}
                 />
                 {isOpen ? "Abierto" : "Cerrado"}
               </span>
             </div>
 
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-[#74645E] mt-1">
               {isOpen
-                ? "Los clientes pueden navegar la carta y enviar pedidos a WhatsApp."
-                : "El local no recibe pedidos. Los clientes verán el menú con un aviso informativo."}
+                ? "Tu local está abierto y recibiendo pedidos en tiempo real."
+                : "El local se encuentra cerrado. Los clientes podrán explorar la carta con aviso informativo."}
             </p>
           </div>
         </div>
 
-        {/* Switch botón maestro */}
+        {/* Switch botón maestro accesible (≥44px) */}
         <button
           type="button"
           onClick={handleToggle}
           disabled={loading}
           aria-label={isOpen ? "Cerrar local" : "Abrir local"}
-          className={`relative inline-flex h-9 w-18 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed ${
-            isOpen ? "bg-emerald-600" : "bg-slate-300"
+          className={`relative inline-flex h-11 w-20 shrink-0 cursor-pointer rounded-full p-1 transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[#78232F] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none ${
+            isOpen ? "bg-[#249653]" : "bg-[#E9DAD2]"
           }`}
         >
           <span
-            className={`pointer-events-none inline-flex h-8 w-8 transform items-center justify-center rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+            className={`pointer-events-none inline-flex h-9 w-9 transform items-center justify-center rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
               isOpen ? "translate-x-9" : "translate-x-0"
             }`}
           >
             {loading ? (
-              <Loader2 className="w-4 h-4 animate-spin text-slate-600" />
+              <Loader2 className="w-4 h-4 animate-spin text-[#74645E]" />
             ) : (
               <Power
                 className={`w-4 h-4 ${
-                  isOpen ? "text-emerald-600" : "text-slate-400"
+                  isOpen ? "text-[#249653]" : "text-[#A18A81]"
                 }`}
               />
             )}
@@ -115,16 +115,16 @@ export function StoreStatusToggle({
 
       {notification && (
         <div
-          className={`mt-3 p-3 rounded-lg text-xs flex items-center gap-2 ${
+          className={`mt-4 p-3 rounded-xl text-xs flex items-center gap-2 ${
             notification.startsWith("Error")
-              ? "bg-rose-50 border border-rose-200 text-rose-700"
-              : "bg-emerald-50 border border-emerald-200 text-emerald-700"
+              ? "bg-[#FDE8E7] border border-[#FAC5C2] text-[#C74742]"
+              : "bg-[#E5F4E7] border border-[#C2E8C7] text-[#249653]"
           }`}
         >
           {notification.startsWith("Error") ? (
-            <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+            <AlertCircle className="w-4 h-4 shrink-0 text-[#C74742]" />
           ) : (
-            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+            <CheckCircle2 className="w-4 h-4 shrink-0 text-[#249653]" />
           )}
           <span>{notification}</span>
         </div>

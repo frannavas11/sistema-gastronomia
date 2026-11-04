@@ -60,8 +60,8 @@ export function QuickPriceEditor({
 
   if (isEditing) {
     return (
-      <div className="inline-flex items-center gap-1 bg-white p-1 rounded-lg border border-slate-300 shadow-2xs">
-        <span className="text-xs font-medium text-slate-500 pl-1">$</span>
+      <div className="inline-flex items-center gap-1 bg-[#FFFCF8] p-1 rounded-xl border border-[#78232F] shadow-xs">
+        <span className="text-xs font-medium text-[#74645E] pl-1">$</span>
         <input
           type="number"
           step="50"
@@ -71,14 +71,14 @@ export function QuickPriceEditor({
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={loading}
-          className="w-20 px-1 py-0.5 bg-transparent text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none tabular-nums"
+          className="w-20 px-1 py-0.5 bg-transparent text-xs sm:text-sm font-bold text-[#211B19] focus:outline-none tabular-nums"
         />
         <button
           type="button"
           onClick={handleSave}
           disabled={loading}
-          className="p-1 rounded bg-slate-900 hover:bg-slate-800 text-white transition-colors disabled:opacity-50"
-          title="Guardar precio"
+          aria-label="Confirmar precio"
+          className="p-1.5 rounded-lg bg-[#78232F] hover:bg-[#541923] text-white transition-colors disabled:opacity-50 min-h-[32px] min-w-[32px] flex items-center justify-center"
         >
           {loading ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -93,8 +93,8 @@ export function QuickPriceEditor({
             setInputValue(price.toString());
           }}
           disabled={loading}
-          className="p-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
-          title="Cancelar"
+          aria-label="Cancelar edición"
+          className="p-1.5 rounded-lg hover:bg-[#F6EBE4] text-[#74645E] transition-colors min-h-[32px] min-w-[32px] flex items-center justify-center"
         >
           <X className="w-3.5 h-3.5" />
         </button>
@@ -109,13 +109,13 @@ export function QuickPriceEditor({
         setInputValue(price.toString());
         setIsEditing(true);
       }}
-      className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg hover:bg-slate-100 transition-colors border border-transparent hover:border-slate-200"
-      title="Hacé clic para modificar el precio"
+      className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl hover:bg-[#F6EBE4] border border-transparent hover:border-[#E9DAD2] transition-colors cursor-pointer text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#78232F] min-h-[44px]"
+      title="Hacé clic para editar el precio"
     >
-      <span className="text-xs sm:text-sm font-bold text-slate-900 tabular-nums">
+      <span className="text-sm font-bold text-[#211B19] tabular-nums">
         {formatPrice(price)}
       </span>
-      <Pencil className="w-3 h-3 text-slate-400 group-hover:text-slate-700 transition-colors" />
+      <Pencil className="w-3.5 h-3.5 text-[#A18A81] group-hover:text-[#78232F] transition-colors" />
     </button>
   );
 }

@@ -69,17 +69,17 @@ export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6 space-y-6 shadow-xs"
+      className="bg-[#FFFCF8] border border-[#E9DAD2] rounded-2xl p-5 sm:p-6 space-y-6 shadow-xs text-[#211B19]"
     >
       {successMsg && (
-        <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-emerald-700 flex items-center gap-2">
+        <div className="p-3.5 rounded-xl bg-[#E5F4E7] border border-[#C2E8C7] text-xs text-[#249653] flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 shrink-0" />
           <span>Configuración guardada exitosamente.</span>
         </div>
       )}
 
       {errorMsg && (
-        <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-700">
+        <div className="p-3.5 rounded-xl bg-[#FDE8E7] border border-[#FAC5C2] text-xs text-[#C74742]">
           {errorMsg}
         </div>
       )}
@@ -87,21 +87,21 @@ export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
       {/* Datos operativos */}
       <div className="space-y-4">
         <div>
-          <h2 className="text-sm font-semibold text-slate-900">
+          <h2 className="font-serif text-base sm:text-lg font-normal text-[#211B19]">
             Datos Operativos
           </h2>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-[#74645E]">
             Nombre, contacto para pedidos y montos comerciales.
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">
+            <label className="block text-xs font-medium text-[#74645E] mb-1">
               Nombre del Comercio
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#A18A81]">
                 <Store className="w-4 h-4" />
               </div>
               <input
@@ -109,17 +109,17 @@ export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
+                className="w-full min-h-[44px] pl-9 pr-3.5 py-2.5 bg-[#FBF5EF] border border-[#E9DAD2] rounded-xl text-sm text-[#211B19] focus:outline-none focus:ring-2 focus:ring-[#78232F] focus:bg-[#FFFCF8]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">
+            <label className="block text-xs font-medium text-[#74645E] mb-1">
               WhatsApp para Pedidos (con código de país)
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#A18A81]">
                 <Phone className="w-4 h-4" />
               </div>
               <input
@@ -128,20 +128,20 @@ export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
                 placeholder="Ej. 5491122334455"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
+                className="w-full min-h-[44px] pl-9 pr-3.5 py-2.5 bg-[#FBF5EF] border border-[#E9DAD2] rounded-xl text-sm text-[#211B19] font-mono focus:outline-none focus:ring-2 focus:ring-[#78232F] focus:bg-[#FFFCF8]"
               />
             </div>
-            <p className="text-[11px] text-slate-400 mt-1">
+            <p className="text-[11px] text-[#74645E] mt-1">
               A este número se enviarán los pedidos vía wa.me
             </p>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">
+            <label className="block text-xs font-medium text-[#74645E] mb-1">
               Costo de Envío Estándar ($)
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#A18A81]">
                 <Bike className="w-4 h-4" />
               </div>
               <input
@@ -150,17 +150,17 @@ export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
                 step="50"
                 value={deliveryCost}
                 onChange={(e) => setDeliveryCost(e.target.value)}
-                className="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 tabular-nums focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
+                className="w-full min-h-[44px] pl-9 pr-3.5 py-2.5 bg-[#FBF5EF] border border-[#E9DAD2] rounded-xl text-sm text-[#211B19] tabular-nums focus:outline-none focus:ring-2 focus:ring-[#78232F] focus:bg-[#FFFCF8]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">
+            <label className="block text-xs font-medium text-[#74645E] mb-1">
               Monto Mínimo de Pedido ($)
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#A18A81]">
                 <Clock className="w-4 h-4" />
               </div>
               <input
@@ -169,7 +169,7 @@ export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
                 step="100"
                 value={minOrder}
                 onChange={(e) => setMinOrder(e.target.value)}
-                className="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 tabular-nums focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
+                className="w-full min-h-[44px] pl-9 pr-3.5 py-2.5 bg-[#FBF5EF] border border-[#E9DAD2] rounded-xl text-sm text-[#211B19] tabular-nums focus:outline-none focus:ring-2 focus:ring-[#78232F] focus:bg-[#FFFCF8]"
               />
             </div>
           </div>
@@ -177,12 +177,12 @@ export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
       </div>
 
       {/* Imágenes de Portada e Identidad */}
-      <div className="pt-4 border-t border-slate-100 space-y-4">
+      <div className="pt-4 border-t border-[#E9DAD2] space-y-4">
         <div>
-          <h2 className="text-sm font-semibold text-slate-900">
+          <h2 className="font-serif text-base sm:text-lg font-normal text-[#211B19]">
             Imágenes del Local
           </h2>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-[#74645E]">
             Personalizá el logo circular y la foto de portada (banner) del catálogo público.
           </p>
         </div>
@@ -204,11 +204,11 @@ export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
         </div>
       </div>
 
-      <div className="pt-3 border-t border-slate-100 flex justify-end">
+      <div className="pt-3 border-t border-[#E9DAD2] flex justify-end">
         <button
           type="submit"
           disabled={loading}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-xs sm:text-sm text-white bg-slate-900 hover:bg-slate-800 disabled:opacity-50 transition-colors shadow-2xs"
+          className="min-h-[44px] inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium text-xs sm:text-sm text-white bg-[#78232F] hover:bg-[#541923] disabled:opacity-50 transition-colors shadow-xs"
         >
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin" />

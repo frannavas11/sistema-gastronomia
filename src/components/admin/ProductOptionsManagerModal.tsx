@@ -226,10 +226,10 @@ export function ProductOptionsManagerModal({
       <button
         type="button"
         onClick={handleOpen}
-        className="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 shadow-2xs inline-flex items-center gap-1.5 transition-colors"
+        className="min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#FFFCF8] hover:bg-[#F6EBE4] text-[#211B19] border border-[#E9DAD2] shadow-xs inline-flex items-center gap-1.5 transition-colors cursor-pointer"
         title="Gestionar grupos de opciones y adicionales"
       >
-        <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" />
+        <SlidersHorizontal className="w-3.5 h-3.5 text-[#78232F]" />
         <span>Opciones</span>
       </button>
 
@@ -237,11 +237,11 @@ export function ProductOptionsManagerModal({
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/45 backdrop-blur-xs animate-fade-in"
         >
-          <div className="relative w-full max-w-2xl bg-white border border-slate-200 rounded-2xl shadow-xl flex flex-col max-h-[90vh] overflow-hidden text-slate-900">
+          <div className="relative w-full max-w-2xl bg-[#FFFCF8] border border-[#E9DAD2] rounded-2xl shadow-xl flex flex-col max-h-[90vh] overflow-hidden text-[#211B19]">
             {/* Header */}
-            <div className="flex items-center justify-between p-5 border-b border-slate-100">
+            <div className="flex items-center justify-between p-5 border-b border-[#E9DAD2]">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center text-slate-700">
                   <Layers className="w-4 h-4" />

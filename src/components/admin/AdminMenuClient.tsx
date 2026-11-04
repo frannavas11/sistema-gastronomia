@@ -75,12 +75,12 @@ export function AdminMenuClient({
   return (
     <div className="space-y-6">
       {/* 1. Cabecera */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5 border-b border-[#E9DAD2]">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+          <h1 className="font-serif text-2xl sm:text-3xl font-normal tracking-tight text-[#211B19]">
             Menú y Precios
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+          <p className="text-xs sm:text-sm text-[#74645E] mt-1">
             Administrá categorías, platos, precios y disponibilidad en tiempo real.
           </p>
         </div>
@@ -99,17 +99,17 @@ export function AdminMenuClient({
         onSelectCategory={setSelectedCategoryId}
       />
 
-      {/* 3. Listado de Productos */}
+      {/* 3. Listado y Tabla de Productos */}
       {products.length === 0 ? (
-        <div className="p-10 text-center rounded-xl bg-white border border-slate-200 shadow-xs">
-          <div className="w-12 h-12 rounded-xl bg-slate-100 mx-auto flex items-center justify-center text-slate-500 mb-3">
+        <div className="p-10 text-center rounded-2xl bg-[#FFFCF8] border border-[#E9DAD2] shadow-xs">
+          <div className="w-12 h-12 rounded-xl bg-[#F6EBE4] mx-auto flex items-center justify-center text-[#78232F] mb-3">
             <PackageOpen className="w-6 h-6" />
           </div>
-          <h3 className="text-base font-semibold text-slate-900">
+          <h3 className="font-serif text-lg text-[#211B19]">
             Tu menú aún no tiene productos
           </h3>
-          <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto mt-1 mb-5">
-            Comenzá creando una categoría arriba (ej. Pizzas, Bebidas) y agregá tus primeros platos.
+          <p className="text-xs sm:text-sm text-[#74645E] max-w-sm mx-auto mt-1 mb-5">
+            Comenzá creando una categoría arriba (ej. Pizzas, Bebidas, Empanadas) y agregá tus primeros platos.
           </p>
           <CreateProductModal
             storeId={store.id}
@@ -117,116 +117,128 @@ export function AdminMenuClient({
           />
         </div>
       ) : filteredProducts.length === 0 ? (
-        <div className="p-8 text-center rounded-xl bg-white border border-slate-200 shadow-xs">
-          <p className="text-xs sm:text-sm text-slate-500">
+        <div className="p-8 text-center rounded-2xl bg-[#FFFCF8] border border-[#E9DAD2] shadow-xs">
+          <p className="text-xs sm:text-sm text-[#74645E]">
             No hay productos en la categoría seleccionada.
           </p>
           <button
             type="button"
             onClick={() => setSelectedCategoryId(null)}
-            className="mt-2 text-xs font-medium text-slate-900 hover:underline"
+            className="mt-2 text-xs font-semibold text-[#78232F] hover:underline cursor-pointer"
           >
             Ver todos los productos
           </button>
         </div>
       ) : (
-        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-          <div className="p-4 border-b border-slate-100 flex items-center justify-between flex-wrap gap-2">
+        <div className="bg-[#FFFCF8] border border-[#E9DAD2] rounded-2xl overflow-hidden shadow-xs">
+          <div className="p-4 border-b border-[#E9DAD2] flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
-              <UtensilsCrossed className="w-4 h-4 text-slate-500" />
-              <span className="text-xs font-semibold text-slate-700">
+              <UtensilsCrossed className="w-4 h-4 text-[#78232F]" />
+              <span className="text-xs font-semibold text-[#211B19]">
                 Productos ({filteredProducts.length}
                 {selectedCategoryId ? ` en ${categoryMap.get(selectedCategoryId)}` : ""})
               </span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-slate-400">
+            <div className="flex items-center gap-1.5 text-xs text-[#74645E]">
               <HelpCircle className="w-3.5 h-3.5" />
-              <span>Hacé clic en cualquier precio para editarlo</span>
+              <span>Hacé clic en cualquier precio para editarlo en el acto</span>
             </div>
           </div>
 
-          <div className="divide-y divide-slate-100">
-            {filteredProducts.map((product) => {
-              const catName = categoryMap.get(product.category_id) || "Sin categoría";
+          {/* Tabla de Productos estilo Dashboard de Referencia */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-[#E9DAD2] bg-[#F6EBE4]/60 text-[11px] font-semibold text-[#74645E] uppercase tracking-wider">
+                  <th className="py-3 px-4 w-16">Foto</th>
+                  <th className="py-3 px-4">Nombre</th>
+                  <th className="py-3 px-4 hidden sm:table-cell">Categoría</th>
+                  <th className="py-3 px-4">Precio</th>
+                  <th className="py-3 px-4">Estado</th>
+                  <th className="py-3 px-4 text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#E9DAD2]">
+                {filteredProducts.map((product) => {
+                  const catName = categoryMap.get(product.category_id) || "Sin categoría";
 
-              return (
-                <div
-                  key={product.id}
-                  className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/80 transition-colors"
-                >
-                  <div className="flex items-start gap-3.5 min-w-0">
-                    {/* Imagen o Thumbnail */}
-                    {product.image_url ? (
-                      <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-slate-100 shrink-0 border border-slate-200">
-                        <Image
-                          src={product.image_url}
-                          alt={product.name}
-                          fill
-                          className="object-cover"
-                          sizes="48px"
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-12 h-12 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 shrink-0">
-                        <UtensilsCrossed className="w-5 h-5 text-slate-400" />
-                      </div>
-                    )}
+                  return (
+                    <tr
+                      key={product.id}
+                      className="hover:bg-[#F6EBE4]/40 transition-colors"
+                    >
+                      {/* Foto */}
+                      <td className="py-3 px-4">
+                        {product.image_url ? (
+                          <div className="relative w-11 h-11 rounded-xl overflow-hidden bg-[#F6EBE4] border border-[#E9DAD2] shrink-0">
+                            <Image
+                              src={product.image_url}
+                              alt={product.name}
+                              fill
+                              className="object-cover"
+                              sizes="44px"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-11 h-11 rounded-xl bg-[#F6EBE4] border border-[#E9DAD2] flex items-center justify-center text-[#A18A81] shrink-0">
+                            <UtensilsCrossed className="w-5 h-5" />
+                          </div>
+                        )}
+                      </td>
 
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h4 className="text-sm font-semibold text-slate-900 truncate">
+                      {/* Nombre y descripción */}
+                      <td className="py-3 px-4 min-w-[180px]">
+                        <div className="font-semibold text-sm text-[#211B19] leading-tight">
                           {product.name}
-                        </h4>
-                        <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+                        </div>
+                        {product.description && (
+                          <p className="text-xs text-[#74645E] mt-0.5 line-clamp-1 max-w-xs">
+                            {product.description}
+                          </p>
+                        )}
+                        <span className="sm:hidden inline-block text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#F6EBE4] text-[#74645E] border border-[#E9DAD2] mt-1">
                           {catName}
                         </span>
-                      </div>
-                      {product.description && (
-                        <p className="text-xs text-slate-500 mt-0.5 line-clamp-1 max-w-lg">
-                          {product.description}
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                      </td>
 
-                  {/* Acciones Rápidas */}
-                  <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 flex-wrap">
-                    <div className="flex flex-col items-start sm:items-end">
-                      <span className="text-[10px] font-medium text-slate-400 mb-0.5">
-                        Variantes
-                      </span>
-                      <ProductOptionsManagerModal
-                        storeId={store.id}
-                        productId={product.id}
-                        productName={product.name}
-                      />
-                    </div>
+                      {/* Categoría */}
+                      <td className="py-3 px-4 hidden sm:table-cell">
+                        <span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-[#F6EBE4] text-[#74645E] border border-[#E9DAD2]">
+                          {catName}
+                        </span>
+                      </td>
 
-                    <div className="flex flex-col items-start sm:items-end">
-                      <span className="text-[10px] font-medium text-slate-400 mb-0.5">
-                        Precio Base
-                      </span>
-                      <QuickPriceEditor
-                        productId={product.id}
-                        storeId={store.id}
-                        initialPrice={product.base_price}
-                      />
-                    </div>
+                      {/* Precio editable */}
+                      <td className="py-3 px-4">
+                        <QuickPriceEditor
+                          productId={product.id}
+                          storeId={store.id}
+                          initialPrice={product.base_price}
+                        />
+                      </td>
 
-                    <div className="flex flex-col items-end">
-                      <span className="text-[10px] font-medium text-slate-400 mb-0.5">
-                        Disponibilidad
-                      </span>
-                      <ProductAvailabilityToggle
-                        productId={product.id}
-                        storeId={store.id}
-                        initialIsAvailable={product.is_available ?? true}
-                      />
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+                      {/* Estado switch Activo/Agotado */}
+                      <td className="py-3 px-4">
+                        <ProductAvailabilityToggle
+                          productId={product.id}
+                          storeId={store.id}
+                          initialIsAvailable={product.is_available ?? true}
+                        />
+                      </td>
+
+                      {/* Acciones */}
+                      <td className="py-3 px-4 text-right">
+                        <ProductOptionsManagerModal
+                          storeId={store.id}
+                          productId={product.id}
+                          productName={product.name}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         </div>
       )}

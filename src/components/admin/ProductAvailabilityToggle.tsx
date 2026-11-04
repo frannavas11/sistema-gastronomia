@@ -32,12 +32,12 @@ export function ProductAvailabilityToggle({
 
     if (!result.success) {
       setIsAvailable(!nextState);
-      toast.error(result.error || "No se pudo actualizar el estado.");
+      toast.error(result.error || "No se pudo actualizar la disponibilidad.");
     } else {
       toast.success(
         nextState
-          ? "Producto habilitado en la carta."
-          : "Producto pausado de la carta.",
+          ? "Producto activo en la carta."
+          : "Producto marcado como agotado.",
       );
     }
 
@@ -49,27 +49,31 @@ export function ProductAvailabilityToggle({
       type="button"
       onClick={handleToggle}
       disabled={loading}
-      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2 disabled:opacity-50 ${
-        isAvailable
-          ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100"
-          : "bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200"
-      }`}
-      title={
-        isAvailable
-          ? "Hacé clic para pausar este producto de la carta"
-          : "Hacé clic para habilitar este producto en la carta"
-      }
+      aria-label={isAvailable ? "Pausar producto" : "Activar producto"}
+      className="min-h-[44px] inline-flex items-center gap-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#78232F] rounded-xl px-2 py-1 select-none disabled:opacity-50 transition-colors"
+      title={isAvailable ? "Hacé clic para marcar como agotado" : "Hacé clic para activar en la carta"}
     >
-      {loading ? (
-        <Loader2 className="w-3 h-3 animate-spin text-current" />
-      ) : (
+      <span
+        className={`relative inline-flex h-6 w-11 shrink-0 rounded-full transition-colors duration-200 ease-in-out p-0.5 ${
+          isAvailable ? "bg-[#249653]" : "bg-[#E9DAD2]"
+        }`}
+      >
         <span
-          className={`w-1.5 h-1.5 rounded-full transition-colors ${
-            isAvailable ? "bg-emerald-500" : "bg-slate-400"
+          className={`inline-flex h-5 w-5 transform items-center justify-center rounded-full bg-white shadow-sm transition duration-200 ease-in-out ${
+            isAvailable ? "translate-x-5" : "translate-x-0"
           }`}
-        />
-      )}
-      <span>{isAvailable ? "Disponible" : "Pausado"}</span>
+        >
+          {loading && <Loader2 className="w-3 h-3 animate-spin text-[#74645E]" />}
+        </span>
+      </span>
+
+      <span
+        className={`text-xs font-semibold ${
+          isAvailable ? "text-[#249653]" : "text-[#74645E]"
+        }`}
+      >
+        {isAvailable ? "Activo" : "Agotado"}
+      </span>
     </button>
   );
 }
