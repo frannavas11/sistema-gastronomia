@@ -95,7 +95,7 @@ export function StoreCatalogView({
       <main className="max-w-2xl mx-auto px-4 mt-6 space-y-8">
         {totalProducts === 0 ? (
           <div className="text-center py-16 px-6 bg-[#FFFCF8] rounded-2xl border border-[#E9DAD2] shadow-xs max-w-md mx-auto">
-            <div className="w-14 h-14 rounded-2xl bg-[#F6EBE4] border border-[#E9DAD2] mx-auto flex items-center justify-center text-[var(--store-primary,#78232F)] mb-3">
+            <div className="w-14 h-14 rounded-2xl bg-[var(--store-primary-light)] border border-[var(--store-primary-subtle)] mx-auto flex items-center justify-center text-[var(--store-primary)] mb-3">
               <ShoppingBag className="w-7 h-7" />
             </div>
             <h2 className="font-serif text-xl sm:text-2xl font-normal text-[#211B19]">

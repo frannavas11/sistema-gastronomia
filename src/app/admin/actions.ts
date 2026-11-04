@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import type { Json } from "@/types/supabase";
 
 /**
  * Valida que la sesión actual pertenezca a un usuario autenticado
@@ -281,8 +282,12 @@ export async function createProduct(payload: {
   }
 }
 
+function isValidHexColor(hex: string): boolean {
+  return /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(hex.trim());
+}
+
 /**
- * Actualiza la información operativa del comercio (teléfono, costo de envío, etc.)
+ * Actualiza la información operativa del comercio (teléfono, costo de envío, color principal, etc.)
  */
 export async function updateStoreSettings(payload: {
   storeId: string;
@@ -292,9 +297,19 @@ export async function updateStoreSettings(payload: {
   minOrderAmount: number;
   logoUrl?: string | null;
   bannerUrl?: string | null;
+  primaryColor?: string | null;
 }) {
   try {
     const { store } = await verifyStoreOwnership(payload.storeId);
+
+    if (payload.primaryColor !== undefined && payload.primaryColor !== null) {
+      const trimmedColor = payload.primaryColor.trim();
+      if (!isValidHexColor(trimmedColor)) {
+        throw new Error(
+          "El color principal debe ser un código hexadecimal válido (ej. #78232F).",
+        );
+      }
+    }
 
     const serviceClient = createServiceClient();
     const updateData: {
@@ -304,6 +319,7 @@ export async function updateStoreSettings(payload: {
       min_order_amount: number;
       logo_url?: string | null;
       banner_url?: string | null;
+      theme_colors?: Json;
     } = {
       name: payload.name.trim(),
       phone_whatsapp: payload.phoneWhatsapp.trim().replace(/\D/g, ""),
@@ -316,6 +332,25 @@ export async function updateStoreSettings(payload: {
     }
     if (payload.bannerUrl !== undefined) {
       updateData.banner_url = payload.bannerUrl ? payload.bannerUrl.trim() : null;
+    }
+
+    if (payload.primaryColor !== undefined) {
+      const { data: storeRecord } = await serviceClient
+        .from("stores")
+        .select("theme_colors")
+        .eq("id", payload.storeId)
+        .single();
+
+      const existingTheme =
+        storeRecord?.theme_colors && typeof storeRecord.theme_colors === "object" && !Array.isArray(storeRecord.theme_colors)
+          ? (storeRecord.theme_colors as Record<string, Json>)
+          : {};
+
+      const cleanHex = payload.primaryColor?.trim() || "#78232F";
+      updateData.theme_colors = {
+        ...existingTheme,
+        primary: cleanHex,
+      };
     }
 
     const { error } = await serviceClient

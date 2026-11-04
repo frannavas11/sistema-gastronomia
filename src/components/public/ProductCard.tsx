@@ -54,7 +54,7 @@ export function ProductCard({
       }}
       className={`group relative bg-[#FFFCF8] rounded-2xl p-3 sm:p-4 border border-[#E9DAD2] shadow-[0_2px_8px_rgba(33,27,25,0.04)] transition-all duration-200 flex gap-3 sm:gap-4 select-none ${
         isAvailable
-          ? "cursor-pointer hover:border-[#D5C2B8] hover:shadow-[0_4px_12px_rgba(33,27,25,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary,#78232F)]"
+          ? "cursor-pointer hover:border-[#D5C2B8] hover:shadow-[0_4px_12px_rgba(33,27,25,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary)]"
           : "opacity-60 cursor-not-allowed"
       }`}
     >
@@ -77,7 +77,7 @@ export function ProductCard({
       <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
         <div>
           <div className="flex items-baseline gap-2 flex-wrap">
-            <h3 className="font-semibold text-sm sm:text-base text-[#211B19] leading-snug group-hover:text-[var(--store-primary-dark,var(--store-primary,#78232F))] transition-colors">
+            <h3 className="font-semibold text-sm sm:text-base text-[#211B19] leading-snug group-hover:text-[var(--store-primary-dark)] transition-colors">
               {product.name}
             </h3>
             {!isAvailable && (
@@ -114,7 +114,7 @@ export function ProductCard({
               whileTap={{ scale: 0.94 }}
               whileHover={{ scale: 1.02 }}
               aria-label={`Agregar ${product.name}`}
-              className="min-h-[44px] px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-[var(--store-primary,#78232F)] text-[var(--store-primary-contrast,#ffffff)] hover:opacity-90 transition-all inline-flex items-center justify-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary,#78232F)] shadow-xs select-none"
+              className="min-h-[44px] px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-[var(--store-primary)] text-[var(--store-primary-contrast)] hover:bg-[var(--store-primary-dark)] transition-all inline-flex items-center justify-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary)] shadow-xs select-none"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Agregar</span>

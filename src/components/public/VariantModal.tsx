@@ -191,7 +191,7 @@ export function VariantModal({
               type="button"
               onClick={onClose}
               aria-label="Cerrar modal de producto"
-              className="absolute top-2.5 right-3 min-h-[44px] min-w-[44px] rounded-full bg-[#FFFCF8]/90 hover:bg-[#FFFCF8] text-[#74645E] hover:text-[#211B19] flex items-center justify-center transition-colors shadow-xs z-10 border border-[#E9DAD2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary,#78232F)]"
+              className="absolute top-2.5 right-3 min-h-[44px] min-w-[44px] rounded-full bg-[#FFFCF8]/90 hover:bg-[#FFFCF8] text-[#74645E] hover:text-[#211B19] flex items-center justify-center transition-colors shadow-xs z-10 border border-[#E9DAD2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary)]"
             >
               <X className="w-4 h-4" />
             </button>
@@ -235,7 +235,7 @@ export function VariantModal({
                           </legend>
                           <span className="text-xs text-[#74645E]">
                             {group.is_required ? (
-                              <span className="text-[var(--store-primary,#78232F)] font-medium mr-1">
+                              <span className="text-[var(--store-primary)] font-medium mr-1">
                                 Obligatorio
                               </span>
                             ) : (
@@ -267,7 +267,7 @@ export function VariantModal({
                               key={item.id}
                               className={`flex items-center justify-between p-3 rounded-xl border transition-colors cursor-pointer select-none min-h-[44px] ${
                                 isSelected
-                                  ? "bg-[#F6EBE4] border-[var(--store-primary,#78232F)] text-[#211B19] shadow-xs"
+                                  ? "bg-[var(--store-primary-light)] border-[var(--store-primary)] text-[#211B19] shadow-xs"
                                   : "bg-[#FFFCF8] border-[#E9DAD2] text-[#74645E] hover:border-[#D5C2B8] hover:text-[#211B19]"
                               }`}
                             >
@@ -279,7 +279,7 @@ export function VariantModal({
                                       : "rounded-md border"
                                   } ${
                                     isSelected
-                                      ? "border-[var(--store-primary,#78232F)] bg-[var(--store-primary,#78232F)] text-[var(--store-primary-contrast,#ffffff)]"
+                                      ? "border-[var(--store-primary)] bg-[var(--store-primary)] text-[var(--store-primary-contrast)]"
                                       : "border-[#E9DAD2] bg-[#FFFCF8]"
                                   }`}
                                 >
@@ -345,7 +345,7 @@ export function VariantModal({
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Ej. Sin condimento, salsa aparte, etc."
-                className="w-full p-3 rounded-xl border border-[#E9DAD2] bg-[#FBF5EF] text-xs sm:text-sm text-[#211B19] placeholder:text-[#A18A81] focus:outline-none focus:ring-2 focus:ring-[var(--store-primary,#78232F)] focus:bg-[#FFFCF8] resize-none transition-all"
+                className="w-full p-3 rounded-xl border border-[#E9DAD2] bg-[#FBF5EF] text-xs sm:text-sm text-[#211B19] placeholder:text-[#A18A81] focus:outline-none focus:ring-2 focus:ring-[var(--store-primary)] focus:bg-[#FFFCF8] resize-none transition-all"
               />
               <span className="block text-right text-[11px] text-[#74645E] mt-1 tabular-nums">
                 {notes.length}/150
@@ -370,7 +370,7 @@ export function VariantModal({
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                   disabled={quantity <= 1}
                   aria-label="Disminuir cantidad"
-                  className="min-h-[44px] min-w-[44px] rounded-lg flex items-center justify-center text-[#211B19] hover:bg-[#FFFCF8] disabled:opacity-30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary,#78232F)]"
+                  className="min-h-[44px] min-w-[44px] rounded-lg flex items-center justify-center text-[#211B19] hover:bg-[#FFFCF8] disabled:opacity-30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary)]"
                 >
                   <Minus className="w-4 h-4" />
                 </button>
@@ -381,7 +381,7 @@ export function VariantModal({
                   type="button"
                   onClick={() => setQuantity((q) => Math.min(99, q + 1))}
                   aria-label="Aumentar cantidad"
-                  className="min-h-[44px] min-w-[44px] rounded-lg flex items-center justify-center text-[#211B19] hover:bg-[#FFFCF8] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary,#78232F)]"
+                  className="min-h-[44px] min-w-[44px] rounded-lg flex items-center justify-center text-[#211B19] hover:bg-[#FFFCF8] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary)]"
                 >
                   <Plus className="w-4 h-4" />
                 </button>
@@ -392,7 +392,7 @@ export function VariantModal({
                 type="button"
                 onClick={handleConfirm}
                 disabled={!isValid}
-                className="flex-1 min-h-[48px] flex items-center justify-between px-4 py-3 rounded-xl font-semibold text-xs sm:text-sm text-[var(--store-primary-contrast,#ffffff)] bg-[var(--store-primary,#78232F)] hover:opacity-95 active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary,#78232F)] focus-visible:ring-offset-2"
+                className="flex-1 min-h-[48px] flex items-center justify-between px-4 py-3 rounded-xl font-semibold text-xs sm:text-sm text-[var(--store-primary-contrast)] bg-[var(--store-primary)] hover:bg-[var(--store-primary-dark)] active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary)] focus-visible:ring-offset-2"
               >
                 <span>Agregar al pedido</span>
                 <span className="tabular-nums font-bold">{formatPrice(subtotal)}</span>

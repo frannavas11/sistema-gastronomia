@@ -275,7 +275,7 @@ export function CheckoutModal({
               onClick={handleClose}
               type="button"
               aria-label="Cerrar checkout"
-              className="min-h-[44px] min-w-[44px] rounded-full text-[#74645E] hover:text-[#211B19] flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary,#78232F)]"
+              className="min-h-[44px] min-w-[44px] rounded-full text-[#74645E] hover:text-[#211B19] flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary)]"
             >
               <X className="w-5 h-5" />
             </button>
@@ -289,7 +289,7 @@ export function CheckoutModal({
               </div>
 
               <div>
-                <span className="inline-block px-3 py-1 rounded-full bg-[#F6EBE4] border border-[#E9DAD2] text-xs font-semibold text-[#211B19] tabular-nums">
+                <span className="inline-block px-3 py-1 rounded-full bg-[var(--store-primary-light)] border border-[var(--store-primary)] text-xs font-semibold text-[#211B19] tabular-nums">
                   Pedido #{successOrder.orderId}
                 </span>
                 <h3 className="font-serif text-2xl font-normal text-[#211B19] mt-2">
@@ -502,9 +502,9 @@ export function CheckoutModal({
                     <button
                       type="button"
                       onClick={() => setDeliveryType("delivery")}
-                      className={`min-h-[48px] flex flex-col items-center justify-center p-3 rounded-xl border text-xs sm:text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary,#78232F)] ${
+                      className={`min-h-[48px] flex flex-col items-center justify-center p-3 rounded-xl border text-xs sm:text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary)] ${
                         deliveryType === "delivery"
-                          ? "bg-[#F6EBE4] border-[var(--store-primary,#78232F)] text-[#211B19] shadow-xs"
+                          ? "bg-[var(--store-primary-light)] border-[var(--store-primary)] text-[#211B19] shadow-xs"
                           : "bg-[#FFFCF8] border-[#E9DAD2] text-[#74645E] hover:border-[#D5C2B8]"
                       }`}
                     >
@@ -520,9 +520,9 @@ export function CheckoutModal({
                     <button
                       type="button"
                       onClick={() => setDeliveryType("take_away")}
-                      className={`min-h-[48px] flex flex-col items-center justify-center p-3 rounded-xl border text-xs sm:text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary,#78232F)] ${
+                      className={`min-h-[48px] flex flex-col items-center justify-center p-3 rounded-xl border text-xs sm:text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary)] ${
                         deliveryType === "take_away"
-                          ? "bg-[#F6EBE4] border-[var(--store-primary,#78232F)] text-[#211B19] shadow-xs"
+                          ? "bg-[var(--store-primary-light)] border-[var(--store-primary)] text-[#211B19] shadow-xs"
                           : "bg-[#FFFCF8] border-[#E9DAD2] text-[#74645E] hover:border-[#D5C2B8]"
                       }`}
                     >
@@ -547,7 +547,7 @@ export function CheckoutModal({
                         htmlFor={nameInputId}
                         className="block text-xs font-medium text-[#74645E] mb-1"
                       >
-                        Nombre y Apellido <span className="text-[var(--store-primary,#78232F)]">*</span>
+                        Nombre y Apellido <span className="text-[var(--store-primary)]">*</span>
                       </label>
                       <div className="relative">
                         <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A18A81]" />
@@ -558,7 +558,7 @@ export function CheckoutModal({
                           value={customerName}
                           onChange={(e) => setCustomerName(e.target.value)}
                           placeholder="Ej: Juan Pérez"
-                          className={`w-full min-h-[44px] text-xs sm:text-sm pl-9 pr-3.5 py-2.5 rounded-xl border bg-[#FBF5EF] text-[#211B19] placeholder:text-[#A18A81] focus:outline-none focus:ring-2 focus:ring-[var(--store-primary,#78232F)] focus:bg-[#FFFCF8] transition-all ${
+                          className={`w-full min-h-[44px] text-xs sm:text-sm pl-9 pr-3.5 py-2.5 rounded-xl border bg-[#FBF5EF] text-[#211B19] placeholder:text-[#A18A81] focus:outline-none focus:ring-2 focus:ring-[var(--store-primary)] focus:bg-[#FFFCF8] transition-all ${
                             errors.customerName
                               ? "border-[#FAC5C2]"
                               : "border-[#E9DAD2]"
@@ -577,7 +577,7 @@ export function CheckoutModal({
                         htmlFor={phoneInputId}
                         className="block text-xs font-medium text-[#74645E] mb-1"
                       >
-                        WhatsApp / Teléfono <span className="text-[var(--store-primary,#78232F)]">*</span>
+                        WhatsApp / Teléfono <span className="text-[var(--store-primary)]">*</span>
                       </label>
                       <div className="relative">
                         <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A18A81]" />
@@ -588,7 +588,7 @@ export function CheckoutModal({
                           value={customerPhone}
                           onChange={(e) => setCustomerPhone(e.target.value)}
                           placeholder="Ej: 11 1234 5678"
-                          className={`w-full min-h-[44px] text-xs sm:text-sm pl-9 pr-3.5 py-2.5 rounded-xl border bg-[#FBF5EF] text-[#211B19] placeholder:text-[#A18A81] focus:outline-none focus:ring-2 focus:ring-[var(--store-primary,#78232F)] focus:bg-[#FFFCF8] transition-all ${
+                          className={`w-full min-h-[44px] text-xs sm:text-sm pl-9 pr-3.5 py-2.5 rounded-xl border bg-[#FBF5EF] text-[#211B19] placeholder:text-[#A18A81] focus:outline-none focus:ring-2 focus:ring-[var(--store-primary)] focus:bg-[#FFFCF8] transition-all ${
                             errors.customerPhone
                               ? "border-[#FAC5C2]"
                               : "border-[#E9DAD2]"
@@ -609,7 +609,7 @@ export function CheckoutModal({
                           className="block text-xs font-medium text-[#74645E] mb-1"
                         >
                           Dirección de entrega{" "}
-                          <span className="text-[var(--store-primary,#78232F)]">*</span>
+                          <span className="text-[var(--store-primary)]">*</span>
                         </label>
                         <div className="relative">
                           <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A18A81]" />
@@ -620,7 +620,7 @@ export function CheckoutModal({
                             value={deliveryAddress}
                             onChange={(e) => setDeliveryAddress(e.target.value)}
                             placeholder="Calle, número, piso/depto..."
-                            className={`w-full min-h-[44px] text-xs sm:text-sm pl-9 pr-3.5 py-2.5 rounded-xl border bg-[#FBF5EF] text-[#211B19] placeholder:text-[#A18A81] focus:outline-none focus:ring-2 focus:ring-[var(--store-primary,#78232F)] focus:bg-[#FFFCF8] transition-all ${
+                            className={`w-full min-h-[44px] text-xs sm:text-sm pl-9 pr-3.5 py-2.5 rounded-xl border bg-[#FBF5EF] text-[#211B19] placeholder:text-[#A18A81] focus:outline-none focus:ring-2 focus:ring-[var(--store-primary)] focus:bg-[#FFFCF8] transition-all ${
                               errors.deliveryAddress
                                 ? "border-[#FAC5C2]"
                                 : "border-[#E9DAD2]"
@@ -647,9 +647,9 @@ export function CheckoutModal({
                     <button
                       type="button"
                       onClick={() => setPaymentMethod("cash")}
-                      className={`min-h-[44px] flex flex-col items-center justify-center p-2.5 rounded-xl border text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary,#78232F)] ${
+                      className={`min-h-[44px] flex flex-col items-center justify-center p-2.5 rounded-xl border text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary)] ${
                         paymentMethod === "cash"
-                          ? "bg-[#F6EBE4] border-[var(--store-primary,#78232F)] text-[#211B19] shadow-xs"
+                          ? "bg-[var(--store-primary-light)] border-[var(--store-primary)] text-[#211B19] shadow-xs"
                           : "bg-[#FFFCF8] border-[#E9DAD2] text-[#74645E] hover:border-[#D5C2B8]"
                       }`}
                     >
@@ -660,9 +660,9 @@ export function CheckoutModal({
                     <button
                       type="button"
                       onClick={() => setPaymentMethod("transfer")}
-                      className={`min-h-[44px] flex flex-col items-center justify-center p-2.5 rounded-xl border text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary,#78232F)] ${
+                      className={`min-h-[44px] flex flex-col items-center justify-center p-2.5 rounded-xl border text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary)] ${
                         paymentMethod === "transfer"
-                          ? "bg-[#F6EBE4] border-[var(--store-primary,#78232F)] text-[#211B19] shadow-xs"
+                          ? "bg-[var(--store-primary-light)] border-[var(--store-primary)] text-[#211B19] shadow-xs"
                           : "bg-[#FFFCF8] border-[#E9DAD2] text-[#74645E] hover:border-[#D5C2B8]"
                       }`}
                     >
@@ -673,9 +673,9 @@ export function CheckoutModal({
                     <button
                       type="button"
                       onClick={() => setPaymentMethod("mercadopago")}
-                      className={`min-h-[44px] flex flex-col items-center justify-center p-2.5 rounded-xl border text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary,#78232F)] ${
+                      className={`min-h-[44px] flex flex-col items-center justify-center p-2.5 rounded-xl border text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary)] ${
                         paymentMethod === "mercadopago"
-                          ? "bg-[#F6EBE4] border-[var(--store-primary,#78232F)] text-[#211B19] shadow-xs"
+                          ? "bg-[var(--store-primary-light)] border-[var(--store-primary)] text-[#211B19] shadow-xs"
                           : "bg-[#FFFCF8] border-[#E9DAD2] text-[#74645E] hover:border-[#D5C2B8]"
                       }`}
                     >
@@ -700,7 +700,7 @@ export function CheckoutModal({
                     value={generalNotes}
                     onChange={(e) => setGeneralNotes(e.target.value)}
                     placeholder="Ej: Timbre 2B, abonaré con cambio, etc."
-                    className="w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-[#E9DAD2] bg-[#FBF5EF] text-[#211B19] placeholder:text-[#A18A81] focus:outline-none focus:ring-2 focus:ring-[var(--store-primary,#78232F)] focus:bg-[#FFFCF8] transition-all resize-none"
+                    className="w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-[#E9DAD2] bg-[#FBF5EF] text-[#211B19] placeholder:text-[#A18A81] focus:outline-none focus:ring-2 focus:ring-[var(--store-primary)] focus:bg-[#FFFCF8] transition-all resize-none"
                   />
                 </section>
 
@@ -747,7 +747,7 @@ export function CheckoutModal({
                   type="submit"
                   form="checkout-form"
                   disabled={isSubmitting || isBelowMinOrder || items.length === 0}
-                  className="w-full min-h-[48px] py-3.5 px-4 rounded-xl font-semibold text-sm text-[var(--store-primary-contrast,#ffffff)] bg-[var(--store-primary,#78232F)] hover:opacity-95 active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary,#78232F)] focus-visible:ring-offset-2"
+                  className="w-full min-h-[48px] py-3.5 px-4 rounded-xl font-semibold text-sm text-[var(--store-primary-contrast)] bg-[var(--store-primary)] hover:bg-[var(--store-primary-dark)] active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary)] focus-visible:ring-offset-2"
                 >
                   {isSubmitting ? (
                     <>

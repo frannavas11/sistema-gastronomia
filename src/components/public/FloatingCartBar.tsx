@@ -40,24 +40,24 @@ export function FloatingCartBar({
               exit={{ y: 60, opacity: 0 }}
               transition={{ type: "spring", stiffness: 350, damping: 30 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full min-h-[56px] px-4 sm:px-5 py-3 rounded-2xl bg-[var(--store-primary,#78232F)] text-[var(--store-primary-contrast,#ffffff)] shadow-xl shadow-black/15 flex items-center justify-between select-none border border-white/10 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--store-primary,#78232F)] focus-visible:ring-offset-2"
+              className="w-full min-h-[56px] px-4 sm:px-5 py-3 rounded-2xl bg-[var(--store-primary)] text-[var(--store-primary-contrast)] shadow-xl shadow-black/15 flex items-center justify-between select-none border border-black/10 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--store-primary)] focus-visible:ring-offset-2"
             >
               {/* Indicador de ítems */}
               <div className="flex items-center gap-3">
-                <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-white/20 text-inherit shrink-0">
+                <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-black/10 text-inherit shrink-0">
                   <ShoppingBag className="w-5 h-5" />
                   <motion.span
                     key={totalItems}
                     initial={{ scale: 0.6 }}
                     animate={{ scale: 1 }}
-                    className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 rounded-full bg-white text-[var(--store-primary,#78232F)] text-[11px] font-extrabold flex items-center justify-center tabular-nums shadow-sm"
+                    className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 rounded-full bg-white text-[var(--store-primary)] text-[11px] font-extrabold flex items-center justify-center tabular-nums shadow-sm"
                   >
                     {totalItems}
                   </motion.span>
                 </div>
 
                 <div className="text-left">
-                  <span className="block text-xs font-medium text-white/90 leading-tight">
+                  <span className="block text-xs font-medium opacity-90 leading-tight">
                     Ver pedido ({totalItems} {totalItems === 1 ? "ítem" : "ítems"})
                   </span>
                   <span className="block text-base font-bold tabular-nums leading-tight mt-0.5">
@@ -67,7 +67,7 @@ export function FloatingCartBar({
               </div>
 
               {/* Botón de acción */}
-              <div className="min-h-[44px] flex items-center gap-2 text-xs sm:text-sm font-semibold tracking-wide bg-white/20 hover:bg-white/25 active:bg-white/30 px-4 py-2 rounded-xl transition-colors">
+              <div className="min-h-[44px] flex items-center gap-2 text-xs sm:text-sm font-semibold tracking-wide bg-black/15 hover:bg-black/25 active:bg-black/30 px-4 py-2 rounded-xl transition-colors">
                 <span>Continuar</span>
                 <ArrowRight className="w-4 h-4 stroke-[2.5]" />
               </div>

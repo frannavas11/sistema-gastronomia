@@ -84,6 +84,15 @@ export default async function StorePage({ params }: PageProps) {
         } as React.CSSProperties
       }
     >
+      <style>{`
+        :root {
+          --store-primary: ${primaryColor};
+          --store-primary-contrast: ${contrastTextColor};
+          --store-primary-dark: color-mix(in srgb, ${primaryColor} 70%, #000000);
+          --store-primary-light: color-mix(in srgb, ${primaryColor} 14%, #FFFCF8);
+          --store-primary-subtle: color-mix(in srgb, ${primaryColor} 6%, #FFFCF8);
+        }
+      `}</style>
       {/* Header estilo Portada */}
       <header className="relative bg-[#FFFCF8] border-b border-[#E9DAD2]">
         {/* Banner horizontal con remate ondulado */}

@@ -116,9 +116,9 @@ export function CategoryPills({
               }}
               onClick={() => handlePillClick(cat.id)}
               type="button"
-              className={`shrink-0 min-h-[44px] inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary,#78232F)] focus-visible:ring-offset-2 ${
+              className={`shrink-0 min-h-[44px] inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary)] focus-visible:ring-offset-2 ${
                 isActive
-                  ? "bg-[var(--store-primary,#78232F)] text-[var(--store-primary-contrast,#ffffff)] shadow-xs"
+                  ? "bg-[var(--store-primary)] text-[var(--store-primary-contrast)] shadow-xs"
                   : "bg-[#FFFCF8] text-[#74645E] hover:text-[#211B19] hover:bg-[#F6EBE4] border border-[#E9DAD2]"
               }`}
             >
