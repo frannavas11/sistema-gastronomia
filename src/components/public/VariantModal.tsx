@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import Image from "next/image";
 import { Drawer } from "vaul";
+import { motion } from "motion/react";
 import { X, Minus, Plus, Check, AlertCircle } from "lucide-react";
 import type {
   ProductWithOptions,
@@ -161,8 +162,14 @@ export function VariantModal({
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 bg-black/45 backdrop-blur-xs z-50 transition-opacity" />
         <Drawer.Content className="fixed bottom-0 left-0 right-0 max-h-[92vh] sm:max-h-[85vh] bg-[#FFFCF8] rounded-t-3xl z-50 flex flex-col focus:outline-none max-w-lg mx-auto shadow-2xl overflow-hidden border-t border-[#E9DAD2]">
-          {/* Manija de arrastre del bottom-sheet */}
-          <div className="w-12 h-1.5 bg-[#E9DAD2] rounded-full mx-auto my-3 shrink-0" />
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            className="flex flex-col h-full max-h-[92vh] sm:max-h-[85vh] overflow-hidden"
+          >
+            {/* Manija de arrastre del bottom-sheet */}
+            <div className="w-12 h-1.5 bg-[#E9DAD2] rounded-full mx-auto my-3 shrink-0" />
 
           {/* Cabecera del modal: Imagen o ícono genérico y botón cerrar */}
           <div className="relative w-full shrink-0">
@@ -392,7 +399,8 @@ export function VariantModal({
               </button>
             </div>
           </div>
-        </Drawer.Content>
+        </motion.div>
+      </Drawer.Content>
       </Drawer.Portal>
     </Drawer.Root>
   );

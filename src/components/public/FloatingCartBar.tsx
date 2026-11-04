@@ -40,7 +40,7 @@ export function FloatingCartBar({
               exit={{ y: 60, opacity: 0 }}
               transition={{ type: "spring", stiffness: 350, damping: 30 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full min-h-[56px] px-4 sm:px-5 py-3 rounded-2xl bg-[var(--store-primary,#78232F)] text-[var(--store-primary-contrast,#ffffff)] shadow-xl shadow-black/15 flex items-center justify-between select-none border border-white/10 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#78232F] focus-visible:ring-offset-2"
+              className="w-full min-h-[56px] px-4 sm:px-5 py-3 rounded-2xl bg-[var(--store-primary,#78232F)] text-[var(--store-primary-contrast,#ffffff)] shadow-xl shadow-black/15 flex items-center justify-between select-none border border-white/10 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--store-primary,#78232F)] focus-visible:ring-offset-2"
             >
               {/* Indicador de ítems */}
               <div className="flex items-center gap-3">
@@ -50,7 +50,7 @@ export function FloatingCartBar({
                     key={totalItems}
                     initial={{ scale: 0.6 }}
                     animate={{ scale: 1 }}
-                    className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 rounded-full bg-white text-[#78232F] text-[11px] font-extrabold flex items-center justify-center tabular-nums shadow-sm"
+                    className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 rounded-full bg-white text-[var(--store-primary,#78232F)] text-[11px] font-extrabold flex items-center justify-center tabular-nums shadow-sm"
                   >
                     {totalItems}
                   </motion.span>

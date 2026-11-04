@@ -101,15 +101,15 @@ export function AdminMenuClient({
 
       {/* 3. Listado y Tabla de Productos */}
       {products.length === 0 ? (
-        <div className="p-10 text-center rounded-2xl bg-[#FFFCF8] border border-[#E9DAD2] shadow-xs">
-          <div className="w-12 h-12 rounded-xl bg-[#F6EBE4] mx-auto flex items-center justify-center text-[#78232F] mb-3">
-            <PackageOpen className="w-6 h-6" />
+        <div className="py-16 px-6 text-center rounded-2xl bg-[#FFFCF8] border border-[#E9DAD2] shadow-xs max-w-lg mx-auto">
+          <div className="w-14 h-14 rounded-2xl bg-[#F6EBE4] border border-[#E9DAD2] mx-auto flex items-center justify-center text-[#78232F] mb-4">
+            <PackageOpen className="w-7 h-7" />
           </div>
-          <h3 className="font-serif text-lg text-[#211B19]">
+          <h3 className="font-serif text-xl font-normal text-[#211B19]">
             Tu menú aún no tiene productos
           </h3>
-          <p className="text-xs sm:text-sm text-[#74645E] max-w-sm mx-auto mt-1 mb-5">
-            Comenzá creando una categoría arriba (ej. Pizzas, Bebidas, Empanadas) y agregá tus primeros platos.
+          <p className="text-xs sm:text-sm text-[#74645E] max-w-sm mx-auto mt-1.5 mb-6 leading-relaxed">
+            Comenzá creando una categoría arriba (ej. Pizzas, Empanadas, Bebidas) y agregá tus primeros platos para que aparezcan en la carta pública.
           </p>
           <CreateProductModal
             storeId={store.id}
@@ -117,14 +117,20 @@ export function AdminMenuClient({
           />
         </div>
       ) : filteredProducts.length === 0 ? (
-        <div className="p-8 text-center rounded-2xl bg-[#FFFCF8] border border-[#E9DAD2] shadow-xs">
-          <p className="text-xs sm:text-sm text-[#74645E]">
-            No hay productos en la categoría seleccionada.
+        <div className="py-14 px-6 text-center rounded-2xl bg-[#FFFCF8] border border-[#E9DAD2] shadow-xs max-w-md mx-auto space-y-3">
+          <div className="w-12 h-12 rounded-xl bg-[#F6EBE4] border border-[#E9DAD2] mx-auto flex items-center justify-center text-[#78232F]">
+            <UtensilsCrossed className="w-6 h-6" />
+          </div>
+          <h3 className="font-serif text-lg font-normal text-[#211B19]">
+            Categoría sin productos
+          </h3>
+          <p className="text-xs sm:text-sm text-[#74645E] max-w-xs mx-auto leading-relaxed">
+            No hay platos cargados en &quot;{categoryMap.get(selectedCategoryId || "")}&quot;. Podés agregar uno con el botón &quot;Nuevo Producto&quot;.
           </p>
           <button
             type="button"
             onClick={() => setSelectedCategoryId(null)}
-            className="mt-2 text-xs font-semibold text-[#78232F] hover:underline cursor-pointer"
+            className="min-h-[44px] px-4 py-2 rounded-xl text-xs font-semibold text-[#78232F] bg-[#F6EBE4] hover:bg-[#E9DAD2] transition-colors cursor-pointer inline-flex items-center gap-1.5"
           >
             Ver todos los productos
           </button>

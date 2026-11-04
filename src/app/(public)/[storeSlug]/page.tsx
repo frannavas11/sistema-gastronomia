@@ -73,11 +73,14 @@ export default async function StorePage({ params }: PageProps) {
 
   return (
     <div
-      className="min-h-screen bg-[#FBF5EF] text-[#211B19] pb-32"
+      className="min-h-screen bg-[#FBF5EF] text-[#211B19] pb-48 sm:pb-56 safe-bottom"
       style={
         {
           "--store-primary": primaryColor,
           "--store-primary-contrast": contrastTextColor,
+          "--store-primary-dark": `color-mix(in srgb, ${primaryColor} 70%, #000000)`,
+          "--store-primary-light": `color-mix(in srgb, ${primaryColor} 14%, #FFFCF8)`,
+          "--store-primary-subtle": `color-mix(in srgb, ${primaryColor} 6%, #FFFCF8)`,
         } as React.CSSProperties
       }
     >

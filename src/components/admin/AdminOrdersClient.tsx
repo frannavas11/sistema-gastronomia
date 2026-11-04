@@ -8,7 +8,6 @@ import {
   Phone,
   MapPin,
   Clock,
-  Inbox,
   Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -118,15 +117,15 @@ export function AdminOrdersClient({ store, orders: initialOrders }: AdminOrdersC
 
       {/* Lista de Pedidos */}
       {orderList.length === 0 ? (
-        <div className="p-10 text-center rounded-2xl bg-[#FFFCF8] border border-[#E9DAD2] shadow-xs">
-          <div className="w-12 h-12 rounded-xl bg-[#F6EBE4] mx-auto flex items-center justify-center text-[#A18A81] mb-3">
-            <Inbox className="w-6 h-6" />
+        <div className="py-16 px-6 text-center rounded-2xl bg-[#FFFCF8] border border-[#E9DAD2] shadow-xs max-w-lg mx-auto">
+          <div className="w-14 h-14 rounded-2xl bg-[#F6EBE4] mx-auto flex items-center justify-center text-[#78232F] mb-4 border border-[#E9DAD2]">
+            <ShoppingBag className="w-7 h-7" />
           </div>
-          <h3 className="font-serif text-lg text-[#211B19]">
-            Todavía no hay pedidos registrados
+          <h3 className="font-serif text-xl font-normal text-[#211B19]">
+            Aún no recibiste pedidos
           </h3>
-          <p className="text-xs sm:text-sm text-[#74645E] max-w-sm mx-auto mt-1">
-            Cuando tus clientes completen el carrito en tu carta digital y hagan clic en enviar a WhatsApp, los pedidos aparecerán registrados acá.
+          <p className="text-xs sm:text-sm text-[#74645E] max-w-sm mx-auto mt-1.5 leading-relaxed">
+            Cuando tus clientes recorran la carta online y envíen su orden a WhatsApp, quedará registrada automáticamente acá con su detalle completo.
           </p>
         </div>
       ) : (

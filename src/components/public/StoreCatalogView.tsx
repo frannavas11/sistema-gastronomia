@@ -94,13 +94,15 @@ export function StoreCatalogView({
       {/* Listado de categorías y productos con tarjetas horizontales */}
       <main className="max-w-2xl mx-auto px-4 mt-6 space-y-8">
         {totalProducts === 0 ? (
-          <div className="text-center py-16 bg-[#FFFCF8] rounded-2xl border border-[#E9DAD2] p-8 shadow-xs">
-            <ShoppingBag className="w-10 h-10 mx-auto text-[#A18A81] mb-2" />
-            <h2 className="font-serif text-lg text-[#211B19]">
-              No hay productos disponibles por el momento
+          <div className="text-center py-16 px-6 bg-[#FFFCF8] rounded-2xl border border-[#E9DAD2] shadow-xs max-w-md mx-auto">
+            <div className="w-14 h-14 rounded-2xl bg-[#F6EBE4] border border-[#E9DAD2] mx-auto flex items-center justify-center text-[var(--store-primary,#78232F)] mb-3">
+              <ShoppingBag className="w-7 h-7" />
+            </div>
+            <h2 className="font-serif text-xl sm:text-2xl font-normal text-[#211B19]">
+              La carta se está actualizando
             </h2>
-            <p className="text-xs text-[#74645E] mt-1">
-              Pronto se publicará el menú actualizado del local.
+            <p className="text-xs sm:text-sm text-[#74645E] mt-1.5 leading-relaxed">
+              El local está renovando sus platos y precios. ¡Volvé a visitarnos en unos momentos!
             </p>
           </div>
         ) : (

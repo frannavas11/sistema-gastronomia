@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Power, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { Power, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { toggleStoreOpenStatus } from "@/app/admin/actions";
 
 interface StoreStatusToggleProps {
@@ -15,12 +16,10 @@ export function StoreStatusToggle({
 }: StoreStatusToggleProps) {
   const [isOpen, setIsOpen] = useState(initialIsOpen);
   const [loading, setLoading] = useState(false);
-  const [notification, setNotification] = useState<string | null>(null);
 
   const handleToggle = async () => {
     const nextState = !isOpen;
     setLoading(true);
-    setNotification(null);
 
     // Actualización optimista
     setIsOpen(nextState);
@@ -29,14 +28,19 @@ export function StoreStatusToggle({
 
     if (!result.success) {
       setIsOpen(!nextState);
-      setNotification(`Error: ${result.error}`);
+      toast.error("Error al actualizar el estado", {
+        description: result.error || "No se pudo cambiar el estado del local.",
+      });
     } else {
-      setNotification(
-        nextState
-          ? "Local Abierto. Los clientes pueden realizar pedidos."
-          : "Local Cerrado. Tu carta se muestra en modo pausa.",
-      );
-      setTimeout(() => setNotification(null), 4000);
+      if (nextState) {
+        toast.success("Local Abierto", {
+          description: "Los clientes ya pueden recorrer la carta y enviar pedidos.",
+        });
+      } else {
+        toast.info("Local Cerrado", {
+          description: "La carta se encuentra en modo pausa con aviso a los clientes.",
+        });
+      }
     }
 
     setLoading(false);
@@ -112,23 +116,6 @@ export function StoreStatusToggle({
           </span>
         </button>
       </div>
-
-      {notification && (
-        <div
-          className={`mt-4 p-3 rounded-xl text-xs flex items-center gap-2 ${
-            notification.startsWith("Error")
-              ? "bg-[#FDE8E7] border border-[#FAC5C2] text-[#C74742]"
-              : "bg-[#E5F4E7] border border-[#C2E8C7] text-[#249653]"
-          }`}
-        >
-          {notification.startsWith("Error") ? (
-            <AlertCircle className="w-4 h-4 shrink-0 text-[#C74742]" />
-          ) : (
-            <CheckCircle2 className="w-4 h-4 shrink-0 text-[#249653]" />
-          )}
-          <span>{notification}</span>
-        </div>
-      )}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { motion } from "motion/react";
 import { Plus, SlidersHorizontal, UtensilsCrossed } from "lucide-react";
 import type { ProductWithOptions } from "@/types/store";
 
@@ -76,7 +77,7 @@ export function ProductCard({
       <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
         <div>
           <div className="flex items-baseline gap-2 flex-wrap">
-            <h3 className="font-semibold text-sm sm:text-base text-[#211B19] leading-snug group-hover:text-[#541923] transition-colors">
+            <h3 className="font-semibold text-sm sm:text-base text-[#211B19] leading-snug group-hover:text-[var(--store-primary-dark,var(--store-primary,#78232F))] transition-colors">
               {product.name}
             </h3>
             {!isAvailable && (
@@ -107,15 +108,17 @@ export function ProductCard({
           </span>
 
           {isAvailable ? (
-            <button
+            <motion.button
               type="button"
               onClick={handleButtonClick}
+              whileTap={{ scale: 0.94 }}
+              whileHover={{ scale: 1.02 }}
               aria-label={`Agregar ${product.name}`}
-              className="min-h-[44px] px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-[var(--store-primary,#78232F)] text-[var(--store-primary-contrast,#ffffff)] hover:opacity-90 active:scale-95 transition-all inline-flex items-center justify-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary,#78232F)] shadow-xs"
+              className="min-h-[44px] px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-[var(--store-primary,#78232F)] text-[var(--store-primary-contrast,#ffffff)] hover:opacity-90 transition-all inline-flex items-center justify-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary,#78232F)] shadow-xs select-none"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Agregar</span>
-            </button>
+            </motion.button>
           ) : (
             <span className="text-xs font-medium text-[#74645E]">
               No disponible
