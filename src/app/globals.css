@@ -1,22 +1,74 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fafafa;
-  --foreground: #18181b;
-  --store-primary: #D62828;
+  /* Marca principal (por defecto bordó artesanal profundo, personalizable por local) */
+  --store-primary: #78232F;
+  --store-primary-dark: color-mix(in srgb, var(--store-primary) 70%, #000000);
+  --store-primary-light: color-mix(in srgb, var(--store-primary) 12%, #FFFCF8);
+  --store-primary-subtle: color-mix(in srgb, var(--store-primary) 6%, #FFFCF8);
+  --store-primary-contrast: #ffffff;
+
+  /* Superficies y Neutros Cálidos (fijos para todos los locales) */
+  --background: #FBF5EF;
+  --surface: #FFFCF8;
+  --surface-2: #F6EBE4;
+  --border: #E9DAD2;
+
+  /* Tipografía y Textos */
+  --text-primary: #211B19;
+  --text-secondary: #74645E;
+
+  /* Colores de Estado Semánticos */
+  --success: #249653;
+  --success-soft: #E5F4E7;
+  --error: #C74742;
+  --error-soft: #FDE8E7;
+  --warning: #E99B37;
+  --warning-soft: #FEF3E2;
+
+  /* Radios y Sombras Discretas */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
 }
 
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-store-primary: var(--store-primary);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+
+  --color-brand: var(--store-primary);
+  --color-brand-dark: var(--store-primary-dark);
+  --color-brand-light: var(--store-primary-light);
+  --color-brand-subtle: var(--store-primary-subtle);
+  --color-brand-contrast: var(--store-primary-contrast);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-error: var(--error);
+  --color-error-soft: var(--error-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+
   --font-sans: var(--font-dm-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: var(--font-dm-serif), Georgia, serif;
 }
 
 body {
   background: var(--background);
-  color: var(--foreground);
+  color: var(--text-primary);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Soporte de safe-area en iPhone con barra flotante */
+.safe-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }

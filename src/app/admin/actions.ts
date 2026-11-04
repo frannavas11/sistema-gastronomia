@@ -366,6 +366,7 @@ export async function deleteOrder(storeId: string, orderId: number) {
 
     revalidatePath("/admin/orders");
     revalidatePath("/admin");
+    revalidatePath(`/${store.slug}`);
 
     return { success: true };
   } catch (err: unknown) {
@@ -728,4 +729,3 @@ export async function toggleOptionItemAvailability(payload: {
     return { success: false, error: message };
   }
 }
-

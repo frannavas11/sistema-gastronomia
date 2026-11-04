@@ -95,11 +95,11 @@ export function CategoryPills({
   return (
     <nav
       aria-label="Categorías del menú"
-      className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200"
+      className="sticky top-0 z-30 bg-[#FBF5EF]/95 backdrop-blur-md border-b border-[#E9DAD2] py-2"
     >
       <div
         ref={containerRef}
-        className="max-w-3xl mx-auto flex items-center gap-2 overflow-x-auto px-4 py-2.5 touch-pan-x scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        className="max-w-2xl mx-auto flex items-center gap-2 overflow-x-auto px-4 touch-pan-x scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       >
         {categories.map((cat) => {
           const isActive = activeId === cat.id;
@@ -116,19 +116,19 @@ export function CategoryPills({
               }}
               onClick={() => handlePillClick(cat.id)}
               type="button"
-              className={`shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-colors select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2 ${
+              className={`shrink-0 min-h-[44px] inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary,#78232F)] focus-visible:ring-offset-2 ${
                 isActive
-                  ? "bg-slate-900 text-white font-semibold"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"
+                  ? "bg-[var(--store-primary,#78232F)] text-[var(--store-primary-contrast,#ffffff)] shadow-xs"
+                  : "bg-[#FFFCF8] text-[#74645E] hover:text-[#211B19] hover:bg-[#F6EBE4] border border-[#E9DAD2]"
               }`}
             >
               <span>{cat.name}</span>
               {typeof cat.productsCount === "number" && (
                 <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full tabular-nums font-semibold ${
+                  className={`text-[11px] px-1.5 py-0.5 rounded-full tabular-nums font-semibold ${
                     isActive
-                      ? "bg-slate-800 text-slate-200"
-                      : "bg-slate-200 text-slate-600"
+                      ? "bg-black/20 text-inherit"
+                      : "bg-[#F6EBE4] text-[#74645E]"
                   }`}
                 >
                   {cat.productsCount}
