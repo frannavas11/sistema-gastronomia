@@ -1,124 +1,252 @@
 import Link from "next/link";
-import { Store, Shield, ArrowRight, UtensilsCrossed, Sparkles, CheckCircle2 } from "lucide-react";
+import {
+  UtensilsCrossed,
+  ArrowRight,
+  MessageCircle,
+  CircleDollarSign,
+  Smartphone,
+  Sparkles,
+} from "lucide-react";
 
 export default function Home() {
+  const contactWhatsapp = process.env.NEXT_PUBLIC_CONTACT_WHATSAPP?.trim();
+  const cleanPhone = contactWhatsapp ? contactWhatsapp.replace(/\D/g, "") : "";
+  const whatsappUrl = cleanPhone
+    ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(
+        "Hola, me interesa tener la carta digital para mi local.",
+      )}`
+    : null;
+
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col justify-between selection:bg-rose-500 selection:text-white">
-      {/* Barra de navegación superior */}
-      <header className="border-b border-zinc-800/80 bg-zinc-900/60 backdrop-blur-md sticky top-0 z-30">
-        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+    <div className="min-h-screen bg-[#FBF5EF] text-[#211B19] flex flex-col selection:bg-[#F4E3E0] selection:text-[#78232F]">
+      {/* 1. Header */}
+      <header className="border-b border-[#E9DAD2] bg-[#FFFCF8]/90 backdrop-blur-sm sticky top-0 z-30">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-500 to-rose-700 flex items-center justify-center text-white shadow-md shadow-rose-600/25">
-              <Store className="w-5 h-5" />
+            <div className="w-9 h-9 rounded-xl bg-[#78232F] text-white flex items-center justify-center shadow-xs">
+              <UtensilsCrossed className="w-5 h-5 stroke-[2.2]" />
             </div>
-            <span className="font-bold text-base text-zinc-100 tracking-tight">
-              Sistema Gastronómico
+            <span className="font-serif text-lg sm:text-xl font-normal text-[#211B19] tracking-tight">
+              Carta Directa
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
-            <Link
-              href="/demo"
-              className="text-xs font-semibold px-3 py-2 rounded-xl text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors"
-            >
-              Ver Carta Demo
-            </Link>
-            <Link
-              href="/admin"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white transition-colors shadow-sm"
-            >
-              <Shield className="w-3.5 h-3.5" />
-              <span>Panel Admin</span>
-            </Link>
-          </div>
+          <Link
+            href="/admin/login"
+            className="text-xs sm:text-sm font-medium text-[#74645E] hover:text-[#211B19] hover:bg-[#F6EBE4] px-3.5 py-2 rounded-xl transition-colors min-h-[44px] inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#78232F]"
+          >
+            Ingresar
+          </Link>
         </div>
       </header>
 
-      {/* Contenido Principal / Hero */}
-      <main className="max-w-5xl mx-auto px-4 py-16 sm:py-24 flex-1 flex flex-col justify-center items-center text-center relative overflow-hidden">
-        {/* Glow de fondo */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-rose-600/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20 mb-6">
-          <Sparkles className="w-3.5 h-3.5 text-rose-400" />
-          <span>SaaS Gastronómico Sin Comisiones</span>
+      {/* 2. Hero Section */}
+      <section className="px-4 sm:px-6 pt-12 pb-14 sm:pt-20 sm:pb-20 text-center max-w-3xl mx-auto">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium bg-[#F4E3E0] text-[#78232F] border border-[#E9DAD2] mb-6 shadow-2xs">
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>Cartas digitales para locales gastronómicos</span>
         </div>
 
-        <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-zinc-100 max-w-2xl leading-tight">
-          Tu Carta Digital conectada directo a WhatsApp
+        <h1 className="font-serif text-3xl sm:text-5xl font-normal text-[#211B19] tracking-tight leading-tight sm:leading-tight">
+          Tu carta digital, con pedidos directo a tu WhatsApp. Sin comisiones.
         </h1>
 
-        <p className="mt-4 text-sm sm:text-base text-zinc-400 max-w-xl leading-relaxed">
-          Permite a tus clientes explorar el menú, personalizar sus pedidos y enviártelos formateados al WhatsApp de tu local, con control total desde tu panel.
+        <p className="mt-4 sm:mt-5 text-sm sm:text-base text-[#74645E] max-w-xl mx-auto leading-relaxed">
+          Tus clientes recorren el menú, eligen opciones y te envían el pedido ordenado y listo para preparar. Vos cobrás el 100% de tus ventas.
         </p>
 
-        {/* Tarjetas de acceso rápido */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-10 w-full max-w-xl">
-          {/* Tarjeta 1: Ver carta */}
+        {/* Acciones principales */}
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-md mx-auto">
           <Link
             href="/demo"
-            className="p-6 rounded-3xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850/60 transition-all text-left group shadow-lg flex flex-col justify-between"
+            className="w-full sm:w-auto min-h-[48px] px-6 py-3 rounded-xl bg-[#78232F] hover:bg-[#541923] text-white font-semibold text-sm inline-flex items-center justify-center gap-2 shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#78232F] focus-visible:ring-offset-2"
           >
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-                <UtensilsCrossed className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-bold text-zinc-100 group-hover:text-amber-400 transition-colors">
-                Carta Pública (Cliente)
-              </h3>
-              <p className="text-xs text-zinc-400 mt-1.5 leading-relaxed">
-                Probá la experiencia de un comensal: catálogo mobile-first, carrito interactivo y checkout a WhatsApp.
-              </p>
-            </div>
-            <div className="mt-6 flex items-center gap-2 text-xs font-semibold text-amber-400">
-              <span>Explorar Pizzería Demo</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </div>
+            <span>Ver demo</span>
+            <ArrowRight className="w-4 h-4" />
           </Link>
 
-          {/* Tarjeta 2: Panel de Administración */}
+          {whatsappUrl && (
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto min-h-[48px] px-6 py-3 rounded-xl bg-[#FFFCF8] hover:bg-[#F6EBE4] text-[#211B19] border border-[#E9DAD2] font-semibold text-sm inline-flex items-center justify-center gap-2 shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#78232F]"
+            >
+              <MessageCircle className="w-4 h-4 text-[#249653]" />
+              <span>Hablemos por WhatsApp</span>
+            </a>
+          )}
+        </div>
+      </section>
+
+      {/* 3. Tres Beneficios Clave */}
+      <section className="py-12 sm:py-16 border-t border-[#E9DAD2] bg-[#FFFCF8]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+          <div className="text-center max-w-xl mx-auto mb-10">
+            <h2 className="font-serif text-2xl sm:text-3xl font-normal text-[#211B19] tracking-tight">
+              Pensada para el trabajo real de tu cocina
+            </h2>
+            <p className="text-xs sm:text-sm text-[#74645E] mt-2 leading-relaxed">
+              Sin intermediarios ni complicaciones operativas en los momentos de más movimiento.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+            {/* Beneficio 1 */}
+            <div className="bg-[#FBF5EF] border border-[#E9DAD2] rounded-2xl p-5 sm:p-6 shadow-2xs space-y-3">
+              <div className="w-11 h-11 rounded-xl bg-[#F4E3E0] text-[#78232F] flex items-center justify-center">
+                <CircleDollarSign className="w-6 h-6 stroke-[2]" />
+              </div>
+              <h3 className="font-serif text-lg font-normal text-[#211B19]">
+                Sin comisiones por venta
+              </h3>
+              <p className="text-xs sm:text-sm text-[#74645E] leading-relaxed">
+                Cobrás el 100% de lo que vendés. No hay porcentajes por pedido ni cargos ocultos sobre tus platos.
+              </p>
+            </div>
+
+            {/* Beneficio 2 */}
+            <div className="bg-[#FBF5EF] border border-[#E9DAD2] rounded-2xl p-5 sm:p-6 shadow-2xs space-y-3">
+              <div className="w-11 h-11 rounded-xl bg-[#E5F4E7] text-[#249653] flex items-center justify-center">
+                <MessageCircle className="w-6 h-6 stroke-[2]" />
+              </div>
+              <h3 className="font-serif text-lg font-normal text-[#211B19]">
+                El pedido llega ordenado a tu WhatsApp
+              </h3>
+              <p className="text-xs sm:text-sm text-[#74645E] leading-relaxed">
+                Recibís cada ítem con sus variantes, sabores, dirección de entrega y total calculado. Sin audios confusos ni demoras.
+              </p>
+            </div>
+
+            {/* Beneficio 3 */}
+            <div className="bg-[#FBF5EF] border border-[#E9DAD2] rounded-2xl p-5 sm:p-6 shadow-2xs space-y-3">
+              <div className="w-11 h-11 rounded-xl bg-[#F6EBE4] text-[#78232F] flex items-center justify-center">
+                <Smartphone className="w-6 h-6 stroke-[2]" />
+              </div>
+              <h3 className="font-serif text-lg font-normal text-[#211B19]">
+                Cambiás precios y marcás agotados desde el celular
+              </h3>
+              <p className="text-xs sm:text-sm text-[#74645E] leading-relaxed">
+                Accedé a tu panel desde el teléfono para actualizar un precio en segundos, pausar un producto sin stock o cerrar el local al terminar el turno.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. Cómo funciona en 3 pasos */}
+      <section className="py-12 sm:py-16 border-t border-[#E9DAD2]">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+          <div className="text-center max-w-xl mx-auto mb-10">
+            <h2 className="font-serif text-2xl sm:text-3xl font-normal text-[#211B19] tracking-tight">
+              Cómo funciona en 3 simples pasos
+            </h2>
+            <p className="text-xs sm:text-sm text-[#74645E] mt-2 leading-relaxed">
+              Empezar es fácil y no tenés que cargar nada complicado por tu cuenta.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {/* Paso 1 */}
+            <div className="bg-[#FFFCF8] border border-[#E9DAD2] rounded-2xl p-5 sm:p-6 flex items-start gap-4 shadow-2xs">
+              <div className="w-8 h-8 rounded-full bg-[#78232F] text-white flex items-center justify-center font-bold text-sm shrink-0">
+                1
+              </div>
+              <div className="space-y-1">
+                <h3 className="font-serif text-base sm:text-lg font-normal text-[#211B19]">
+                  Nos pasás tu menú
+                </h3>
+                <p className="text-xs sm:text-sm text-[#74645E] leading-relaxed">
+                  Nos compartís tu lista de productos, precios actuales, fotos y opciones. Nosotros nos encargamos de dejar todo cargado.
+                </p>
+              </div>
+            </div>
+
+            {/* Paso 2 */}
+            <div className="bg-[#FFFCF8] border border-[#E9DAD2] rounded-2xl p-5 sm:p-6 flex items-start gap-4 shadow-2xs">
+              <div className="w-8 h-8 rounded-full bg-[#78232F] text-white flex items-center justify-center font-bold text-sm shrink-0">
+                2
+              </div>
+              <div className="space-y-1">
+                <h3 className="font-serif text-base sm:text-lg font-normal text-[#211B19]">
+                  Lo dejamos funcionando
+                </h3>
+                <p className="text-xs sm:text-sm text-[#74645E] leading-relaxed">
+                  Configuramos el logo, los colores de tu marca, el costo de entrega y conectamos los pedidos directamente a tu número de WhatsApp.
+                </p>
+              </div>
+            </div>
+
+            {/* Paso 3 */}
+            <div className="bg-[#FFFCF8] border border-[#E9DAD2] rounded-2xl p-5 sm:p-6 flex items-start gap-4 shadow-2xs">
+              <div className="w-8 h-8 rounded-full bg-[#249653] text-white flex items-center justify-center font-bold text-sm shrink-0">
+                3
+              </div>
+              <div className="space-y-1">
+                <h3 className="font-serif text-base sm:text-lg font-normal text-[#211B19]">
+                  Empezás a recibir pedidos
+                </h3>
+                <p className="text-xs sm:text-sm text-[#74645E] leading-relaxed">
+                  Compartís el link de tu carta por Instagram, en tus estados de WhatsApp o mediante un código QR en las mesas y mostrador.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. Cierre con llamada a la acción */}
+      <section className="py-12 sm:py-16 border-t border-[#E9DAD2] bg-[#FFFCF8]">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center space-y-4">
+          <h2 className="font-serif text-2xl sm:text-3xl font-normal text-[#211B19] tracking-tight">
+            ¿Querés sumar tu local?
+          </h2>
+          <p className="text-xs sm:text-sm text-[#74645E] max-w-lg mx-auto leading-relaxed">
+            Empezá a recibir pedidos más rápido, con menos errores y sin pagar comisiones por cada plato que vendés.
+          </p>
+
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+            {whatsappUrl ? (
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto min-h-[48px] px-7 py-3 rounded-xl bg-[#78232F] hover:bg-[#541923] text-white font-semibold text-sm inline-flex items-center justify-center gap-2 shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#78232F] focus-visible:ring-offset-2"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>Hablemos por WhatsApp</span>
+              </a>
+            ) : (
+              <Link
+                href="/demo"
+                className="w-full sm:w-auto min-h-[48px] px-7 py-3 rounded-xl bg-[#78232F] hover:bg-[#541923] text-white font-semibold text-sm inline-flex items-center justify-center gap-2 shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#78232F] focus-visible:ring-offset-2"
+              >
+                <span>Probar la carta demo</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            )}
+
+            <Link
+              href="/demo"
+              className="w-full sm:w-auto min-h-[48px] px-6 py-3 rounded-xl bg-[#FBF5EF] hover:bg-[#F6EBE4] text-[#211B19] border border-[#E9DAD2] font-semibold text-sm inline-flex items-center justify-center gap-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#78232F]"
+            >
+              <span>Ver cómo queda una carta</span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. Footer Discreto */}
+      <footer className="mt-auto border-t border-[#E9DAD2] bg-[#FBF5EF] py-8 text-center text-xs text-[#74645E]">
+        <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <span>Carta Directa • Pedidos gastronómicos sin comisiones</span>
           <Link
-            href="/admin"
-            className="p-6 rounded-3xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850/60 transition-all text-left group shadow-lg flex flex-col justify-between"
+            href="/admin/login"
+            className="hover:text-[#211B19] underline underline-offset-4 transition-colors"
           >
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-400 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-                <Shield className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-bold text-zinc-100 group-hover:text-rose-400 transition-colors">
-                Panel de Control (Dueño)
-              </h3>
-              <p className="text-xs text-zinc-400 mt-1.5 leading-relaxed">
-                Abrí o cerrá el local en 1 clic, pausá productos agotados, editá precios al instante y revisá pedidos.
-              </p>
-            </div>
-            <div className="mt-6 flex items-center gap-2 text-xs font-semibold text-rose-400">
-              <span>Ingresar al Admin</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </div>
+            Acceso para locales
           </Link>
         </div>
-
-        {/* Badges de características */}
-        <div className="flex items-center justify-center gap-6 mt-12 text-xs text-zinc-400 flex-wrap">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            <span>Cero comisiones por venta</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            <span>Disparo a WhatsApp directo</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            <span>Precios recalculados en servidor</span>
-          </div>
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="border-t border-zinc-900 py-6 text-center text-xs text-zinc-500">
-        Plataforma SaaS para gastronomía • Desarrollado con Next.js y Supabase
       </footer>
     </div>
   );

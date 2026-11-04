@@ -1,6 +1,6 @@
 export default function StoreCatalogLoading() {
   return (
-    <div className="min-h-screen bg-[#FBF5EF] text-[#211B19] pb-48 animate-pulse">
+    <div className="min-h-screen bg-[#FBF5EF] text-[#211B19] pb-12 animate-pulse">
       {/* Header Portada Skeleton */}
       <header className="relative bg-[#FFFCF8] border-b border-[#E9DAD2]">
         <div className="relative w-full h-44 sm:h-56 md:h-64 bg-[#F6EBE4]">

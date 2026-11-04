@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowRight, ShoppingBag } from "lucide-react";
 
@@ -8,6 +9,7 @@ interface FloatingCartBarProps {
   subtotal: number;
   hasHydrated?: boolean;
   onOpenCheckout: () => void;
+  onHeightChange?: (height: number) => void;
 }
 
 export function FloatingCartBar({
@@ -15,8 +17,62 @@ export function FloatingCartBar({
   subtotal,
   hasHydrated = true,
   onOpenCheckout,
+  onHeightChange,
 }: FloatingCartBarProps) {
   const isVisible = hasHydrated && totalItems > 0;
+  const barContainerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!isVisible) {
+      document.documentElement.style.removeProperty("--cart-bar-height");
+      onHeightChange?.(0);
+      return;
+    }
+
+    const updateHeight = () => {
+      const el = barContainerRef.current;
+      if (!el) return;
+      // Altura del botón de la barra + el margen inferior del aside (p-4 = 16px)
+      const measuredHeight = el.getBoundingClientRect().height;
+      if (measuredHeight > 0) {
+        const fullBarHeight = measuredHeight + 16;
+        document.documentElement.style.setProperty(
+          "--cart-bar-height",
+          `${fullBarHeight}px`,
+        );
+        onHeightChange?.(fullBarHeight);
+      }
+    };
+
+    updateHeight();
+
+    const el = barContainerRef.current;
+    if (!el) return;
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const h = entry.borderBoxSize?.[0]?.blockSize ?? entry.contentRect.height;
+        if (h > 0) {
+          const fullBarHeight = h + 16;
+          document.documentElement.style.setProperty(
+            "--cart-bar-height",
+            `${fullBarHeight}px`,
+          );
+          onHeightChange?.(fullBarHeight);
+        }
+      }
+    });
+
+    observer.observe(el);
+    window.addEventListener("resize", updateHeight);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", updateHeight);
+      document.documentElement.style.removeProperty("--cart-bar-height");
+      onHeightChange?.(0);
+    };
+  }, [isVisible, totalItems, onHeightChange]);
 
   const formattedSubtotal = new Intl.NumberFormat("es-AR", {
     style: "currency",
@@ -31,7 +87,10 @@ export function FloatingCartBar({
           aria-label="Resumen del pedido"
           className="fixed bottom-0 inset-x-0 z-40 p-4 pointer-events-none safe-bottom"
         >
-          <div className="max-w-md mx-auto pointer-events-auto">
+          <div
+            ref={barContainerRef}
+            className="max-w-md mx-auto pointer-events-auto"
+          >
             <motion.button
               type="button"
               onClick={onOpenCheckout}

@@ -40,6 +40,9 @@ export function StoreCatalogView({
     useState<ProductWithOptions | null>(null);
   const [isVariantModalOpen, setIsVariantModalOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [cartBarHeight, setCartBarHeight] = useState<number>(0);
+
+  const hasCartItems = hasHydrated && totalItems > 0;
 
   const handleSelectProduct = (product: ProductWithOptions) => {
     setSelectedProduct(product);
@@ -92,7 +95,14 @@ export function StoreCatalogView({
       )}
 
       {/* Listado de categorías y productos con tarjetas horizontales */}
-      <main className="max-w-2xl mx-auto px-4 mt-6 space-y-8">
+      <main
+        className="max-w-2xl mx-auto px-4 mt-6 space-y-8 transition-[padding-bottom] duration-200 ease-out"
+        style={{
+          paddingBottom: hasCartItems
+            ? `calc(var(--cart-bar-height, ${cartBarHeight || 80}px) + env(safe-area-inset-bottom, 0px) + 24px)`
+            : "2rem",
+        }}
+      >
         {totalProducts === 0 ? (
           <div className="text-center py-16 px-6 bg-[#FFFCF8] rounded-2xl border border-[#E9DAD2] shadow-xs max-w-md mx-auto">
             <div className="w-14 h-14 rounded-2xl bg-[var(--store-primary-light)] border border-[var(--store-primary-subtle)] mx-auto flex items-center justify-center text-[var(--store-primary)] mb-3">
@@ -150,12 +160,13 @@ export function StoreCatalogView({
         />
       )}
 
-      {/* Barra flotante del carrito en bordó */}
+      {/* Barra flotante del carrito */}
       <FloatingCartBar
         totalItems={totalItems}
         subtotal={subtotal}
         hasHydrated={hasHydrated}
         onOpenCheckout={() => setIsCheckoutOpen(true)}
+        onHeightChange={setCartBarHeight}
       />
 
       {/* Modal de checkout usando Vaul / Bottom Sheet */}

@@ -73,7 +73,7 @@ export default async function StorePage({ params }: PageProps) {
 
   return (
     <div
-      className="min-h-screen bg-[#FBF5EF] text-[#211B19] pb-48 sm:pb-56 safe-bottom"
+      className="min-h-screen bg-[#FBF5EF] text-[#211B19]"
       style={
         {
           "--store-primary": primaryColor,
