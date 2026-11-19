@@ -116,7 +116,7 @@ export function AdminSidebar({ userEmail, storeName, storeSlug }: AdminSidebarPr
           <div className="my-8 h-px bg-white/15" />
 
           <nav aria-label="Navegación del panel" className="space-y-1">
-            {NAV_ITEMS.map((item, index) => {
+            {NAV_ITEMS.map((item) => {
               const active = isActive(item.href);
               const Icon = item.icon;
               return (
@@ -135,10 +135,7 @@ export function AdminSidebar({ userEmail, storeName, storeSlug }: AdminSidebarPr
                       transition={{ type: "spring", stiffness: 500, damping: 40 }}
                     />
                   )}
-                  <span className="relative font-serif italic text-xs text-white/45 tabular-nums w-5">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <Icon className="relative w-4 h-4" />
+                  <Icon className="relative w-4 h-4 shrink-0" />
                   <span className="relative">{item.label}</span>
                 </Link>
               );

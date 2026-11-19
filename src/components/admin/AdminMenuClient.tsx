@@ -2,10 +2,11 @@
 
 import { useState, useMemo } from "react";
 import Image from "next/image";
-import { UtensilsCrossed, PackageOpen, HelpCircle } from "lucide-react";
+import { UtensilsCrossed, PackageOpen, HelpCircle, Pencil } from "lucide-react";
 import { ProductAvailabilityToggle } from "@/components/admin/ProductAvailabilityToggle";
 import { QuickPriceEditor } from "@/components/admin/QuickPriceEditor";
 import { CreateProductModal } from "@/components/admin/CreateProductModal";
+import { EditProductModal } from "@/components/admin/EditProductModal";
 import { ProductOptionsManagerModal } from "@/components/admin/ProductOptionsManagerModal";
 import { CategoryListManager } from "@/components/admin/CategoryListManager";
 
@@ -36,6 +37,7 @@ interface AdminMenuClientProps {
 
 export function AdminMenuClient({ storeId, categories, products }: AdminMenuClientProps) {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   // Mapear nombre de categoría por id
   const categoryMap = useMemo(() => {
@@ -167,8 +169,13 @@ export function AdminMenuClient({ storeId, categories, products }: AdminMenuClie
                     >
                       {/* Foto */}
                       <td className="py-3 px-4">
-                        {product.image_url ? (
-                          <div className="relative w-11 h-11 rounded-xl overflow-hidden bg-surface-2 border border-border shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => setEditingProduct(product)}
+                          title="Editar producto y foto"
+                          className="relative w-11 h-11 rounded-xl overflow-hidden bg-surface-2 border border-border shrink-0 hover:ring-2 hover:ring-brand hover:opacity-90 transition-all cursor-pointer group text-left block"
+                        >
+                          {product.image_url ? (
                             <Image
                               src={product.image_url}
                               alt={product.name}
@@ -176,12 +183,12 @@ export function AdminMenuClient({ storeId, categories, products }: AdminMenuClie
                               className="object-cover"
                               sizes="44px"
                             />
-                          </div>
-                        ) : (
-                          <div className="w-11 h-11 rounded-xl bg-surface-2 border border-border flex items-center justify-center text-text-tertiary shrink-0">
-                            <UtensilsCrossed className="w-5 h-5" />
-                          </div>
-                        )}
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-text-tertiary group-hover:text-brand-fg">
+                              <UtensilsCrossed className="w-5 h-5" />
+                            </div>
+                          )}
+                        </button>
                       </td>
 
                       {/* Nombre y descripción */}
@@ -226,11 +233,22 @@ export function AdminMenuClient({ storeId, categories, products }: AdminMenuClie
 
                       {/* Acciones */}
                       <td className="py-3 px-4 text-right">
-                        <ProductOptionsManagerModal
-                          storeId={storeId}
-                          productId={product.id}
-                          productName={product.name}
-                        />
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setEditingProduct(product)}
+                            title="Editar plato y foto"
+                            className="min-h-[36px] px-2.5 py-1.5 rounded-xl text-xs font-semibold text-text-primary bg-surface-2 hover:bg-border transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                            <span className="hidden sm:inline">Editar</span>
+                          </button>
+                          <ProductOptionsManagerModal
+                            storeId={storeId}
+                            productId={product.id}
+                            productName={product.name}
+                          />
+                        </div>
                       </td>
                     </tr>
                   );
@@ -240,6 +258,15 @@ export function AdminMenuClient({ storeId, categories, products }: AdminMenuClie
           </div>
         </div>
       )}
+
+      {/* Modal para editar producto existente y su foto */}
+      <EditProductModal
+        storeId={storeId}
+        product={editingProduct}
+        categories={categoryOptions}
+        isOpen={Boolean(editingProduct)}
+        onClose={() => setEditingProduct(null)}
+      />
     </div>
   );
 }

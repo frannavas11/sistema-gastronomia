@@ -74,7 +74,7 @@ export function CategoryPills({ categories }: CategoryPillsProps) {
         ref={containerRef}
         className="max-w-2xl mx-auto flex items-center gap-1 overflow-x-auto px-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        {categories.map((cat, index) => {
+        {categories.map((cat) => {
           const isActive = activeId === cat.id;
           return (
             <button
@@ -86,13 +86,10 @@ export function CategoryPills({ categories }: CategoryPillsProps) {
               type="button"
               onClick={() => handleClick(cat.id)}
               aria-current={isActive ? "true" : undefined}
-              className={`relative shrink-0 min-h-[52px] px-3.5 inline-flex items-baseline gap-1.5 text-sm transition-colors select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-lg ${
+              className={`relative shrink-0 h-12 px-4 inline-flex items-center justify-center text-sm transition-colors select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-lg ${
                 isActive ? "text-text-primary font-semibold" : "text-text-secondary hover:text-text-primary"
               }`}
             >
-              <span className="font-serif italic text-xs text-brand-fg tabular-nums">
-                {String(index + 1).padStart(2, "0")}
-              </span>
               <span>{cat.name}</span>
               {isActive && (
                 <motion.span

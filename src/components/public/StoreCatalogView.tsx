@@ -81,11 +81,8 @@ export function StoreCatalogView({ store, categories }: StoreCatalogViewProps) {
               style={{ animationDelay: `${Math.min(index, 4) * 70}ms` }}
             >
               <header className="mb-2">
-                <div className="flex items-end gap-3">
-                  <span className="font-serif italic text-2xl text-brand-fg leading-none tabular-nums">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <h2 className="font-serif text-3xl sm:text-4xl leading-none text-text-primary tracking-tight">
+                <div>
+                  <h2 className="font-serif text-3xl sm:text-4xl leading-tight text-text-primary tracking-tight">
                     {category.name}
                   </h2>
                 </div>

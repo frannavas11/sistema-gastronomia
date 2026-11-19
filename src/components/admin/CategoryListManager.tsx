@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, X, Loader2, Trash2 } from "lucide-react";
+import { Plus, X, Loader2, Trash2, Pencil, Check } from "lucide-react";
 import { toast } from "sonner";
-import { createCategory, deleteCategory } from "@/app/admin/actions";
+import { createCategory, updateCategory, deleteCategory } from "@/app/admin/actions";
 
 interface Category {
   id: string;
@@ -31,6 +31,11 @@ export function CategoryListManager({
   const [loading, setLoading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
+  // Estados para renombrar categoría
+  const [editingCatId, setEditingCatId] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState("");
+  const [updating, setUpdating] = useState(false);
+
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCatName.trim()) return;
@@ -53,9 +58,40 @@ export function CategoryListManager({
     }
   };
 
-  const handleDelete = async (cat: Category) => {
+  const startEdit = (e: React.MouseEvent, cat: Category) => {
+    e.stopPropagation();
+    setEditingCatId(cat.id);
+    setEditingName(cat.name);
+  };
+
+  const handleUpdate = async (e: React.FormEvent, catId: string) => {
+    e.preventDefault();
+    const clean = editingName.trim();
+    if (!clean) return;
+
+    setUpdating(true);
+    try {
+      const res = await updateCategory(catId, clean);
+      if (res.success) {
+        toast.success(`Categoría renombrada a "${clean}".`);
+        setEditingCatId(null);
+        router.refresh();
+      } else {
+        toast.error(res.error || "No se pudo actualizar la categoría.");
+      }
+    } catch {
+      toast.error("Error al actualizar la categoría.");
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleDelete = async (e: React.MouseEvent, cat: Category) => {
+    e.stopPropagation();
     if (cat.count > 0) {
-      toast.error(`No podés eliminar "${cat.name}" porque contiene ${cat.count} producto(s).`);
+      toast.error(
+        `No podés eliminar "${cat.name}" porque contiene ${cat.count} producto(s). Reubicá o eliminá sus productos primero.`,
+      );
       return;
     }
 
@@ -63,7 +99,7 @@ export function CategoryListManager({
 
     setDeletingId(cat.id);
     try {
-      const res = await deleteCategory(storeId, cat.id);
+      const res = await deleteCategory(cat.id);
       if (res.success) {
         toast.success(`Categoría "${cat.name}" eliminada.`);
         if (selectedCategoryId === cat.id) {
@@ -96,7 +132,7 @@ export function CategoryListManager({
           <button
             type="button"
             onClick={() => setIsAdding(true)}
-            className="min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-brand-fg bg-surface-2 hover:bg-border transition-colors"
+            className="min-h-[44px] inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-brand-fg bg-surface-2 hover:bg-border transition-colors cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Nueva Categoría</span>
@@ -122,7 +158,7 @@ export function CategoryListManager({
           <button
             type="submit"
             disabled={loading || !newCatName.trim()}
-            className="min-h-[44px] px-4 py-2 rounded-xl text-xs font-semibold text-white bg-brand hover:bg-brand-dark disabled:opacity-50 transition-colors flex items-center gap-1.5"
+            className="min-h-[44px] px-4 py-2 rounded-xl text-xs font-semibold text-white bg-brand hover:bg-brand-dark disabled:opacity-50 transition-colors flex items-center gap-1.5 cursor-pointer"
           >
             {loading && <Loader2 className="w-3 h-3 animate-spin" />}
             <span>Guardar</span>
@@ -133,7 +169,7 @@ export function CategoryListManager({
               setIsAdding(false);
               setNewCatName("");
             }}
-            className="min-h-[44px] min-w-[44px] flex items-center justify-center text-text-secondary hover:text-text-primary rounded-xl"
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center text-text-secondary hover:text-text-primary rounded-xl cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -161,11 +197,52 @@ export function CategoryListManager({
         ) : (
           categories.map((cat) => {
             const isSelected = selectedCategoryId === cat.id;
+            const isEditing = editingCatId === cat.id;
+
+            if (isEditing) {
+              return (
+                <form
+                  key={cat.id}
+                  onSubmit={(e) => handleUpdate(e, cat.id)}
+                  className="inline-flex items-center gap-1 pl-3 pr-1 py-1 rounded-full bg-surface border-2 border-brand shadow-xs min-h-[44px]"
+                >
+                  <input
+                    type="text"
+                    required
+                    autoFocus
+                    value={editingName}
+                    onChange={(e) => setEditingName(e.target.value)}
+                    className="bg-transparent text-xs sm:text-sm text-text-primary focus:outline-none w-28 sm:w-36 font-semibold"
+                    placeholder="Nuevo nombre"
+                  />
+                  <button
+                    type="submit"
+                    disabled={updating || !editingName.trim()}
+                    title="Guardar nombre"
+                    className="p-1.5 rounded-full text-brand hover:bg-brand-light transition-colors disabled:opacity-50 cursor-pointer"
+                  >
+                    {updating ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Check className="w-3.5 h-3.5" />
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditingCatId(null)}
+                    title="Cancelar"
+                    className="p-1.5 rounded-full text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </form>
+              );
+            }
 
             return (
               <div
                 key={cat.id}
-                className={`inline-flex items-center gap-1.5 pl-3.5 pr-2 py-1.5 rounded-full text-xs font-medium transition-colors min-h-[44px] select-none ${
+                className={`inline-flex items-center gap-1 pl-3.5 pr-2 py-1.5 rounded-full text-xs font-medium transition-colors min-h-[44px] select-none ${
                   isSelected
                     ? "bg-brand text-white shadow-xs font-semibold"
                     : "bg-surface-2 text-text-secondary hover:text-text-primary hover:bg-border"
@@ -174,7 +251,7 @@ export function CategoryListManager({
                 <button
                   type="button"
                   onClick={() => onSelectCategory(cat.id)}
-                  className="focus:outline-none cursor-pointer"
+                  className="focus:outline-none cursor-pointer text-left"
                 >
                   <span>{cat.name}</span>
                   <span
@@ -186,13 +263,34 @@ export function CategoryListManager({
                   </span>
                 </button>
 
-                {cat.count === 0 && (
+                <div className="flex items-center gap-0.5 ml-1">
                   <button
                     type="button"
-                    onClick={() => handleDelete(cat)}
+                    onClick={(e) => startEdit(e, cat)}
+                    title={`Editar nombre de "${cat.name}"`}
+                    className={`p-1 rounded-full transition-colors cursor-pointer ${
+                      isSelected
+                        ? "hover:bg-white/20 text-white/80 hover:text-white"
+                        : "hover:bg-surface text-text-tertiary hover:text-text-primary"
+                    }`}
+                  >
+                    <Pencil className="w-3 h-3" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={(e) => handleDelete(e, cat)}
                     disabled={deletingId === cat.id}
-                    title="Eliminar categoría vacía"
-                    className="p-1 rounded-full hover:bg-error-soft hover:text-error transition-colors text-inherit opacity-70 hover:opacity-100"
+                    title={
+                      cat.count > 0
+                        ? `Tiene ${cat.count} producto(s) - No se puede eliminar`
+                        : `Eliminar categoría "${cat.name}"`
+                    }
+                    className={`p-1 rounded-full transition-colors cursor-pointer ${
+                      isSelected
+                        ? "hover:bg-red-500/30 text-white/80 hover:text-white"
+                        : "hover:bg-error-soft hover:text-error text-text-tertiary"
+                    }`}
                   >
                     {deletingId === cat.id ? (
                       <Loader2 className="w-3 h-3 animate-spin" />
@@ -200,7 +298,7 @@ export function CategoryListManager({
                       <Trash2 className="w-3 h-3" />
                     )}
                   </button>
-                )}
+                </div>
               </div>
             );
           })

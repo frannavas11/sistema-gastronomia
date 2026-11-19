@@ -295,8 +295,70 @@ export async function createCategory(storeId: string, name: string) {
   });
 }
 
-/** Elimina una categoría del menú (solo si no contiene productos). */
-export async function deleteCategory(storeId: string, categoryId: string) {
+/** Actualiza el nombre de una categoría. Acepta (storeId, categoryId, name) o (id, name). */
+export async function updateCategory(
+  first: string,
+  second: string,
+  third?: string,
+) {
+  let storeId: string;
+  let categoryId: string;
+  let name: string;
+
+  if (third !== undefined) {
+    storeId = first;
+    categoryId = second;
+    name = third;
+  } else {
+    categoryId = first;
+    name = second;
+    const supabase = await createClient();
+    const { data: cat } = await supabase
+      .from("categories")
+      .select("store_id")
+      .eq("id", categoryId)
+      .maybeSingle();
+    if (!cat?.store_id) throw new Error("Categoría no encontrada.");
+    storeId = cat.store_id;
+  }
+
+  return ownerAction(storeId, ["/admin/menu"], async ({ db }) => {
+    const cleanName = name.trim();
+    if (!cleanName) throw new Error("El nombre de la categoría es obligatorio.");
+    if (cleanName.length > 60) throw new Error("El nombre de la categoría es demasiado largo.");
+
+    const { data: category, error } = await db
+      .from("categories")
+      .update({ name: cleanName })
+      .eq("id", categoryId)
+      .eq("store_id", storeId)
+      .select()
+      .single();
+    if (error) throw new Error(`Error al actualizar categoría: ${error.message}`);
+    return { category };
+  });
+}
+
+/** Elimina una categoría del menú (solo si no contiene productos). Acepta (storeId, categoryId) o (id). */
+export async function deleteCategory(storeIdOrCategoryId: string, maybeCategoryId?: string) {
+  let storeId: string;
+  let categoryId: string;
+
+  if (maybeCategoryId !== undefined) {
+    storeId = storeIdOrCategoryId;
+    categoryId = maybeCategoryId;
+  } else {
+    categoryId = storeIdOrCategoryId;
+    const supabase = await createClient();
+    const { data: cat } = await supabase
+      .from("categories")
+      .select("store_id")
+      .eq("id", categoryId)
+      .maybeSingle();
+    if (!cat?.store_id) throw new Error("Categoría no encontrada.");
+    storeId = cat.store_id;
+  }
+
   return ownerAction(storeId, ["/admin/menu"], async ({ db }) => {
     const { count, error: countError } = await db
       .from("products")
@@ -360,6 +422,66 @@ export async function createProduct(payload: {
       .select()
       .single();
     if (error) throw new Error(`Error al crear producto: ${error.message}`);
+    return { product };
+  });
+}
+
+export async function updateProduct(payload: {
+  id?: string;
+  productId?: string;
+  storeId?: string;
+  categoryId: string;
+  name: string;
+  description?: string | null;
+  basePrice: number;
+  imageUrl?: string | null;
+}) {
+  const prodId = payload.productId || payload.id;
+  if (!prodId) throw new Error("ID de producto no especificado.");
+
+  let storeId = payload.storeId;
+  if (!storeId) {
+    const supabase = await createClient();
+    const { data: prod } = await supabase
+      .from("products")
+      .select("store_id")
+      .eq("id", prodId)
+      .maybeSingle();
+    if (!prod?.store_id) throw new Error("Producto no encontrado.");
+    storeId = prod.store_id;
+  }
+
+  return ownerAction(storeId, ["/admin/menu"], async ({ db }) => {
+    const name = payload.name.trim();
+    if (!name) throw new Error("El nombre del producto es obligatorio.");
+    if (name.length > 80) throw new Error("El nombre del producto es demasiado largo.");
+    assertValidPrice(payload.basePrice, "El precio base debe ser un valor positivo.");
+
+    const { data: category } = await db
+      .from("categories")
+      .select("id")
+      .eq("id", payload.categoryId)
+      .eq("store_id", storeId)
+      .maybeSingle();
+    if (!category) throw new Error("La categoría seleccionada no pertenece a este comercio.");
+
+    const normalizedImage = normalizeImageUrl(payload.imageUrl);
+
+    const { data: product, error } = await db
+      .from("products")
+      .update({
+        category_id: payload.categoryId,
+        name,
+        description: payload.description?.trim().slice(0, 300) || null,
+        base_price: payload.basePrice,
+        image_url: normalizedImage,
+      })
+      .eq("id", prodId)
+      .eq("store_id", storeId)
+      .select()
+      .single();
+
+    if (error) throw new Error(`Error al actualizar producto: ${error.message}`);
     return { product };
   });
 }
