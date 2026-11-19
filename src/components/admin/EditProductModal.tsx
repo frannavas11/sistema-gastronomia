@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
-import { Pencil, X, Loader2 } from "lucide-react";
+import { Pencil, X, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { updateProduct } from "@/app/admin/actions";
+import { updateProduct, deleteProduct } from "@/app/admin/actions";
 import { ImageUploadInput } from "@/components/admin/ImageUploadInput";
 
 interface CategoryOption {
@@ -51,6 +52,7 @@ function EditProductModalContent({
   const [imageUrl, setImageUrl] = useState(product.image_url || "");
 
   const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -98,8 +100,30 @@ function EditProductModalContent({
     }
   };
 
+  const handleDelete = async () => {
+    if (!confirm(`¿Seguro que deseás eliminar el producto "${product.name}"?`)) {
+      return;
+    }
+
+    setDeleting(true);
+    try {
+      const res = await deleteProduct(product.id, storeId);
+      if (res.success) {
+        toast.success(`Producto "${product.name}" eliminado.`);
+        onClose();
+        router.refresh();
+      } else {
+        toast.error(res.error || "No se pudo eliminar el producto.");
+      }
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Error al eliminar el producto");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/45 backdrop-blur-xs animate-fade">
+    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 animate-fade">
       <div className="bg-surface border border-border rounded-2xl max-w-lg w-full p-6 shadow-xl relative text-text-primary max-h-[90vh] overflow-y-auto">
         {/* Cabecera */}
         <div className="flex items-center justify-between pb-4 border-b border-border mb-4">
@@ -199,23 +223,39 @@ function EditProductModalContent({
             onChange={setImageUrl}
           />
 
-          <div className="pt-3 flex items-center justify-end gap-2 border-t border-border">
+          <div className="pt-3 flex items-center justify-between gap-2 border-t border-border flex-wrap sm:flex-nowrap">
             <button
               type="button"
-              onClick={onClose}
-              disabled={loading}
-              className="min-h-[44px] px-4 py-2 rounded-xl text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors cursor-pointer"
+              onClick={handleDelete}
+              disabled={loading || deleting}
+              className="min-h-[44px] px-3 py-2 rounded-xl text-xs font-medium text-error hover:bg-error-soft transition-colors cursor-pointer inline-flex items-center gap-1.5"
             >
-              Cancelar
+              {deleting ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Trash2 className="w-3.5 h-3.5" />
+              )}
+              <span>Eliminar producto</span>
             </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="min-h-[44px] inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-medium text-white bg-brand hover:bg-brand-dark disabled:opacity-50 transition-colors shadow-xs cursor-pointer"
-            >
-              {loading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-              <span>Guardar Cambios</span>
-            </button>
+
+            <div className="flex items-center gap-2 ml-auto">
+              <button
+                type="button"
+                onClick={onClose}
+                disabled={loading || deleting}
+                className="min-h-[44px] px-4 py-2 rounded-xl text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                disabled={loading || deleting}
+                className="min-h-[44px] inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-medium text-white bg-brand hover:bg-brand-dark disabled:opacity-50 transition-colors shadow-xs cursor-pointer"
+              >
+                {loading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                <span>Guardar Cambios</span>
+              </button>
+            </div>
           </div>
         </form>
       </div>
@@ -230,15 +270,16 @@ export function EditProductModal({
   isOpen,
   onClose,
 }: EditProductModalProps) {
-  if (!isOpen || !product) return null;
+  if (!isOpen || !product || typeof document === "undefined") return null;
 
-  return (
+  return createPortal(
     <EditProductModalContent
       key={product.id}
       storeId={storeId}
       product={product}
       categories={categories}
       onClose={onClose}
-    />
+    />,
+    document.body,
   );
 }

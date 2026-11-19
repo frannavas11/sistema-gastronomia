@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useId } from "react";
 import Image from "next/image";
 import { UploadCloud, X, Loader2, Link as LinkIcon, Image as ImageIcon } from "lucide-react";
 import { uploadStoreImage } from "@/app/admin/actions";
@@ -10,6 +10,7 @@ interface ImageUploadInputProps {
   value: string;
   onChange: (url: string) => void;
   label?: string;
+  previewVariant?: "rectangle" | "circle";
 }
 
 export function ImageUploadInput({
@@ -17,11 +18,13 @@ export function ImageUploadInput({
   value,
   onChange,
   label = "Foto del Producto (opcional)",
+  previewVariant = "rectangle",
 }: ImageUploadInputProps) {
   const [tab, setTab] = useState<"upload" | "url">("upload");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const inputId = useId();
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -91,22 +94,28 @@ export function ImageUploadInput({
       </div>
 
       {value ? (
-        <div className="relative w-full h-32 rounded-xl overflow-hidden bg-surface-2 border border-border group">
+        <div
+          className={`relative overflow-hidden bg-surface-2 border border-border group ${
+            previewVariant === "circle"
+              ? "w-24 h-24 rounded-full mx-auto"
+              : "w-full h-32 rounded-xl"
+          }`}
+        >
           <Image
             src={value}
             alt="Vista previa"
             fill
             className="object-cover"
-            sizes="(max-width: 768px) 100vw, 300px"
+            sizes={previewVariant === "circle" ? "96px" : "(max-width: 768px) 100vw, 300px"}
           />
-          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-2">
             <button
               type="button"
               onClick={handleRemove}
-              className="px-3 py-1.5 rounded-lg bg-white/90 hover:bg-white text-text-primary text-xs font-medium flex items-center gap-1.5 transition-colors shadow-sm"
+              className="px-2.5 py-1 rounded-lg bg-white/90 hover:bg-white text-text-primary text-xs font-medium flex items-center gap-1 transition-colors shadow-sm cursor-pointer"
             >
               <X className="w-3.5 h-3.5" />
-              Quitar foto
+              <span>Quitar</span>
             </button>
           </div>
         </div>
@@ -119,10 +128,10 @@ export function ImageUploadInput({
             onChange={handleFileChange}
             disabled={uploading}
             className="hidden"
-            id="store-asset-file-input"
+            id={inputId}
           />
           <label
-            htmlFor="store-asset-file-input"
+            htmlFor={inputId}
             className={`w-full py-5 px-4 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors ${
               uploading
                 ? "border-border-strong bg-surface-2 cursor-not-allowed opacity-70"

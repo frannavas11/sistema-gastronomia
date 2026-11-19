@@ -486,6 +486,67 @@ export async function updateProduct(payload: {
   });
 }
 
+/** Elimina un producto del menú y limpia sus referencias de forma segura. Acepta (productId) o (productId, storeId). */
+export async function deleteProduct(
+  productIdOrPayload: string | { productId: string; storeId?: string },
+  maybeStoreId?: string,
+) {
+  let productId: string;
+  let storeId: string | undefined;
+
+  if (typeof productIdOrPayload === "string") {
+    productId = productIdOrPayload;
+    storeId = maybeStoreId;
+  } else {
+    productId = productIdOrPayload.productId;
+    storeId = productIdOrPayload.storeId;
+  }
+
+  if (!productId) throw new Error("ID de producto no especificado.");
+
+  if (!storeId) {
+    const supabase = await createClient();
+    const { data: prod } = await supabase
+      .from("products")
+      .select("store_id")
+      .eq("id", productId)
+      .maybeSingle();
+    if (!prod?.store_id) throw new Error("Producto no encontrado.");
+    storeId = prod.store_id;
+  }
+
+  return ownerAction(storeId, ["/admin/menu"], async ({ db }) => {
+    // 1. Eliminar opciones asociadas al producto para evitar restricciones de FK
+    const { data: groups } = await db
+      .from("product_option_groups")
+      .select("id")
+      .eq("product_id", productId)
+      .eq("store_id", storeId);
+
+    if (groups && groups.length > 0) {
+      const groupIds = groups.map((g) => g.id);
+      await db.from("product_option_items").delete().in("group_id", groupIds);
+      await db.from("product_option_groups").delete().eq("product_id", productId);
+    }
+
+    // 2. Desvincular items de pedidos históricos (order_items.product_id es nullable)
+    await db
+      .from("order_items")
+      .update({ product_id: null })
+      .eq("product_id", productId);
+
+    // 3. Eliminar el producto
+    const { error } = await db
+      .from("products")
+      .delete()
+      .eq("id", productId)
+      .eq("store_id", storeId);
+
+    if (error) throw new Error(`Error al eliminar producto: ${error.message}`);
+    return {};
+  });
+}
+
 export async function toggleProductAvailability(
   productId: string,
   storeId: string,

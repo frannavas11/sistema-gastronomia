@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { Plus, X, Loader2, Utensils, FolderPlus } from "lucide-react";
 import { toast } from "sonner";
@@ -130,9 +131,9 @@ export function CreateProductModal({
         <span>Nuevo Producto</span>
       </button>
 
-      {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/45 backdrop-blur-xs animate-fade">
-          <div className="bg-surface border border-border rounded-2xl max-w-lg w-full p-6 shadow-xl relative text-text-primary">
+      {isOpen && typeof document !== "undefined" && createPortal(
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 animate-fade">
+          <div className="bg-surface border border-border rounded-2xl max-w-lg w-full p-6 shadow-xl relative text-text-primary max-h-[90vh] overflow-y-auto">
             {/* Cabecera */}
             <div className="flex items-center justify-between pb-4 border-b border-border mb-4">
               <div className="flex items-center gap-2.5">
@@ -313,7 +314,8 @@ export function CreateProductModal({
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

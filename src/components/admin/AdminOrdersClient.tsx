@@ -76,7 +76,7 @@ function OrderTicket({
   };
 
   return (
-    <article className="relative rounded-3xl bg-surface border border-border shadow-[0_1px_0_var(--border)] overflow-hidden flex flex-col">
+    <article className="relative rounded-3xl bg-surface border border-border shadow-[0_1px_0_var(--border)] overflow-hidden flex flex-col h-full">
       <header className="px-5 pt-5 pb-4 flex items-start justify-between gap-3">
         <div>
           <p className="eyebrow text-text-tertiary">{formatDateTimeAR(order.created_at)} hs</p>
@@ -139,40 +139,42 @@ function OrderTicket({
         </p>
       )}
 
-      <div className="perforation mx-5 my-4" />
+      <div className="mt-auto pt-4">
+        <div className="perforation mx-5 mb-4" />
 
-      <dl className="px-5 space-y-1 text-sm">
-        {isDelivery && (
+        <dl className="px-5 space-y-1 text-sm">
+          {isDelivery && (
+            <div className="flex justify-between text-text-secondary">
+              <dt>Envío</dt>
+              <dd className="tabular-nums">{deliveryFee > 0 ? formatCurrencyARS(deliveryFee) : "A convenir"}</dd>
+            </div>
+          )}
           <div className="flex justify-between text-text-secondary">
-            <dt>Envío</dt>
-            <dd className="tabular-nums">{deliveryFee > 0 ? formatCurrencyARS(deliveryFee) : "A convenir"}</dd>
+            <dt>Pago</dt>
+            <dd>{PAYMENT_LABELS[order.payment_method] ?? order.payment_method}</dd>
           </div>
-        )}
-        <div className="flex justify-between text-text-secondary">
-          <dt>Pago</dt>
-          <dd>{PAYMENT_LABELS[order.payment_method] ?? order.payment_method}</dd>
-        </div>
-        <div className="flex items-baseline justify-between pt-1">
-          <dt className="eyebrow text-text-primary">Total</dt>
-          <dd className="font-serif text-3xl tabular-nums text-text-primary">{formatCurrencyARS(order.total)}</dd>
-        </div>
-      </dl>
+          <div className="flex items-baseline justify-between pt-1">
+            <dt className="eyebrow text-text-primary">Total</dt>
+            <dd className="font-serif text-3xl tabular-nums text-text-primary">{formatCurrencyARS(order.total)}</dd>
+          </div>
+        </dl>
 
-      <footer className="mt-4 px-3 pb-3 flex justify-end">
-        <button
-          type="button"
-          onClick={handleDelete}
-          disabled={deleting}
-          className={`min-h-[40px] px-3.5 rounded-full text-xs font-semibold inline-flex items-center gap-1.5 transition-colors disabled:opacity-50 ${
-            confirming
-              ? "bg-error-solid text-white"
-              : "text-text-tertiary hover:text-error hover:bg-error-soft"
-          }`}
-        >
-          {deleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
-          {confirming ? "¿Eliminar? Tocá de nuevo" : "Eliminar"}
-        </button>
-      </footer>
+        <footer className="mt-4 px-3 pb-3 flex justify-end">
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={deleting}
+            className={`min-h-[40px] px-3.5 rounded-full text-xs font-semibold inline-flex items-center gap-1.5 transition-colors disabled:opacity-50 ${
+              confirming
+                ? "bg-error-solid text-white"
+                : "text-text-tertiary hover:text-error hover:bg-error-soft"
+            }`}
+          >
+            {deleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+            {confirming ? "¿Eliminar? Tocá de nuevo" : "Eliminar"}
+          </button>
+        </footer>
+      </div>
     </article>
   );
 }
@@ -212,7 +214,7 @@ export function AdminOrdersClient({ storeId, orders: initialOrders, limit }: Adm
           </p>
         </div>
       ) : (
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3 items-start">
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {orders.map((order) => (
             <OrderTicket key={order.id} order={order} onDelete={handleDelete} />
           ))}

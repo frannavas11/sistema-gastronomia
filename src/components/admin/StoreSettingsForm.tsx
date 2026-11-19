@@ -257,6 +257,7 @@ export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
             value={logoUrl}
             onChange={setLogoUrl}
             label="Logo del Local"
+            previewVariant="circle"
           />
 
           <ImageUploadInput
