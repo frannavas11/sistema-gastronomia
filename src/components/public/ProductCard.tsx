@@ -2,130 +2,112 @@
 
 import Image from "next/image";
 import { motion } from "motion/react";
-import { Plus, SlidersHorizontal, UtensilsCrossed } from "lucide-react";
+import { Plus, SlidersHorizontal } from "lucide-react";
+import { formatCurrencyARS } from "@/lib/format";
 import type { ProductWithOptions } from "@/types/store";
 
 interface ProductCardProps {
   product: ProductWithOptions;
   onSelect: (product: ProductWithOptions) => void;
-  onQuickAdd?: (product: ProductWithOptions) => void;
+  onQuickAdd: (product: ProductWithOptions) => void;
 }
 
-export function ProductCard({
-  product,
-  onSelect,
-  onQuickAdd,
-}: ProductCardProps) {
+/**
+ * Plato en formato de carta impresa: nombre · · · · precio con línea punteada,
+ * descripción en serif itálica y foto a la derecha con el botón "+" superpuesto.
+ */
+export function ProductCard({ product, onSelect, onQuickAdd }: ProductCardProps) {
   const isAvailable = product.is_available ?? true;
-  const hasOptions = (product.option_groups?.length ?? 0) > 0;
+  const hasOptions = product.option_groups.length > 0;
 
-  const formattedPrice = new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    maximumFractionDigits: 0,
-  }).format(product.base_price);
-
-  const handleCardClick = () => {
-    if (!isAvailable) return;
-    onSelect(product);
-  };
-
-  const handleButtonClick = (e: React.MouseEvent) => {
+  const handleAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!isAvailable) return;
-
-    if (!hasOptions && onQuickAdd) {
-      onQuickAdd(product);
-    } else {
-      onSelect(product);
-    }
+    if (hasOptions) onSelect(product);
+    else onQuickAdd(product);
   };
+
+  const addButton = isAvailable && (
+    <motion.button
+      type="button"
+      onClick={handleAdd}
+      whileTap={{ scale: 0.9 }}
+      aria-label={hasOptions ? `Elegir opciones de ${product.name}` : `Agregar ${product.name}`}
+      className="w-10 h-10 rounded-full bg-brand text-brand-contrast shadow-md shadow-black/15 flex items-center justify-center ring-4 ring-surface hover:bg-brand-dark transition-colors focus-visible:outline-none focus-visible:ring-brand/40"
+    >
+      <Plus className="w-5 h-5" strokeWidth={2.5} />
+    </motion.button>
+  );
 
   return (
     <article
-      onClick={handleCardClick}
+      onClick={() => isAvailable && onSelect(product)}
       role={isAvailable ? "button" : undefined}
       tabIndex={isAvailable ? 0 : -1}
+      aria-disabled={!isAvailable || undefined}
       onKeyDown={(e) => {
         if (isAvailable && (e.key === "Enter" || e.key === " ")) {
           e.preventDefault();
-          handleCardClick();
+          onSelect(product);
         }
       }}
-      className={`group relative bg-[#FFFCF8] rounded-2xl p-3 sm:p-4 border border-[#E9DAD2] shadow-[0_2px_8px_rgba(33,27,25,0.04)] transition-all duration-200 flex gap-3 sm:gap-4 select-none ${
+      className={`group relative flex gap-4 py-5 rounded-xl transition-colors ${
         isAvailable
-          ? "cursor-pointer hover:border-[#D5C2B8] hover:shadow-[0_4px_12px_rgba(33,27,25,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary)]"
-          : "opacity-60 cursor-not-allowed"
+          ? "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-4"
+          : "cursor-not-allowed"
       }`}
     >
-      {/* 1. Foto a la izquierda (o recuadro crema con ícono genérico) */}
-      <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden bg-[#F6EBE4] shrink-0 border border-[#E9DAD2] flex items-center justify-center">
-        {product.image_url ? (
-          <Image
-            src={product.image_url}
-            alt={product.name}
-            fill
-            className="object-cover group-hover:scale-102 transition-transform duration-300"
-            sizes="(max-width: 640px) 96px, 112px"
-          />
-        ) : (
-          <UtensilsCrossed className="w-7 h-7 text-[#A18A81]" />
-        )}
-      </div>
-
-      {/* 2. Información del producto y acción */}
-      <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
-        <div>
-          <div className="flex items-baseline gap-2 flex-wrap">
-            <h3 className="font-semibold text-sm sm:text-base text-[#211B19] leading-snug group-hover:text-[var(--store-primary-dark)] transition-colors">
-              {product.name}
-            </h3>
-            {!isAvailable && (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#F6EBE4] text-[#74645E] shrink-0">
-                Agotado
-              </span>
-            )}
-          </div>
-
-          {product.description && (
-            <p className="text-xs text-[#74645E] mt-1 line-clamp-2 leading-relaxed">
-              {product.description}
-            </p>
-          )}
-
-          {hasOptions && isAvailable && (
-            <div className="mt-1 flex items-center gap-1 text-[11px] text-[#74645E]">
-              <SlidersHorizontal className="w-3 h-3 text-[#A18A81]" />
-              <span>Personalizable</span>
-            </div>
-          )}
-        </div>
-
-        {/* Fila inferior: Precio y Botón Agregar */}
-        <div className="pt-2 flex items-center justify-between gap-2">
-          <span className="font-bold text-sm sm:text-base text-[#211B19] tabular-nums">
-            {formattedPrice}
+      <div className={`flex-1 min-w-0 ${isAvailable ? "" : "opacity-55"}`}>
+        <div className="flex items-baseline gap-2">
+          <h3
+            className={`font-serif text-[1.15rem] sm:text-xl leading-snug text-text-primary transition-colors group-hover:text-brand-fg ${
+              isAvailable ? "" : "line-through decoration-1"
+            }`}
+          >
+            {product.name}
+          </h3>
+          <span className="leader" aria-hidden="true" />
+          <span className="font-semibold text-[0.95rem] text-text-primary tabular-nums shrink-0">
+            {formatCurrencyARS(product.base_price)}
           </span>
+        </div>
 
-          {isAvailable ? (
-            <motion.button
-              type="button"
-              onClick={handleButtonClick}
-              whileTap={{ scale: 0.94 }}
-              whileHover={{ scale: 1.02 }}
-              aria-label={`Agregar ${product.name}`}
-              className="min-h-[44px] px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-[var(--store-primary)] text-[var(--store-primary-contrast)] hover:bg-[var(--store-primary-dark)] transition-all inline-flex items-center justify-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary)] shadow-xs select-none"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Agregar</span>
-            </motion.button>
-          ) : (
-            <span className="text-xs font-medium text-[#74645E]">
-              No disponible
+        {product.description && (
+          <p className="mt-1.5 font-serif italic text-sm leading-relaxed text-text-secondary line-clamp-2">
+            {product.description}
+          </p>
+        )}
+
+        <div className="mt-2.5 flex items-center gap-2 min-h-5">
+          {!isAvailable ? (
+            <span className="eyebrow text-error">Agotado por hoy</span>
+          ) : hasOptions ? (
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-text-tertiary">
+              <SlidersHorizontal className="w-3 h-3" />
+              A tu gusto
             </span>
-          )}
+          ) : null}
         </div>
       </div>
+
+      {product.image_url ? (
+        <div className="relative shrink-0 self-start">
+          <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden bg-surface-2 shadow-sm">
+            <Image
+              src={product.image_url}
+              alt={product.name}
+              fill
+              className={`object-cover transition-transform duration-500 ease-out group-hover:scale-105 ${
+                isAvailable ? "" : "grayscale"
+              }`}
+              sizes="(max-width: 640px) 96px, 112px"
+            />
+          </div>
+          {addButton && <div className="absolute -bottom-3 -right-2">{addButton}</div>}
+        </div>
+      ) : (
+        addButton && <div className="shrink-0 self-center">{addButton}</div>
+      )}
     </article>
   );
 }

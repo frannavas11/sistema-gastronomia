@@ -1,34 +1,24 @@
-import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/lib/supabase/server";
+import { getOwnerContext } from "@/lib/supabase/owner";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 
 export const dynamic = "force-dynamic";
 
 /**
- * Layout protegido para el panel de administración (/admin, /admin/orders, /admin/menu, etc.).
- * Sistema visual artesanal contemporáneo con fondo crema y sidebar bordó.
+ * Layout protegido del panel. La protección real está en `src/proxy.ts` (redirige sin sesión);
+ * `getOwnerContext` vuelve a verificar por las dudas y comparte el local con las páginas.
  */
-export default async function AdminDashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const { user } = await getCurrentUser();
-
-  if (!user) {
-    redirect("/admin/login");
-  }
+export default async function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
+  const { user, store } = await getOwnerContext();
 
   return (
-    <div className="min-h-screen bg-[#FBF5EF] text-[#211B19] flex flex-col md:flex-row antialiased selection:bg-[#F4E3E0] selection:text-[#541923]">
-      {/* Sidebar de navegación: bordó en desktop y barra adaptada en mobile */}
-      <AdminSidebar userEmail={user.email} />
-
-      {/* Área de contenido principal con padding inferior extra en mobile para no tapar la barra inferior */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto pb-24 md:pb-8">
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-6xl w-full mx-auto">
-          {children}
-        </main>
+    <div className="paper min-h-screen text-text-primary flex flex-col md:flex-row selection:bg-brand-tint selection:text-brand-fg">
+      <AdminSidebar
+        userEmail={user.email}
+        storeName={store?.name ?? null}
+        storeSlug={store?.slug ?? null}
+      />
+      <div className="flex-1 min-w-0 pb-28 md:pb-10">
+        <main className="p-4 sm:p-6 lg:p-10 max-w-6xl w-full mx-auto">{children}</main>
       </div>
     </div>
   );

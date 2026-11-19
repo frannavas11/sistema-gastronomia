@@ -1,62 +1,26 @@
-import { redirect } from "next/navigation";
-import { createClient, getCurrentUser } from "@/lib/supabase/server";
+import { getOwnerContext } from "@/lib/supabase/owner";
 import { AdminOrdersClient } from "@/components/admin/AdminOrdersClient";
+import { NoStoreNotice } from "@/components/admin/NoStoreNotice";
 
 export const dynamic = "force-dynamic";
 
+/** Cantidad de pedidos que se cargan (antes se traían todos los pedidos históricos sin límite). */
+const ORDERS_LIMIT = 100;
+
 export default async function AdminOrdersPage() {
-  const { user } = await getCurrentUser();
+  const { store, supabase } = await getOwnerContext();
+  if (!store) return <NoStoreNotice />;
 
-  if (!user) {
-    redirect("/admin/login");
-  }
-
-  const supabase = await createClient();
-
-  const { data: store } = await supabase
-    .from("stores")
-    .select("id, name, slug")
-    .eq("owner_id", user.id)
-    .maybeSingle();
-
-  if (!store) {
-    return (
-      <div className="p-8 text-center text-slate-500">
-        No se encontró ningún local vinculado a tu usuario.
-      </div>
-    );
-  }
-
-  const { data: rawOrders } = await supabase
+  const { data: orders } = await supabase
     .from("orders")
     .select(
-      `
-      id,
-      created_at,
-      customer_name,
-      customer_phone,
-      delivery_type,
-      delivery_address,
-      delivery_fee,
-      payment_method,
-      notes,
-      status,
-      subtotal,
-      total,
-      order_items (
-        id,
-        product_name,
-        quantity,
-        unit_price,
-        subtotal,
-        selected_options
-      )
-    `,
+      `id, created_at, customer_name, customer_phone, delivery_type, delivery_address,
+       delivery_fee, payment_method, notes, subtotal, total,
+       order_items (id, product_name, quantity, unit_price, subtotal, selected_options)`,
     )
     .eq("store_id", store.id)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(ORDERS_LIMIT);
 
-  const orders = rawOrders ?? [];
-
-  return <AdminOrdersClient store={store} orders={orders} />;
+  return <AdminOrdersClient storeId={store.id} orders={orders ?? []} limit={ORDERS_LIMIT} />;
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans, DM_Serif_Display } from "next/font/google";
-import { Toaster } from "sonner";
+import { ThemedToaster } from "@/components/theme/ThemedToaster";
+import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -11,6 +12,7 @@ const dmSans = DM_Sans({
 
 const dmSerif = DM_Serif_Display({
   weight: ["400"],
+  style: ["normal", "italic"],
   subsets: ["latin"],
   variable: "--font-dm-serif",
   display: "swap",
@@ -27,13 +29,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
+    // suppressHydrationWarning: el script de tema agrega la clase `dark` antes de hidratar
     <html
       lang="es"
       className={`h-full ${dmSans.variable} ${dmSerif.variable}`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col font-sans bg-[#FBF5EF] text-[#211B19] antialiased selection:bg-[#F4E3E0] selection:text-[#541923]">
+      <head>
+        {/* Se ejecuta durante el parseo del HTML, antes del primer pintado (sin parpadeo).
+            En el cliente se marca text/plain para que React no advierta ni lo re-ejecute. */}
+        <script
+          type={typeof window === "undefined" ? "text/javascript" : "text/plain"}
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{ __html: themeInitScript }}
+        />
+      </head>
+      <body className="min-h-full flex flex-col font-sans bg-background text-text-primary antialiased selection:bg-brand-tint selection:text-brand-fg">
         {children}
-        <Toaster position="top-center" richColors closeButton />
+        <ThemedToaster />
       </body>
     </html>
   );

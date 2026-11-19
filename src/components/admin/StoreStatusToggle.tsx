@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Power, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { toggleStoreOpenStatus } from "@/app/admin/actions";
 
@@ -10,112 +10,82 @@ interface StoreStatusToggleProps {
   initialIsOpen: boolean;
 }
 
-export function StoreStatusToggle({
-  storeId,
-  initialIsOpen,
-}: StoreStatusToggleProps) {
+/** Interruptor maestro "abierto / cerrado", presentado como cartel de la puerta del local. */
+export function StoreStatusToggle({ storeId, initialIsOpen }: StoreStatusToggleProps) {
   const [isOpen, setIsOpen] = useState(initialIsOpen);
   const [loading, setLoading] = useState(false);
 
   const handleToggle = async () => {
-    const nextState = !isOpen;
+    const next = !isOpen;
     setLoading(true);
+    setIsOpen(next); // optimista
 
-    // Actualización optimista
-    setIsOpen(nextState);
-
-    const result = await toggleStoreOpenStatus(storeId, nextState);
-
+    const result = await toggleStoreOpenStatus(storeId, next);
     if (!result.success) {
-      setIsOpen(!nextState);
-      toast.error("Error al actualizar el estado", {
-        description: result.error || "No se pudo cambiar el estado del local.",
-      });
+      setIsOpen(!next);
+      toast.error("No se pudo cambiar el estado", { description: result.error });
+    } else if (next) {
+      toast.success("Local abierto", { description: "Ya podés recibir pedidos." });
     } else {
-      if (nextState) {
-        toast.success("Local Abierto", {
-          description: "Los clientes ya pueden recorrer la carta y enviar pedidos.",
-        });
-      } else {
-        toast.info("Local Cerrado", {
-          description: "La carta se encuentra en modo pausa con aviso a los clientes.",
-        });
-      }
+      toast.info("Local cerrado", { description: "La carta queda visible pero sin recibir pedidos." });
     }
-
     setLoading(false);
   };
 
   return (
-    <div className="p-5 sm:p-6 rounded-2xl bg-[#FFFCF8] border border-[#E9DAD2] shadow-xs">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-start sm:items-center gap-3.5">
-          <div
-            className={`w-11 h-11 rounded-xl flex items-center justify-center transition-colors shrink-0 ${
-              isOpen
-                ? "bg-[#E5F4E7] text-[#249653] border border-[#C2E8C7]"
-                : "bg-[#F6EBE4] text-[#74645E] border border-[#E9DAD2]"
-            }`}
-          >
-            <Power className="w-5 h-5" />
-          </div>
-
-          <div>
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <h3 className="font-serif text-base sm:text-lg font-normal text-[#211B19]">
-                Estado del Local
-              </h3>
-              <span
-                className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-medium border transition-colors ${
-                  isOpen
-                    ? "bg-[#E5F4E7] text-[#249653] border-[#C2E8C7]"
-                    : "bg-[#FDE8E7] text-[#C74742] border-[#FAC5C2]"
-                }`}
-              >
-                <span
-                  className={`w-2 h-2 rounded-full ${
-                    isOpen ? "bg-[#249653]" : "bg-[#C74742]"
-                  }`}
-                />
-                {isOpen ? "Abierto" : "Cerrado"}
-              </span>
-            </div>
-
-            <p className="text-xs text-[#74645E] mt-1">
-              {isOpen
-                ? "Tu local está abierto y recibiendo pedidos en tiempo real."
-                : "El local se encuentra cerrado. Los clientes podrán explorar la carta con aviso informativo."}
-            </p>
-          </div>
+    <section
+      className={`relative overflow-hidden rounded-3xl border p-6 sm:p-7 transition-colors ${
+        isOpen ? "bg-success-soft border-success-border" : "bg-surface border-border"
+      }`}
+    >
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+        <div>
+          <p className={`eyebrow ${isOpen ? "text-success" : "text-text-tertiary"}`}>Estado del local</p>
+          <p className="mt-1 font-serif text-4xl sm:text-5xl leading-none text-text-primary">
+            {isOpen ? "Abierto" : "Cerrado"}
+            <span className={`font-serif italic ${isOpen ? "text-success" : "text-text-tertiary"}`}>.</span>
+          </p>
+          <p className="mt-2 text-sm text-text-secondary max-w-md">
+            {isOpen
+              ? "Tu carta está recibiendo pedidos ahora mismo."
+              : "Los clientes pueden ver la carta, pero no enviar pedidos."}
+          </p>
         </div>
 
-        {/* Switch botón maestro accesible (≥44px) */}
         <button
           type="button"
+          role="switch"
+          aria-checked={isOpen}
           onClick={handleToggle}
           disabled={loading}
-          aria-label={isOpen ? "Cerrar local" : "Abrir local"}
-          className={`relative inline-flex h-11 w-20 shrink-0 cursor-pointer rounded-full p-1 transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[#78232F] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none ${
-            isOpen ? "bg-[#249653]" : "bg-[#E9DAD2]"
+          aria-label={isOpen ? "Cerrar el local" : "Abrir el local"}
+          className={`relative inline-flex h-14 w-28 shrink-0 items-center rounded-full p-1.5 transition-colors focus:outline-none focus-visible:ring-4 focus-visible:ring-brand/30 disabled:opacity-60 ${
+            isOpen ? "bg-success-solid" : "bg-border-strong"
           }`}
         >
           <span
-            className={`pointer-events-none inline-flex h-9 w-9 transform items-center justify-center rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
-              isOpen ? "translate-x-9" : "translate-x-0"
+            className={`eyebrow absolute text-white/90 transition-opacity ${
+              isOpen ? "left-4 opacity-100" : "left-4 opacity-0"
             }`}
           >
-            {loading ? (
-              <Loader2 className="w-4 h-4 animate-spin text-[#74645E]" />
-            ) : (
-              <Power
-                className={`w-4 h-4 ${
-                  isOpen ? "text-[#249653]" : "text-[#A18A81]"
-                }`}
-              />
-            )}
+            On
+          </span>
+          <span
+            className={`eyebrow absolute right-4 text-text-secondary transition-opacity ${
+              isOpen ? "opacity-0" : "opacity-100"
+            }`}
+          >
+            Off
+          </span>
+          <span
+            className={`relative z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-md transition-transform duration-300 ease-out ${
+              isOpen ? "translate-x-14" : "translate-x-0"
+            }`}
+          >
+            {loading && <Loader2 className="w-4 h-4 animate-spin text-neutral-500" />}
           </span>
         </button>
       </div>
-    </div>
+    </section>
   );
 }

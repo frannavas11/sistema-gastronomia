@@ -18,7 +18,7 @@
   - Escritura: restringida exclusivamente al dueño del local (`owner_id = auth.uid()` en la tabla `stores`).
 
 ## Stack Tecnológico
-- **Framework:** Next.js 14+ (App Router, Server Components por defecto).
+- **Framework:** Next.js 16 (App Router, Server Components por defecto). La protección de `/admin` vive en `src/proxy.ts` (ex `middleware`; debe estar dentro de `src/`, al lado de `app/`).
 - **Estilos:** Tailwind CSS (Mobile-First estricto en catálogo y checkout).
 - **Backend / Database:** Supabase (PostgreSQL + RLS + Auth + Storage).
 - **Gestión de Estado del Carrito:** Zustand (sincronizado con `localStorage`).

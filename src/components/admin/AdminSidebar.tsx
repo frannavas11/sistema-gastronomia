@@ -2,185 +2,156 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  LayoutDashboard,
-  ShoppingBag,
-  UtensilsCrossed,
-  Settings,
-  Store,
-  User,
-} from "lucide-react";
+import { LayoutDashboard, ShoppingBag, UtensilsCrossed, Settings, ExternalLink } from "lucide-react";
+import { motion } from "motion/react";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { LogoutButton } from "./LogoutButton";
 
 interface AdminSidebarProps {
   userEmail?: string | null;
+  storeName: string | null;
+  storeSlug: string | null;
 }
 
 const NAV_ITEMS = [
-  {
-    label: "Dashboard",
-    sublabel: "Inicio y métricas",
-    href: "/admin",
-    icon: LayoutDashboard,
-  },
-  {
-    label: "Pedidos",
-    sublabel: "Historial y activos",
-    href: "/admin/orders",
-    icon: ShoppingBag,
-  },
-  {
-    label: "Menú",
-    sublabel: "Categorías y productos",
-    href: "/admin/menu",
-    icon: UtensilsCrossed,
-  },
-  {
-    label: "Configuración",
-    sublabel: "Datos del local y tema",
-    href: "/admin/settings",
-    icon: Settings,
-  },
+  { label: "Resumen", href: "/admin", icon: LayoutDashboard },
+  { label: "Pedidos", href: "/admin/orders", icon: ShoppingBag },
+  { label: "Menú", href: "/admin/menu", icon: UtensilsCrossed },
+  { label: "Ajustes", href: "/admin/settings", icon: Settings },
 ];
 
-export function AdminSidebar({ userEmail }: AdminSidebarProps) {
-  const pathname = usePathname();
+/** Textura de papel sobre el bordó del sidebar */
+const grainStyle = { backgroundImage: "var(--paper-grain)", backgroundSize: "180px" };
 
-  const isActive = (href: string) => {
-    if (href === "/admin") {
-      return pathname === "/admin";
-    }
-    return pathname.startsWith(href);
-  };
+export function AdminSidebar({ userEmail, storeName, storeSlug }: AdminSidebarProps) {
+  const pathname = usePathname();
+  const isActive = (href: string) => (href === "/admin" ? pathname === "/admin" : pathname.startsWith(href));
 
   return (
     <>
-      {/* 1. Header superior exclusivo para Mobile (hasta md) */}
-      <header className="md:hidden flex items-center justify-between px-4 py-3 bg-[#541923] text-white border-b border-[#42131C] sticky top-0 z-30 shadow-xs">
-        <Link href="/admin" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center text-white">
-            <Store className="w-4 h-4" />
-          </div>
-          <div className="flex flex-col">
-            <span className="font-serif font-normal text-base text-white tracking-wide">
-              Panel Gastro
-            </span>
-            <span className="text-[10px] text-white/70">
-              Administración
-            </span>
-          </div>
+      {/* ── Mobile: barra superior ── */}
+      <header
+        className="md:hidden sticky top-0 z-30 flex items-center justify-between gap-3 px-4 py-2.5 bg-sidebar text-white border-b border-sidebar-border"
+        style={grainStyle}
+      >
+        <Link href="/admin" className="min-w-0">
+          <span className="eyebrow block text-white/55">Panel</span>
+          <span className="font-serif text-lg leading-tight truncate block">{storeName ?? "Mi local"}</span>
         </Link>
-
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-white/80 truncate max-w-[140px]">
-            {userEmail}
-          </span>
+        <div className="flex items-center gap-1">
+          {storeSlug && (
+            <Link
+              href={`/${storeSlug}`}
+              target="_blank"
+              aria-label="Ver la carta pública"
+              className="w-11 h-11 rounded-xl flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+            >
+              <ExternalLink className="w-[18px] h-[18px]" />
+            </Link>
+          )}
+          <ThemeToggle variant="onDark" />
         </div>
       </header>
 
-      {/* 2. Barra de Navegación Inferior Móvil Real (ergonómica, accesible con pulgar) */}
+      {/* ── Mobile: navegación inferior ── */}
       <nav
-        aria-label="Navegación móvil"
-        className="fixed bottom-0 inset-x-0 bg-[#541923] text-white border-t border-[#42131C] z-40 flex items-center justify-around py-1.5 px-2 safe-bottom md:hidden shadow-lg shadow-black/25"
+        aria-label="Navegación del panel"
+        className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-sidebar border-t border-sidebar-border safe-bottom shadow-[0_-8px_24px_rgba(0,0,0,0.18)]"
+        style={grainStyle}
       >
-        {NAV_ITEMS.map((item) => {
-          const active = isActive(item.href);
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex-1 min-h-[48px] flex flex-col items-center justify-center gap-1 rounded-xl transition-colors select-none ${
-                active
-                  ? "bg-white/15 text-white font-semibold"
-                  : "text-white/70 hover:text-white"
-              }`}
-            >
-              <Icon className="w-4 h-4 shrink-0" />
-              <span className="text-[10px] leading-tight tracking-tight">
+        <div className="flex items-stretch justify-around px-2 pt-1.5">
+          {NAV_ITEMS.map((item) => {
+            const active = isActive(item.href);
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={active ? "page" : undefined}
+                className={`relative flex-1 min-h-[52px] flex flex-col items-center justify-center gap-1 rounded-xl text-[11px] transition-colors ${
+                  active ? "text-white font-semibold" : "text-white/60 hover:text-white"
+                }`}
+              >
+                {active && (
+                  <motion.span
+                    layoutId="mobile-nav-active"
+                    className="absolute inset-x-3 top-0 h-[2px] rounded-full bg-white"
+                  />
+                )}
+                <Icon className="w-[18px] h-[18px]" />
                 {item.label}
-              </span>
-            </Link>
-          );
-        })}
+              </Link>
+            );
+          })}
+        </div>
       </nav>
 
-      {/* 3. Sidebar fijo de Desktop en bordó profundo (md en adelante) */}
-      <aside className="hidden md:flex flex-col w-64 min-h-screen bg-[#541923] text-white border-r border-[#42131C] p-5 sticky top-0 h-screen select-none justify-between">
+      {/* ── Desktop: sidebar ── */}
+      <aside
+        className="hidden md:flex sticky top-0 h-screen w-72 shrink-0 flex-col justify-between bg-sidebar text-white border-r border-sidebar-border px-6 py-8"
+        style={grainStyle}
+      >
         <div>
-          {/* Header del Sidebar */}
-          <div className="pb-5 border-b border-white/15 mb-6">
-            <Link href="/admin" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center text-white shrink-0">
-                <Store className="w-5 h-5" />
-              </div>
-              <div className="flex flex-col min-w-0">
-                <span className="font-serif font-normal text-lg text-white tracking-wide truncate">
-                  Panel Gastro
-                </span>
-                <span className="text-xs text-white/70 truncate">
-                  Gestión artesanal
-                </span>
-              </div>
+          <div className="flex items-start justify-between gap-2">
+            <Link href="/admin" className="min-w-0">
+              <span className="eyebrow text-white/50">Panel del local</span>
+              <span className="mt-1 block font-serif text-3xl leading-[1.05] text-balance">
+                {storeName ?? "Mi local"}
+              </span>
             </Link>
+            <ThemeToggle variant="onDark" className="-mr-2 shrink-0" />
           </div>
 
-          {/* Navegación Desktop */}
-          <nav className="space-y-1.5">
-            <div className="px-3 pb-2 text-[11px] font-semibold text-white/50 tracking-wider">
-              Navegación
-            </div>
-            {NAV_ITEMS.map((item) => {
+          {storeSlug && (
+            <Link
+              href={`/${storeSlug}`}
+              target="_blank"
+              className="mt-4 inline-flex items-center gap-1.5 font-serif italic text-sm text-white/70 hover:text-white transition-colors"
+            >
+              Ver la carta pública
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Link>
+          )}
+
+          <div className="my-8 h-px bg-white/15" />
+
+          <nav aria-label="Navegación del panel" className="space-y-1">
+            {NAV_ITEMS.map((item, index) => {
               const active = isActive(item.href);
               const Icon = item.icon;
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-medium transition-colors min-h-[44px] ${
-                    active
-                      ? "bg-white/15 text-white font-semibold shadow-xs"
-                      : "text-white/70 hover:text-white hover:bg-white/10"
+                  aria-current={active ? "page" : undefined}
+                  className={`relative flex items-center gap-3 px-3 min-h-[48px] rounded-xl text-sm transition-colors ${
+                    active ? "text-white font-semibold" : "text-white/65 hover:text-white hover:bg-white/5"
                   }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <Icon className="w-4 h-4 shrink-0" />
-                    <span>{item.label}</span>
-                  </div>
                   {active && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                    <motion.span
+                      layoutId="desktop-nav-active"
+                      className="absolute inset-0 rounded-xl bg-white/12 border border-white/10"
+                      transition={{ type: "spring", stiffness: 500, damping: 40 }}
+                    />
                   )}
+                  <span className="relative font-serif italic text-xs text-white/45 tabular-nums w-5">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <Icon className="relative w-4 h-4" />
+                  <span className="relative">{item.label}</span>
                 </Link>
               );
             })}
           </nav>
         </div>
 
-        {/* Footer del Sidebar Desktop */}
-        <div className="pt-4 border-t border-white/15 space-y-3">
-          <div className="p-3 rounded-xl bg-white/10 border border-white/10">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white shrink-0">
-                <User className="w-4 h-4" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-white truncate">
-                  {userEmail || "Dueño del local"}
-                </p>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#249653]" />
-                  <span className="text-[10px] text-white/70">
-                    En línea
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <LogoutButton
-            variant="outline"
-            className="w-full text-xs py-2.5 bg-white/5 hover:bg-white/10 text-white border-white/20 min-h-[44px]"
-          />
+        <div className="space-y-3">
+          <div className="h-px bg-white/15" />
+          <p className="text-xs text-white/55 truncate" title={userEmail ?? undefined}>
+            {userEmail}
+          </p>
+          <LogoutButton variant="onDark" className="w-full" />
         </div>
       </aside>
     </>

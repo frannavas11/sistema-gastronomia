@@ -1,44 +1,34 @@
-import { redirect } from "next/navigation";
-import { createClient, getCurrentUser } from "@/lib/supabase/server";
+import { getOwnerContext } from "@/lib/supabase/owner";
 import { StoreSettingsForm } from "@/components/admin/StoreSettingsForm";
+import { NoStoreNotice } from "@/components/admin/NoStoreNotice";
+import { LogoutButton } from "@/components/admin/LogoutButton";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminSettingsPage() {
-  const { user } = await getCurrentUser();
-
-  if (!user) {
-    redirect("/admin/login");
-  }
-
-  const supabase = await createClient();
-
-  const { data: store } = await supabase
-    .from("stores")
-    .select("id, name, slug, phone_whatsapp, delivery_cost, min_order_amount, logo_url, banner_url, theme_colors")
-    .eq("owner_id", user.id)
-    .maybeSingle();
-
-  if (!store) {
-    return (
-      <div className="p-8 text-center text-slate-500">
-        No se encontró ningún local vinculado a tu usuario.
-      </div>
-    );
-  }
+  const { store, user } = await getOwnerContext();
+  if (!store) return <NoStoreNotice />;
 
   return (
-    <div className="space-y-6 max-w-4xl">
-      <div className="pb-5 border-b border-slate-200">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-          Configuración General
-        </h1>
-        <p className="text-xs sm:text-sm text-slate-500 mt-1">
-          Modificá el número de WhatsApp receptor, costos de entrega y montos mínimos.
+    <div className="space-y-8 max-w-4xl">
+      <header className="animate-rise">
+        <p className="eyebrow text-brand-fg">La casa</p>
+        <h1 className="mt-2 font-serif text-4xl sm:text-5xl text-text-primary tracking-tight">Ajustes</h1>
+        <p className="mt-2 text-text-secondary">
+          WhatsApp que recibe los pedidos, costos de envío, imágenes y el color de tu carta.
         </p>
-      </div>
+      </header>
 
       <StoreSettingsForm store={store} />
+
+      {/* En mobile el sidebar no tiene "cerrar sesión": queda acá, accesible en todas las pantallas */}
+      <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-border pt-6">
+        <div>
+          <p className="eyebrow text-text-tertiary">Sesión</p>
+          <p className="mt-1 text-sm text-text-secondary">{user.email}</p>
+        </div>
+        <LogoutButton variant="danger" />
+      </section>
     </div>
   );
 }

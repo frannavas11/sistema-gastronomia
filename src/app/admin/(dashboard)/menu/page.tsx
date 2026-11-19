@@ -1,34 +1,13 @@
-import { redirect } from "next/navigation";
-import { createClient, getCurrentUser } from "@/lib/supabase/server";
+import { getOwnerContext } from "@/lib/supabase/owner";
 import { AdminMenuClient } from "@/components/admin/AdminMenuClient";
+import { NoStoreNotice } from "@/components/admin/NoStoreNotice";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminMenuPage() {
-  const { user } = await getCurrentUser();
+  const { store, supabase } = await getOwnerContext();
+  if (!store) return <NoStoreNotice />;
 
-  if (!user) {
-    redirect("/admin/login");
-  }
-
-  const supabase = await createClient();
-
-  // Obtener el comercio del usuario
-  const { data: store } = await supabase
-    .from("stores")
-    .select("id, name, slug")
-    .eq("owner_id", user.id)
-    .maybeSingle();
-
-  if (!store) {
-    return (
-      <div className="p-8 text-center text-slate-500">
-        No se encontró ningún local vinculado a tu usuario.
-      </div>
-    );
-  }
-
-  // Consultar categorías y productos de este comercio
   const [categoriesResult, productsResult] = await Promise.all([
     supabase
       .from("categories")
@@ -42,14 +21,11 @@ export default async function AdminMenuPage() {
       .order("display_order", { ascending: true }),
   ]);
 
-  const categories = categoriesResult.data ?? [];
-  const products = productsResult.data ?? [];
-
   return (
     <AdminMenuClient
-      store={store}
-      categories={categories}
-      products={products}
+      storeId={store.id}
+      categories={categoriesResult.data ?? []}
+      products={productsResult.data ?? []}
     />
   );
 }

@@ -1,3 +1,4 @@
+import { formatCurrencyARS } from "@/lib/format";
 import type { DeliveryType, PaymentMethod, Store, CartItem } from "@/types/store";
 
 export interface WhatsAppOrderParams {
@@ -26,16 +27,6 @@ export interface WhatsAppOrderParams {
   total: number;
 }
 
-/**
- * Formatea un número como moneda en pesos argentinos (ARS).
- */
-export function formatCurrencyARS(amount: number): string {
-  return new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
 
 /**
  * Normaliza y limpia el número de teléfono para enlaces de WhatsApp.

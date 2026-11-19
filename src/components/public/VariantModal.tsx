@@ -3,8 +3,8 @@
 import { useState, useMemo } from "react";
 import Image from "next/image";
 import { Drawer } from "vaul";
-import { motion } from "motion/react";
-import { X, Minus, Plus, Check, AlertCircle } from "lucide-react";
+import { X, Minus, Plus, Check } from "lucide-react";
+import { formatCurrencyARS } from "@/lib/format";
 import type {
   ProductWithOptions,
   ProductOptionItem,
@@ -13,168 +13,86 @@ import type {
 } from "@/types/store";
 
 interface VariantModalProps {
-  product: ProductWithOptions | null;
+  product: ProductWithOptions;
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (payload: ConfiguredItemPayload) => void;
 }
 
-export function VariantModal({
-  product,
-  isOpen,
-  onClose,
-  onConfirm,
-}: VariantModalProps) {
-  const [quantity, setQuantity] = useState<number>(1);
-  const [notes, setNotes] = useState<string>("");
+const NOTES_MAX = 150;
 
-  const [selectedOptionsMap, setSelectedOptionsMap] = useState<
-    Record<string, ProductOptionItem[]>
-  >(() => {
-    if (!product) return {};
-    const initialMap: Record<string, ProductOptionItem[]> = {};
-    product.option_groups.forEach((group) => {
-      if (group.is_required && group.items.length === 1 && group.items[0]) {
-        initialMap[group.id] = [group.items[0]];
-      } else {
-        initialMap[group.id] = [];
-      }
-    });
-    return initialMap;
-  });
-
-  const validationErrors = useMemo(() => {
-    if (!product) return [];
-    const missingGroupNames: string[] = [];
-
-    product.option_groups.forEach((group) => {
-      if (group.is_required) {
-        const selected = selectedOptionsMap[group.id] || [];
-        if (selected.length === 0) {
-          missingGroupNames.push(group.name);
-        }
-      }
-    });
-
-    return missingGroupNames;
-  }, [product, selectedOptionsMap]);
-
-  const unitPrice = useMemo(() => {
-    if (!product) return 0;
-    let extraTotal = 0;
-    Object.values(selectedOptionsMap).forEach((items) => {
-      items.forEach((item) => {
-        extraTotal += item.price || 0;
-      });
-    });
-    return product.base_price + extraTotal;
-  }, [product, selectedOptionsMap]);
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("es-AR", {
-      style: "currency",
-      currency: "ARS",
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
-
-  if (!product) {
-    return null;
+function initialSelection(product: ProductWithOptions) {
+  const map: Record<string, ProductOptionItem[]> = {};
+  for (const group of product.option_groups) {
+    // Si un grupo obligatorio tiene una única opción, se preselecciona
+    map[group.id] = group.is_required && group.items.length === 1 ? [group.items[0]] : [];
   }
+  return map;
+}
 
-  const handleToggleOption = (
-    groupId: string,
-    item: ProductOptionItem,
-    maxSelectable: number | null,
-  ) => {
-    setSelectedOptionsMap((prev) => {
-      const currentSelection = prev[groupId] || [];
-      const isAlreadySelected = currentSelection.some((i) => i.id === item.id);
+export function VariantModal({ product, isOpen, onClose, onConfirm }: VariantModalProps) {
+  const [quantity, setQuantity] = useState(1);
+  const [notes, setNotes] = useState("");
+  const [selection, setSelection] = useState(() => initialSelection(product));
 
-      if (isAlreadySelected) {
-        return {
-          ...prev,
-          [groupId]: currentSelection.filter((i) => i.id !== item.id),
-        };
+  const missingRequired = product.option_groups.filter(
+    (g) => g.is_required && (selection[g.id]?.length ?? 0) === 0,
+  );
+  const isValid = missingRequired.length === 0;
+
+  const unitPrice = useMemo(
+    () =>
+      product.base_price +
+      Object.values(selection)
+        .flat()
+        .reduce((sum, item) => sum + (item.price ?? 0), 0),
+    [product.base_price, selection],
+  );
+  const subtotal = unitPrice * quantity;
+
+  const toggleOption = (groupId: string, item: ProductOptionItem, max: number | null) => {
+    setSelection((prev) => {
+      const current = prev[groupId] ?? [];
+      if (current.some((i) => i.id === item.id)) {
+        return { ...prev, [groupId]: current.filter((i) => i.id !== item.id) };
       }
-
-      if (maxSelectable === 1) {
-        return {
-          ...prev,
-          [groupId]: [item],
-        };
-      }
-
-      if (
-        maxSelectable !== null &&
-        maxSelectable > 1 &&
-        currentSelection.length >= maxSelectable
-      ) {
-        return prev;
-      }
-
-      return {
-        ...prev,
-        [groupId]: [...currentSelection, item],
-      };
+      if (max === 1) return { ...prev, [groupId]: [item] };
+      if (max !== null && current.length >= max) return prev;
+      return { ...prev, [groupId]: [...current, item] };
     });
   };
-
-  const isValid = validationErrors.length === 0;
-  const subtotal = unitPrice * quantity;
 
   const handleConfirm = () => {
     if (!isValid) return;
-
-    const flattenedOptions: SelectedOptionItem[] = [];
-    product.option_groups.forEach((group) => {
-      const selectedItems = selectedOptionsMap[group.id] || [];
-      selectedItems.forEach((item) => {
-        flattenedOptions.push({
-          id: item.id,
-          name: item.name,
-          price: item.price || 0,
-          group_id: group.id,
-          group_name: group.name,
-        });
-      });
-    });
-
+    const selected_options: SelectedOptionItem[] = product.option_groups.flatMap((group) =>
+      (selection[group.id] ?? []).map((item) => ({
+        id: item.id,
+        name: item.name,
+        price: item.price ?? 0,
+        group_id: group.id,
+        group_name: group.name,
+      })),
+    );
     onConfirm({
       product,
       quantity,
-      selected_options: flattenedOptions,
+      selected_options,
       notes: notes.trim(),
       unit_price: unitPrice,
       subtotal,
     });
-
     onClose();
   };
 
   return (
-    <Drawer.Root
-      open={isOpen}
-      onOpenChange={(open) => {
-        if (!open) onClose();
-      }}
-    >
+    <Drawer.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <Drawer.Portal>
-        <Drawer.Overlay className="fixed inset-0 bg-black/45 backdrop-blur-xs z-50 transition-opacity" />
-        <Drawer.Content className="fixed bottom-0 left-0 right-0 max-h-[92vh] sm:max-h-[85vh] bg-[#FFFCF8] rounded-t-3xl z-50 flex flex-col focus:outline-none max-w-lg mx-auto shadow-2xl overflow-hidden border-t border-[#E9DAD2]">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.22, ease: "easeOut" }}
-            className="flex flex-col h-full max-h-[92vh] sm:max-h-[85vh] overflow-hidden"
-          >
-            {/* Manija de arrastre del bottom-sheet */}
-            <div className="w-12 h-1.5 bg-[#E9DAD2] rounded-full mx-auto my-3 shrink-0" />
-
-          {/* Cabecera del modal: Imagen o ícono genérico y botón cerrar */}
-          <div className="relative w-full shrink-0">
+        <Drawer.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" />
+        <Drawer.Content className="fixed bottom-0 inset-x-0 z-50 max-w-lg mx-auto max-h-[94vh] flex flex-col rounded-t-[2rem] bg-surface shadow-2xl overflow-hidden focus:outline-none">
+          {/* Cabecera con foto a sangre o franja de color */}
+          <div className="relative shrink-0">
             {product.image_url ? (
-              <div className="relative w-full h-44 sm:h-52 bg-[#F6EBE4] border-b border-[#E9DAD2]">
+              <div className="relative h-56 sm:h-64 bg-surface-2">
                 <Image
                   src={product.image_url}
                   alt={product.name}
@@ -183,224 +101,173 @@ export function VariantModal({
                   className="object-cover"
                   sizes="(max-width: 640px) 100vw, 512px"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-black/20" />
               </div>
-            ) : null}
-
-            {/* Botón cerrar táctil */}
+            ) : (
+              <div className="h-20 bg-brand-light" />
+            )}
+            <div className="absolute top-3 inset-x-0 mx-auto w-10 h-1.5 rounded-full bg-white/70" />
             <button
               type="button"
               onClick={onClose}
-              aria-label="Cerrar modal de producto"
-              className="absolute top-2.5 right-3 min-h-[44px] min-w-[44px] rounded-full bg-[#FFFCF8]/90 hover:bg-[#FFFCF8] text-[#74645E] hover:text-[#211B19] flex items-center justify-center transition-colors shadow-xs z-10 border border-[#E9DAD2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary)]"
+              aria-label="Cerrar"
+              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-surface/90 backdrop-blur text-text-primary shadow-md flex items-center justify-center hover:bg-surface transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
-          {/* Contenido desplazable */}
-          <div className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1">
-            <div>
-              <Drawer.Title className="font-serif text-xl sm:text-2xl font-normal tracking-tight text-[#211B19]">
-                {product.name}
-              </Drawer.Title>
-              {product.description ? (
-                <Drawer.Description className="text-xs sm:text-sm text-[#74645E] mt-1.5 leading-relaxed">
-                  {product.description}
-                </Drawer.Description>
-              ) : (
-                <Drawer.Description className="sr-only">
-                  Detalles y opciones de {product.name}
-                </Drawer.Description>
-              )}
-              <div className="mt-2.5 text-sm font-semibold text-[#211B19] tabular-nums">
-                Precio base: {formatPrice(product.base_price)}
-              </div>
-            </div>
+          <div className="flex-1 overflow-y-auto px-6 pb-6 -mt-6 relative">
+            <p className="eyebrow text-brand-fg">{formatCurrencyARS(product.base_price)}</p>
+            <Drawer.Title className="mt-1 font-serif text-3xl leading-tight text-text-primary text-balance">
+              {product.name}
+            </Drawer.Title>
+            <Drawer.Description
+              className={
+                product.description
+                  ? "mt-2 font-serif italic text-text-secondary leading-relaxed"
+                  : "sr-only"
+              }
+            >
+              {product.description || `Opciones de ${product.name}`}
+            </Drawer.Description>
 
-            {/* Grupos de opciones */}
-            {product.option_groups.length > 0 && (
-              <div className="space-y-6 pt-4 border-t border-[#E9DAD2]">
-                {product.option_groups.map((group) => {
-                  const isSingleChoice = group.max_selectable === 1;
-                  const currentSelected = selectedOptionsMap[group.id] || [];
-                  const isSatisfied =
-                    !group.is_required || currentSelected.length > 0;
+            {product.option_groups.map((group) => {
+              const isSingle = group.max_selectable === 1;
+              const selected = selection[group.id] ?? [];
+              const isMissing = group.is_required && selected.length === 0;
+              const rule = isSingle
+                ? "Elegí 1"
+                : group.max_selectable
+                  ? `Hasta ${group.max_selectable}`
+                  : "Elegí las que quieras";
 
-                  return (
-                    <fieldset key={group.id} className="space-y-2.5">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <legend className="text-sm font-semibold text-[#211B19]">
-                            {group.name}
-                          </legend>
-                          <span className="text-xs text-[#74645E]">
-                            {group.is_required ? (
-                              <span className="text-[var(--store-primary)] font-medium mr-1">
-                                Obligatorio
-                              </span>
-                            ) : (
-                              <span className="mr-1">Opcional</span>
-                            )}
-                            {isSingleChoice
-                              ? "• Elegí 1"
-                              : group.max_selectable
-                              ? `• Hasta ${group.max_selectable}`
-                              : ""}
-                          </span>
-                        </div>
+              return (
+                <fieldset key={group.id} className="mt-8">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <legend className="font-serif text-xl text-text-primary">{group.name}</legend>
+                    <span
+                      className={`eyebrow shrink-0 px-2 py-0.5 rounded-full ${
+                        isMissing
+                          ? "bg-brand-light text-brand-fg"
+                          : group.is_required
+                            ? "bg-success-soft text-success"
+                            : "text-text-tertiary"
+                      }`}
+                    >
+                      {group.is_required ? (isMissing ? "Obligatorio" : "Listo") : "Opcional"}
+                    </span>
+                  </div>
+                  <p className="text-xs text-text-tertiary mt-0.5">{rule}</p>
 
-                        {group.is_required && !isSatisfied && (
-                          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#FDE8E7] text-[#C74742] border border-[#FAC5C2]">
-                            Falta elegir
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="space-y-1.5">
-                        {group.items.map((item) => {
-                          const isSelected = currentSelected.some(
-                            (i) => i.id === item.id,
-                          );
-
-                          return (
-                            <label
-                              key={item.id}
-                              className={`flex items-center justify-between p-3 rounded-xl border transition-colors cursor-pointer select-none min-h-[44px] ${
-                                isSelected
-                                  ? "bg-[var(--store-primary-light)] border-[var(--store-primary)] text-[#211B19] shadow-xs"
-                                  : "bg-[#FFFCF8] border-[#E9DAD2] text-[#74645E] hover:border-[#D5C2B8] hover:text-[#211B19]"
-                              }`}
-                            >
-                              <div className="flex items-center gap-3">
-                                <div
-                                  className={`w-5 h-5 flex items-center justify-center transition-colors ${
-                                    isSingleChoice
-                                      ? "rounded-full border"
-                                      : "rounded-md border"
-                                  } ${
-                                    isSelected
-                                      ? "border-[var(--store-primary)] bg-[var(--store-primary)] text-[var(--store-primary-contrast)]"
-                                      : "border-[#E9DAD2] bg-[#FFFCF8]"
-                                  }`}
-                                >
-                                  {isSelected && (
-                                    isSingleChoice ? (
-                                      <span className="w-2 h-2 rounded-full bg-current" />
-                                    ) : (
-                                      <Check className="w-3.5 h-3.5 stroke-[3]" />
-                                    )
-                                  )}
-                                </div>
-
-                                <span className="text-sm font-medium text-[#211B19]">
-                                  {item.name}
-                                </span>
-                              </div>
-
-                              {item.price && item.price > 0 ? (
-                                <span className="text-xs font-semibold text-[#74645E] tabular-nums">
-                                  +{formatPrice(item.price)}
-                                </span>
+                  <div className="mt-3 divide-y divide-border border-y border-border">
+                    {group.items.map((item) => {
+                      const isSelected = selected.some((i) => i.id === item.id);
+                      return (
+                        <label
+                          key={item.id}
+                          className="flex items-center gap-3 py-3.5 cursor-pointer select-none group/opt"
+                        >
+                          <input
+                            type={isSingle ? "radio" : "checkbox"}
+                            name={`group-${group.id}`}
+                            checked={isSelected}
+                            onChange={() => toggleOption(group.id, item, group.max_selectable)}
+                            className="peer sr-only"
+                          />
+                          <span
+                            className={`w-5 h-5 shrink-0 flex items-center justify-center border-[1.5px] transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-brand ring-offset-2 ${
+                              isSingle ? "rounded-full" : "rounded-md"
+                            } ${
+                              isSelected
+                                ? "border-brand bg-brand text-brand-contrast"
+                                : "border-border-strong group-hover/opt:border-text-tertiary"
+                            }`}
+                          >
+                            {isSelected &&
+                              (isSingle ? (
+                                <span className="w-2 h-2 rounded-full bg-current" />
                               ) : (
-                                <span className="text-xs text-[#74645E]">
-                                  Sin costo
-                                </span>
-                              )}
+                                <Check className="w-3.5 h-3.5" strokeWidth={3} />
+                              ))}
+                          </span>
+                          <span
+                            className={`flex-1 text-[0.95rem] ${
+                              isSelected ? "text-text-primary font-medium" : "text-text-secondary"
+                            }`}
+                          >
+                            {item.name}
+                          </span>
+                          <span className="text-sm tabular-nums text-text-secondary">
+                            {item.price ? `+${formatCurrencyARS(item.price)}` : "—"}
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </fieldset>
+              );
+            })}
 
-                              <input
-                                type={isSingleChoice ? "radio" : "checkbox"}
-                                name={`group-${group.id}`}
-                                checked={isSelected}
-                                onChange={() =>
-                                  handleToggleOption(
-                                    group.id,
-                                    item,
-                                    group.max_selectable,
-                                  )
-                                }
-                                className="sr-only"
-                              />
-                            </label>
-                          );
-                        })}
-                      </div>
-                    </fieldset>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Aclaraciones para la cocina */}
-            <div className="pt-4 border-t border-[#E9DAD2]">
-              <label
-                htmlFor="product-notes"
-                className="block text-xs font-semibold text-[#74645E] mb-1.5"
-              >
-                Aclaraciones para el pedido (opcional)
+            <div className="mt-8">
+              <label htmlFor="product-notes" className="font-serif text-xl text-text-primary">
+                ¿Alguna aclaración?
               </label>
               <textarea
                 id="product-notes"
                 rows={2}
-                maxLength={150}
+                maxLength={NOTES_MAX}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Ej. Sin condimento, salsa aparte, etc."
-                className="w-full p-3 rounded-xl border border-[#E9DAD2] bg-[#FBF5EF] text-xs sm:text-sm text-[#211B19] placeholder:text-[#A18A81] focus:outline-none focus:ring-2 focus:ring-[var(--store-primary)] focus:bg-[#FFFCF8] resize-none transition-all"
+                placeholder="Sin cebolla, salsa aparte, bien cocido…"
+                className="mt-2 w-full p-3.5 rounded-2xl border border-border bg-background text-sm text-text-primary placeholder:text-text-tertiary placeholder:italic focus:outline-none focus:ring-2 focus:ring-brand focus:bg-surface resize-none transition-colors"
               />
-              <span className="block text-right text-[11px] text-[#74645E] mt-1 tabular-nums">
-                {notes.length}/150
+              <span className="block text-right text-[11px] text-text-tertiary tabular-nums">
+                {notes.length}/{NOTES_MAX}
               </span>
             </div>
           </div>
 
-          {/* Footer fijo con selector de cantidad y botón agregar */}
-          <div className="p-4 sm:p-5 border-t border-[#E9DAD2] bg-[#FFFCF8] shrink-0 space-y-3">
+          <div className="shrink-0 p-4 border-t border-border bg-surface safe-bottom">
             {!isValid && (
-              <div className="flex items-center gap-1.5 text-xs text-[#C74742] bg-[#FDE8E7] border border-[#FAC5C2] p-2.5 rounded-xl">
-                <AlertCircle className="w-4 h-4 shrink-0 text-[#C74742]" />
-                <span>Completá las opciones obligatorias para continuar.</span>
-              </div>
+              <p className="text-xs text-brand-fg mb-3 text-center">
+                Falta elegir: {missingRequired.map((g) => g.name).join(", ")}
+              </p>
             )}
-
             <div className="flex items-center gap-3">
-              {/* Selector de cantidad */}
-              <div className="flex items-center rounded-xl border border-[#E9DAD2] bg-[#F6EBE4] p-1">
+              <div className="flex items-center rounded-full border border-border bg-background p-1">
                 <button
                   type="button"
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                   disabled={quantity <= 1}
-                  aria-label="Disminuir cantidad"
-                  className="min-h-[44px] min-w-[44px] rounded-lg flex items-center justify-center text-[#211B19] hover:bg-[#FFFCF8] disabled:opacity-30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary)]"
+                  aria-label="Restar uno"
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-text-primary hover:bg-surface-2 disabled:opacity-30 transition-colors"
                 >
                   <Minus className="w-4 h-4" />
                 </button>
-                <span className="w-8 text-center text-sm font-bold text-[#211B19] tabular-nums">
-                  {quantity}
-                </span>
+                <span className="w-7 text-center font-semibold tabular-nums">{quantity}</span>
                 <button
                   type="button"
                   onClick={() => setQuantity((q) => Math.min(99, q + 1))}
-                  aria-label="Aumentar cantidad"
-                  className="min-h-[44px] min-w-[44px] rounded-lg flex items-center justify-center text-[#211B19] hover:bg-[#FFFCF8] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary)]"
+                  aria-label="Sumar uno"
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-text-primary hover:bg-surface-2 transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                 </button>
               </div>
 
-              {/* Botón principal */}
               <button
                 type="button"
                 onClick={handleConfirm}
                 disabled={!isValid}
-                className="flex-1 min-h-[48px] flex items-center justify-between px-4 py-3 rounded-xl font-semibold text-xs sm:text-sm text-[var(--store-primary-contrast)] bg-[var(--store-primary)] hover:bg-[var(--store-primary-dark)] active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--store-primary)] focus-visible:ring-offset-2"
+                className="flex-1 min-h-[52px] px-5 rounded-full bg-brand text-brand-contrast font-semibold text-sm flex items-center justify-between shadow-lg shadow-black/10 hover:bg-brand-dark active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed transition-all focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/30"
               >
-                <span>Agregar al pedido</span>
-                <span className="tabular-nums font-bold">{formatPrice(subtotal)}</span>
+                <span>Agregar</span>
+                <span className="font-serif text-base tabular-nums">{formatCurrencyARS(subtotal)}</span>
               </button>
             </div>
           </div>
-        </motion.div>
-      </Drawer.Content>
+        </Drawer.Content>
       </Drawer.Portal>
     </Drawer.Root>
   );

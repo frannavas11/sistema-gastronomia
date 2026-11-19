@@ -14,8 +14,6 @@ export interface CartStoreState {
   removeItem: (itemId: string) => void;
   updateQuantity: (itemId: string, quantity: number) => void;
   clearCart: () => void;
-  getTotalItems: () => number;
-  getSubtotal: () => number;
 }
 
 /**
@@ -44,7 +42,7 @@ const storesCache = new Map<
 function createCartStoreInstance(storeKey: string) {
   return create<CartStoreState>()(
     persist(
-      (set, get) => ({
+      (set) => ({
         items: [],
         hasHydrated: false,
         setHasHydrated: (val) => set({ hasHydrated: val }),
@@ -122,14 +120,6 @@ function createCartStoreInstance(storeKey: string) {
         clearCart: () => {
           set({ items: [] });
         },
-
-        getTotalItems: () => {
-          return get().items.reduce((acc, item) => acc + item.quantity, 0);
-        },
-
-        getSubtotal: () => {
-          return get().items.reduce((acc, item) => acc + item.subtotal, 0);
-        },
       }),
       {
         name: `gastro_cart_${storeKey}`,
@@ -145,22 +135,11 @@ function createCartStoreInstance(storeKey: string) {
 /**
  * Obtiene o crea la instancia del store aislada por comercio (slug o id).
  */
-export function getCartStore(storeKey: string) {
+function getCartStore(storeKey: string) {
   if (!storesCache.has(storeKey)) {
     storesCache.set(storeKey, createCartStoreInstance(storeKey));
   }
   return storesCache.get(storeKey)!;
-}
-
-/**
- * Hook para suscribirse al store de un comercio con un selector arbitrario.
- */
-export function useCartStore<T>(
-  storeKey: string,
-  selector: (state: CartStoreState) => T,
-): T {
-  const store = getCartStore(storeKey);
-  return store(selector);
 }
 
 /**

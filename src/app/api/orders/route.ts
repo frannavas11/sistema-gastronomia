@@ -1,6 +1,17 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { formatCurrencyARS } from "@/lib/format";
 import type { DeliveryType, PaymentMethod } from "@/types/store";
+
+/** Límites de largo para que un pedido anónimo no pueda inflar la base con textos enormes. */
+const MAX_LENGTH = {
+  name: 80,
+  phone: 30,
+  address: 200,
+  orderNotes: 500,
+  itemNotes: 150,
+} as const;
+const MAX_ITEMS = 50;
 
 interface OrderItemInput {
   product_id: string;
@@ -84,9 +95,9 @@ export async function POST(request: Request) {
 
     const customerName =
       typeof body.customer_name === "string" ? body.customer_name.trim() : "";
-    if (!customerName || customerName.length < 2) {
+    if (customerName.length < 2 || customerName.length > MAX_LENGTH.name) {
       return NextResponse.json(
-        { error: "El nombre del cliente debe tener al menos 2 caracteres." },
+        { error: `El nombre del cliente debe tener entre 2 y ${MAX_LENGTH.name} caracteres.` },
         { status: 400 },
       );
     }
@@ -94,9 +105,10 @@ export async function POST(request: Request) {
     const customerPhone =
       typeof body.customer_phone === "string" ? body.customer_phone.trim() : "";
     const cleanDigits = customerPhone.replace(/\D/g, "");
-    if (!customerPhone || cleanDigits.length < 6) {
+    // Mismo mínimo que valida el formulario del checkout (8 dígitos)
+    if (cleanDigits.length < 8 || customerPhone.length > MAX_LENGTH.phone) {
       return NextResponse.json(
-        { error: "El teléfono del cliente debe tener al menos 6 dígitos válidos." },
+        { error: "Ingresá un número de teléfono válido (mín. 8 dígitos)." },
         { status: 400 },
       );
     }
@@ -118,6 +130,20 @@ export async function POST(request: Request) {
         { status: 400 },
       );
     }
+    if (deliveryAddress.length > MAX_LENGTH.address) {
+      return NextResponse.json(
+        { error: `La dirección no puede superar los ${MAX_LENGTH.address} caracteres.` },
+        { status: 400 },
+      );
+    }
+
+    const orderNotes = typeof body.notes === "string" ? body.notes.trim() : "";
+    if (orderNotes.length > MAX_LENGTH.orderNotes) {
+      return NextResponse.json(
+        { error: `Las aclaraciones no pueden superar los ${MAX_LENGTH.orderNotes} caracteres.` },
+        { status: 400 },
+      );
+    }
 
     const validPaymentMethods: PaymentMethod[] = ["cash", "transfer", "mercadopago"];
     if (!validPaymentMethods.includes(body.payment_method)) {
@@ -130,6 +156,12 @@ export async function POST(request: Request) {
     if (!Array.isArray(body.items) || body.items.length === 0) {
       return NextResponse.json(
         { error: "El pedido debe incluir al menos un producto." },
+        { status: 400 },
+      );
+    }
+    if (body.items.length > MAX_ITEMS) {
+      return NextResponse.json(
+        { error: `El pedido no puede tener más de ${MAX_ITEMS} productos distintos.` },
         { status: 400 },
       );
     }
@@ -152,6 +184,23 @@ export async function POST(request: Request) {
       if (!Number.isInteger(qty) || qty <= 0 || qty > 100) {
         return NextResponse.json(
           { error: "La cantidad de cada producto debe ser un entero positivo (máx 100)." },
+          { status: 400 },
+        );
+      }
+      if (typeof item.notes === "string" && item.notes.trim().length > MAX_LENGTH.itemNotes) {
+        return NextResponse.json(
+          { error: `Las aclaraciones de cada producto no pueden superar los ${MAX_LENGTH.itemNotes} caracteres.` },
+          { status: 400 },
+        );
+      }
+      if (item.selected_options !== undefined && !Array.isArray(item.selected_options)) {
+        return NextResponse.json({ error: "Formato de opciones inválido." }, { status: 400 });
+      }
+      // Una misma opción repetida en un ítem no tiene sentido (y cobraría dos veces el adicional)
+      const optionIds = (item.selected_options ?? []).map((o) => o?.id);
+      if (optionIds.some((id) => typeof id !== "string") || new Set(optionIds).size !== optionIds.length) {
+        return NextResponse.json(
+          { error: "Las opciones seleccionadas son inválidas o están repetidas." },
           { status: 400 },
         );
       }
@@ -415,7 +464,7 @@ export async function POST(request: Request) {
     ) {
       return NextResponse.json(
         {
-          error: `El pedido no alcanza el monto mínimo de compra ($${store.min_order_amount}).`,
+          error: `El pedido no alcanza el monto mínimo de compra (${formatCurrencyARS(store.min_order_amount)}).`,
         },
         { status: 400 },
       );
@@ -438,10 +487,7 @@ export async function POST(request: Request) {
           body.delivery_type === "delivery" ? deliveryAddress : null,
         delivery_fee: deliveryFee,
         payment_method: body.payment_method,
-        notes:
-          typeof body.notes === "string" && body.notes.trim()
-            ? body.notes.trim()
-            : null,
+        notes: orderNotes || null,
         status: "pending",
         subtotal: calculatedSubtotal,
         total: calculatedTotal,

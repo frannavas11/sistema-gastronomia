@@ -64,12 +64,12 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FBF5EF] flex flex-col justify-center items-center px-4 py-12">
+    <div className="min-h-screen bg-background flex flex-col justify-center items-center px-4 py-12">
       {/* Botón para volver a la carta */}
       <div className="w-full max-w-sm mb-6">
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-[#74645E] hover:text-[#211B19] transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-text-secondary hover:text-text-primary transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Volver al inicio</span>
@@ -77,24 +77,24 @@ export default function AdminLoginPage() {
       </div>
 
       {/* Tarjeta de Login */}
-      <div className="w-full max-w-sm bg-[#FFFCF8] border border-[#E9DAD2] rounded-2xl p-6 sm:p-8 shadow-sm">
+      <div className="w-full max-w-sm bg-surface border border-border rounded-2xl p-6 sm:p-8 shadow-sm">
         {/* Cabecera */}
         <div className="text-center mb-6">
-          <div className="w-12 h-12 rounded-xl bg-[#541923] mx-auto flex items-center justify-center text-white mb-3 shadow-xs">
+          <div className="w-12 h-12 rounded-xl bg-sidebar mx-auto flex items-center justify-center text-white mb-3 shadow-xs">
             <Store className="w-6 h-6" />
           </div>
-          <h1 className="font-serif text-2xl font-normal tracking-tight text-[#211B19]">
+          <h1 className="font-serif text-2xl font-normal tracking-tight text-text-primary">
             Panel de Administración
           </h1>
-          <p className="text-xs text-[#74645E] mt-1">
+          <p className="text-xs text-text-secondary mt-1">
             Ingresá con tu cuenta para gestionar tu comercio
           </p>
         </div>
 
         {/* Mensaje de error si falla */}
         {errorMessage && (
-          <div className="mb-4 p-3 rounded-xl bg-[#FDE8E7] border border-[#FAC5C2] text-[#C74742] text-xs flex items-start gap-2">
-            <AlertCircle className="w-4 h-4 text-[#C74742] shrink-0 mt-0.5" />
+          <div className="mb-4 p-3 rounded-xl bg-error-soft border border-error-border text-error text-xs flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 text-error shrink-0 mt-0.5" />
             <span className="leading-relaxed">{errorMessage}</span>
           </div>
         )}
@@ -104,12 +104,12 @@ export default function AdminLoginPage() {
           <div>
             <label
               htmlFor="email"
-              className="block text-xs font-medium text-[#74645E] mb-1"
+              className="block text-xs font-medium text-text-secondary mb-1"
             >
               Correo Electrónico
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#A18A81]">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-text-tertiary">
                 <Mail className="w-4 h-4" />
               </div>
               <input
@@ -120,7 +120,7 @@ export default function AdminLoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="ejemplo@comercio.com"
-                className="w-full min-h-[44px] pl-9 pr-3.5 py-2.5 bg-[#FBF5EF] border border-[#E9DAD2] rounded-xl text-sm text-[#211B19] placeholder:text-[#A18A81] focus:outline-none focus:ring-2 focus:ring-[#78232F] focus:bg-[#FFFCF8] transition-colors"
+                className="w-full min-h-[44px] pl-9 pr-3.5 py-2.5 bg-background border border-border rounded-xl text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-brand focus:bg-surface transition-colors"
               />
             </div>
           </div>
@@ -129,13 +129,13 @@ export default function AdminLoginPage() {
             <div className="flex items-center justify-between mb-1">
               <label
                 htmlFor="password"
-                className="block text-xs font-medium text-[#74645E]"
+                className="block text-xs font-medium text-text-secondary"
               >
                 Contraseña
               </label>
             </div>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#A18A81]">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-text-tertiary">
                 <Lock className="w-4 h-4" />
               </div>
               <input
@@ -146,13 +146,13 @@ export default function AdminLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full min-h-[44px] pl-9 pr-10 py-2.5 bg-[#FBF5EF] border border-[#E9DAD2] rounded-xl text-sm text-[#211B19] placeholder:text-[#A18A81] focus:outline-none focus:ring-2 focus:ring-[#78232F] focus:bg-[#FFFCF8] transition-colors"
+                className="w-full min-h-[44px] pl-9 pr-10 py-2.5 bg-background border border-border rounded-xl text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-brand focus:bg-surface transition-colors"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 tabIndex={-1}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#A18A81] hover:text-[#211B19] transition-colors"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-text-tertiary hover:text-text-primary transition-colors"
                 aria-label={showPassword ? "Ocultar contraseña" : "Ver contraseña"}
               >
                 {showPassword ? (
@@ -167,7 +167,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-2 min-h-[48px] inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-semibold text-sm text-white bg-[#78232F] hover:bg-[#541923] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-[#78232F] focus-visible:ring-offset-2"
+            className="w-full mt-2 min-h-[48px] inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-semibold text-sm text-white bg-brand hover:bg-brand-dark active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
           >
             {loading ? (
               <>
@@ -181,8 +181,8 @@ export default function AdminLoginPage() {
         </form>
 
         {/* Footer con info */}
-        <div className="mt-6 pt-4 border-t border-[#E9DAD2] text-center">
-          <p className="text-xs text-[#74645E]">
+        <div className="mt-6 pt-4 border-t border-border text-center">
+          <p className="text-xs text-text-secondary">
             Plataforma de cartas y pedidos gastronómicos
           </p>
         </div>

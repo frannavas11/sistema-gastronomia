@@ -1,74 +1,39 @@
 export default function StoreCatalogLoading() {
   return (
-    <div className="min-h-screen bg-[#FBF5EF] text-[#211B19] pb-12 animate-pulse">
-      {/* Header Portada Skeleton */}
-      <header className="relative bg-[#FFFCF8] border-b border-[#E9DAD2]">
-        <div className="relative w-full h-44 sm:h-56 md:h-64 bg-[#F6EBE4]">
-          {/* Borde inferior ondulado */}
-          <div className="absolute -bottom-1 inset-x-0 overflow-hidden leading-none z-10 pointer-events-none">
-            <svg
-              className="relative block w-full h-4 sm:h-6 md:h-8 text-[#FFFCF8]"
-              viewBox="0 0 1440 80"
-              preserveAspectRatio="none"
-              aria-hidden="true"
-            >
-              <path
-                fill="currentColor"
-                d="M0,32 C240,75 480,85 720,50 C960,15 1200,65 1440,32 L1440,80 L0,80 Z"
-              />
-            </svg>
+    <div className="paper min-h-screen" aria-busy="true" aria-label="Cargando la carta">
+      <div className="h-[46vh] min-h-[320px] max-h-[480px] bg-surface-2 animate-pulse relative">
+        <div className="absolute inset-x-0 bottom-0 max-w-2xl mx-auto px-5 pb-8 space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="w-14 h-14 rounded-full bg-border" />
+            <div className="h-3 w-28 rounded bg-border" />
+          </div>
+          <div className="h-12 w-3/4 rounded-xl bg-border" />
+          <div className="flex gap-2">
+            <div className="h-7 w-28 rounded-full bg-border" />
+            <div className="h-7 w-32 rounded-full bg-border" />
           </div>
         </div>
-
-        {/* Info del local Skeleton */}
-        <div className="max-w-2xl mx-auto px-4 pb-5">
-          <div className="flex justify-center">
-            <div className="relative -mt-12 sm:-mt-14 w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-[#FFFCF8] shadow-sm bg-[#E9DAD2] overflow-hidden" />
-          </div>
-
-          <div className="mt-3 flex flex-col items-center space-y-2.5">
-            <div className="h-7 w-48 bg-[#E9DAD2] rounded-xl" />
-            <div className="h-4 w-32 bg-[#F6EBE4] rounded-lg" />
-            <div className="flex gap-4 pt-1">
-              <div className="h-4 w-24 bg-[#F6EBE4] rounded-lg" />
-              <div className="h-4 w-24 bg-[#F6EBE4] rounded-lg" />
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Píldoras de Categorías Skeleton */}
-      <div className="max-w-2xl mx-auto px-4 py-3 flex gap-2 overflow-hidden border-b border-[#E9DAD2]/60">
-        <div className="h-10 w-24 bg-[#E9DAD2] rounded-full shrink-0" />
-        <div className="h-10 w-28 bg-[#FFFCF8] border border-[#E9DAD2] rounded-full shrink-0" />
-        <div className="h-10 w-24 bg-[#FFFCF8] border border-[#E9DAD2] rounded-full shrink-0" />
-        <div className="h-10 w-20 bg-[#FFFCF8] border border-[#E9DAD2] rounded-full shrink-0" />
       </div>
 
-      {/* Tarjetas de Productos Skeleton */}
-      <main className="max-w-2xl mx-auto px-4 mt-6 space-y-4">
-        <div className="h-6 w-36 bg-[#E9DAD2] rounded-lg mb-2" />
+      <div className="border-b border-border">
+        <div className="max-w-2xl mx-auto px-5 h-[52px] flex items-center gap-6">
+          {[20, 24, 16, 20].map((w, i) => (
+            <div key={i} className="h-3 rounded bg-border animate-pulse" style={{ width: `${w * 4}px` }} />
+          ))}
+        </div>
+      </div>
 
+      <main className="max-w-2xl mx-auto px-5 pt-10 animate-pulse">
+        <div className="h-9 w-48 rounded-lg bg-border" />
+        <div className="mt-3 rule-double" />
         {[1, 2, 3].map((n) => (
-          <div
-            key={n}
-            className="bg-[#FFFCF8] rounded-2xl p-3 sm:p-4 border border-[#E9DAD2] flex gap-3 sm:gap-4"
-          >
-            {/* Foto Skeleton */}
-            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-xl bg-[#F6EBE4] border border-[#E9DAD2] shrink-0" />
-
-            {/* Info Skeleton */}
-            <div className="flex-1 flex flex-col justify-between py-1">
-              <div className="space-y-2">
-                <div className="h-5 w-40 bg-[#E9DAD2] rounded-lg" />
-                <div className="h-3 w-56 bg-[#F6EBE4] rounded" />
-                <div className="h-3 w-32 bg-[#F6EBE4] rounded" />
-              </div>
-              <div className="flex justify-between items-center pt-2">
-                <div className="h-5 w-16 bg-[#E9DAD2] rounded" />
-                <div className="h-9 w-24 bg-[#E9DAD2] rounded-xl" />
-              </div>
+          <div key={n} className="flex gap-4 py-5 border-b border-border/70">
+            <div className="flex-1 space-y-2.5">
+              <div className="h-5 w-2/3 rounded bg-border" />
+              <div className="h-3 w-full rounded bg-surface-2" />
+              <div className="h-3 w-1/2 rounded bg-surface-2" />
             </div>
+            <div className="w-24 h-24 rounded-2xl bg-surface-2" />
           </div>
         ))}
       </main>

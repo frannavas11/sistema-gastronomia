@@ -29,20 +29,12 @@ interface Product {
 }
 
 interface AdminMenuClientProps {
-  store: {
-    id: string;
-    name: string;
-    slug: string;
-  };
+  storeId: string;
   categories: Category[];
   products: Product[];
 }
 
-export function AdminMenuClient({
-  store,
-  categories,
-  products,
-}: AdminMenuClientProps) {
+export function AdminMenuClient({ storeId, categories, products }: AdminMenuClientProps) {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
 
   // Mapear nombre de categoría por id
@@ -66,6 +58,11 @@ export function AdminMenuClient({
     }));
   }, [categories, products]);
 
+  const categoryOptions = useMemo(
+    () => categories.map((c) => ({ id: c.id, name: c.name })),
+    [categories],
+  );
+
   // Filtrar productos
   const filteredProducts = useMemo(() => {
     if (!selectedCategoryId) return products;
@@ -73,27 +70,25 @@ export function AdminMenuClient({
   }, [products, selectedCategoryId]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* 1. Cabecera */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5 border-b border-[#E9DAD2]">
+      <header className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 animate-rise">
         <div>
-          <h1 className="font-serif text-2xl sm:text-3xl font-normal tracking-tight text-[#211B19]">
-            Menú y Precios
+          <p className="eyebrow text-brand-fg">La carta</p>
+          <h1 className="mt-2 font-serif text-4xl sm:text-5xl tracking-tight text-text-primary">
+            Menú y precios
           </h1>
-          <p className="text-xs sm:text-sm text-[#74645E] mt-1">
-            Administrá categorías, platos, precios y disponibilidad en tiempo real.
+          <p className="mt-2 text-text-secondary">
+            Categorías, platos, precios y disponibilidad. Los cambios se ven al instante en la carta.
           </p>
         </div>
 
-        <CreateProductModal
-          storeId={store.id}
-          categories={categories.map((c) => ({ id: c.id, name: c.name }))}
-        />
-      </div>
+        <CreateProductModal storeId={storeId} categories={categoryOptions} />
+      </header>
 
       {/* 2. Gestor visual de Categorías */}
       <CategoryListManager
-        storeId={store.id}
+        storeId={storeId}
         categories={categoriesWithCounts}
         selectedCategoryId={selectedCategoryId}
         onSelectCategory={setSelectedCategoryId}
@@ -101,51 +96,48 @@ export function AdminMenuClient({
 
       {/* 3. Listado y Tabla de Productos */}
       {products.length === 0 ? (
-        <div className="py-16 px-6 text-center rounded-2xl bg-[#FFFCF8] border border-[#E9DAD2] shadow-xs max-w-lg mx-auto">
-          <div className="w-14 h-14 rounded-2xl bg-[#F6EBE4] border border-[#E9DAD2] mx-auto flex items-center justify-center text-[#78232F] mb-4">
+        <div className="py-16 px-6 text-center rounded-2xl bg-surface border border-border shadow-xs max-w-lg mx-auto">
+          <div className="w-14 h-14 rounded-2xl bg-surface-2 border border-border mx-auto flex items-center justify-center text-brand-fg mb-4">
             <PackageOpen className="w-7 h-7" />
           </div>
-          <h3 className="font-serif text-xl font-normal text-[#211B19]">
+          <h3 className="font-serif text-xl font-normal text-text-primary">
             Tu menú aún no tiene productos
           </h3>
-          <p className="text-xs sm:text-sm text-[#74645E] max-w-sm mx-auto mt-1.5 mb-6 leading-relaxed">
+          <p className="text-xs sm:text-sm text-text-secondary max-w-sm mx-auto mt-1.5 mb-6 leading-relaxed">
             Comenzá creando una categoría arriba (ej. Pizzas, Empanadas, Bebidas) y agregá tus primeros platos para que aparezcan en la carta pública.
           </p>
-          <CreateProductModal
-            storeId={store.id}
-            categories={categories.map((c) => ({ id: c.id, name: c.name }))}
-          />
+          <CreateProductModal storeId={storeId} categories={categoryOptions} />
         </div>
       ) : filteredProducts.length === 0 ? (
-        <div className="py-14 px-6 text-center rounded-2xl bg-[#FFFCF8] border border-[#E9DAD2] shadow-xs max-w-md mx-auto space-y-3">
-          <div className="w-12 h-12 rounded-xl bg-[#F6EBE4] border border-[#E9DAD2] mx-auto flex items-center justify-center text-[#78232F]">
+        <div className="py-14 px-6 text-center rounded-2xl bg-surface border border-border shadow-xs max-w-md mx-auto space-y-3">
+          <div className="w-12 h-12 rounded-xl bg-surface-2 border border-border mx-auto flex items-center justify-center text-brand-fg">
             <UtensilsCrossed className="w-6 h-6" />
           </div>
-          <h3 className="font-serif text-lg font-normal text-[#211B19]">
+          <h3 className="font-serif text-lg font-normal text-text-primary">
             Categoría sin productos
           </h3>
-          <p className="text-xs sm:text-sm text-[#74645E] max-w-xs mx-auto leading-relaxed">
+          <p className="text-xs sm:text-sm text-text-secondary max-w-xs mx-auto leading-relaxed">
             No hay platos cargados en &quot;{categoryMap.get(selectedCategoryId || "")}&quot;. Podés agregar uno con el botón &quot;Nuevo Producto&quot;.
           </p>
           <button
             type="button"
             onClick={() => setSelectedCategoryId(null)}
-            className="min-h-[44px] px-4 py-2 rounded-xl text-xs font-semibold text-[#78232F] bg-[#F6EBE4] hover:bg-[#E9DAD2] transition-colors cursor-pointer inline-flex items-center gap-1.5"
+            className="min-h-[44px] px-4 py-2 rounded-xl text-xs font-semibold text-brand-fg bg-surface-2 hover:bg-border transition-colors cursor-pointer inline-flex items-center gap-1.5"
           >
             Ver todos los productos
           </button>
         </div>
       ) : (
-        <div className="bg-[#FFFCF8] border border-[#E9DAD2] rounded-2xl overflow-hidden shadow-xs">
-          <div className="p-4 border-b border-[#E9DAD2] flex items-center justify-between flex-wrap gap-2">
+        <div className="bg-surface border border-border rounded-2xl overflow-hidden shadow-xs">
+          <div className="p-4 border-b border-border flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
-              <UtensilsCrossed className="w-4 h-4 text-[#78232F]" />
-              <span className="text-xs font-semibold text-[#211B19]">
+              <UtensilsCrossed className="w-4 h-4 text-brand-fg" />
+              <span className="text-xs font-semibold text-text-primary">
                 Productos ({filteredProducts.length}
                 {selectedCategoryId ? ` en ${categoryMap.get(selectedCategoryId)}` : ""})
               </span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-[#74645E]">
+            <div className="flex items-center gap-1.5 text-xs text-text-secondary">
               <HelpCircle className="w-3.5 h-3.5" />
               <span>Hacé clic en cualquier precio para editarlo en el acto</span>
             </div>
@@ -155,7 +147,7 @@ export function AdminMenuClient({
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-[#E9DAD2] bg-[#F6EBE4]/60 text-[11px] font-semibold text-[#74645E] uppercase tracking-wider">
+                <tr className="border-b border-border bg-surface-2/60 text-[11px] font-semibold text-text-secondary uppercase tracking-wider">
                   <th className="py-3 px-4 w-16">Foto</th>
                   <th className="py-3 px-4">Nombre</th>
                   <th className="py-3 px-4 hidden sm:table-cell">Categoría</th>
@@ -164,19 +156,19 @@ export function AdminMenuClient({
                   <th className="py-3 px-4 text-right">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#E9DAD2]">
+              <tbody className="divide-y divide-border">
                 {filteredProducts.map((product) => {
                   const catName = categoryMap.get(product.category_id) || "Sin categoría";
 
                   return (
                     <tr
                       key={product.id}
-                      className="hover:bg-[#F6EBE4]/40 transition-colors"
+                      className="hover:bg-surface-2/40 transition-colors"
                     >
                       {/* Foto */}
                       <td className="py-3 px-4">
                         {product.image_url ? (
-                          <div className="relative w-11 h-11 rounded-xl overflow-hidden bg-[#F6EBE4] border border-[#E9DAD2] shrink-0">
+                          <div className="relative w-11 h-11 rounded-xl overflow-hidden bg-surface-2 border border-border shrink-0">
                             <Image
                               src={product.image_url}
                               alt={product.name}
@@ -186,7 +178,7 @@ export function AdminMenuClient({
                             />
                           </div>
                         ) : (
-                          <div className="w-11 h-11 rounded-xl bg-[#F6EBE4] border border-[#E9DAD2] flex items-center justify-center text-[#A18A81] shrink-0">
+                          <div className="w-11 h-11 rounded-xl bg-surface-2 border border-border flex items-center justify-center text-text-tertiary shrink-0">
                             <UtensilsCrossed className="w-5 h-5" />
                           </div>
                         )}
@@ -194,22 +186,22 @@ export function AdminMenuClient({
 
                       {/* Nombre y descripción */}
                       <td className="py-3 px-4 min-w-[180px]">
-                        <div className="font-semibold text-sm text-[#211B19] leading-tight">
+                        <div className="font-semibold text-sm text-text-primary leading-tight">
                           {product.name}
                         </div>
                         {product.description && (
-                          <p className="text-xs text-[#74645E] mt-0.5 line-clamp-1 max-w-xs">
+                          <p className="text-xs text-text-secondary mt-0.5 line-clamp-1 max-w-xs">
                             {product.description}
                           </p>
                         )}
-                        <span className="sm:hidden inline-block text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#F6EBE4] text-[#74645E] border border-[#E9DAD2] mt-1">
+                        <span className="sm:hidden inline-block text-[10px] font-medium px-2 py-0.5 rounded-full bg-surface-2 text-text-secondary border border-border mt-1">
                           {catName}
                         </span>
                       </td>
 
                       {/* Categoría */}
                       <td className="py-3 px-4 hidden sm:table-cell">
-                        <span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-[#F6EBE4] text-[#74645E] border border-[#E9DAD2]">
+                        <span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-surface-2 text-text-secondary border border-border">
                           {catName}
                         </span>
                       </td>
@@ -218,7 +210,7 @@ export function AdminMenuClient({
                       <td className="py-3 px-4">
                         <QuickPriceEditor
                           productId={product.id}
-                          storeId={store.id}
+                          storeId={storeId}
                           initialPrice={product.base_price}
                         />
                       </td>
@@ -227,7 +219,7 @@ export function AdminMenuClient({
                       <td className="py-3 px-4">
                         <ProductAvailabilityToggle
                           productId={product.id}
-                          storeId={store.id}
+                          storeId={storeId}
                           initialIsAvailable={product.is_available ?? true}
                         />
                       </td>
@@ -235,7 +227,7 @@ export function AdminMenuClient({
                       {/* Acciones */}
                       <td className="py-3 px-4 text-right">
                         <ProductOptionsManagerModal
-                          storeId={store.id}
+                          storeId={storeId}
                           productId={product.id}
                           productName={product.name}
                         />

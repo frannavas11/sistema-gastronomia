@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Check, X, Pencil, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { updateProductBasePrice } from "@/app/admin/actions";
+import { formatCurrencyARS } from "@/lib/format";
 
 interface QuickPriceEditorProps {
   productId: string;
@@ -21,13 +22,7 @@ export function QuickPriceEditor({
   const [inputValue, setInputValue] = useState(initialPrice.toString());
   const [loading, setLoading] = useState(false);
 
-  const formatPrice = (val: number) => {
-    return new Intl.NumberFormat("es-AR", {
-      style: "currency",
-      currency: "ARS",
-      maximumFractionDigits: 0,
-    }).format(val);
-  };
+  const formatPrice = formatCurrencyARS;
 
   const handleSave = async () => {
     const numeric = parseFloat(inputValue);
@@ -60,8 +55,8 @@ export function QuickPriceEditor({
 
   if (isEditing) {
     return (
-      <div className="inline-flex items-center gap-1 bg-[#FFFCF8] p-1 rounded-xl border border-[#78232F] shadow-xs">
-        <span className="text-xs font-medium text-[#74645E] pl-1">$</span>
+      <div className="inline-flex items-center gap-1 bg-surface p-1 rounded-xl border border-brand shadow-xs">
+        <span className="text-xs font-medium text-text-secondary pl-1">$</span>
         <input
           type="number"
           step="50"
@@ -71,14 +66,14 @@ export function QuickPriceEditor({
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={loading}
-          className="w-20 px-1 py-0.5 bg-transparent text-xs sm:text-sm font-bold text-[#211B19] focus:outline-none tabular-nums"
+          className="w-20 px-1 py-0.5 bg-transparent text-xs sm:text-sm font-bold text-text-primary focus:outline-none tabular-nums"
         />
         <button
           type="button"
           onClick={handleSave}
           disabled={loading}
           aria-label="Confirmar precio"
-          className="p-1.5 rounded-lg bg-[#78232F] hover:bg-[#541923] text-white transition-colors disabled:opacity-50 min-h-[32px] min-w-[32px] flex items-center justify-center"
+          className="p-1.5 rounded-lg bg-brand hover:bg-brand-dark text-white transition-colors disabled:opacity-50 min-h-[32px] min-w-[32px] flex items-center justify-center"
         >
           {loading ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -94,7 +89,7 @@ export function QuickPriceEditor({
           }}
           disabled={loading}
           aria-label="Cancelar edición"
-          className="p-1.5 rounded-lg hover:bg-[#F6EBE4] text-[#74645E] transition-colors min-h-[32px] min-w-[32px] flex items-center justify-center"
+          className="p-1.5 rounded-lg hover:bg-surface-2 text-text-secondary transition-colors min-h-[32px] min-w-[32px] flex items-center justify-center"
         >
           <X className="w-3.5 h-3.5" />
         </button>
@@ -109,13 +104,13 @@ export function QuickPriceEditor({
         setInputValue(price.toString());
         setIsEditing(true);
       }}
-      className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl hover:bg-[#F6EBE4] border border-transparent hover:border-[#E9DAD2] transition-colors cursor-pointer text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#78232F] min-h-[44px]"
+      className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl hover:bg-surface-2 border border-transparent hover:border-border transition-colors cursor-pointer text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand min-h-[44px]"
       title="Hacé clic para editar el precio"
     >
-      <span className="text-sm font-bold text-[#211B19] tabular-nums">
+      <span className="text-sm font-bold text-text-primary tabular-nums">
         {formatPrice(price)}
       </span>
-      <Pencil className="w-3.5 h-3.5 text-[#A18A81] group-hover:text-[#78232F] transition-colors" />
+      <Pencil className="w-3.5 h-3.5 text-text-tertiary group-hover:text-brand-fg transition-colors" />
     </button>
   );
 }

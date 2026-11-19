@@ -4,6 +4,8 @@ import Image from "next/image";
 import { Clock, Bike, AlertCircle } from "lucide-react";
 import { getStoreCatalog } from "@/lib/supabase/queries";
 import { StoreCatalogView } from "@/components/public/StoreCatalogView";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { formatCurrencyARS } from "@/lib/format";
 import { getContrastTextColor } from "@/lib/utils";
 import type { StoreThemeColors } from "@/types/store";
 
@@ -20,12 +22,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const catalog = await getStoreCatalog(storeSlug);
 
   if (!catalog) {
-    return {
-      title: "Local no encontrado",
-    };
+    return { title: "Local no encontrado" };
   }
 
   const { store } = catalog;
+  const cover = store.banner_url ?? store.logo_url;
 
   return {
     title: `${store.name} | Carta Digital`,
@@ -33,13 +34,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title: store.name,
       description: `Carta online de ${store.name}`,
-      images: store.banner_url
-        ? [store.banner_url]
-        : store.logo_url
-        ? [store.logo_url]
-        : [],
+      images: cover ? [cover] : [],
     },
   };
+}
+
+function getStoreInitials(name: string) {
+  const words = name.trim().split(/\s+/);
+  if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
+  return name.slice(0, 2).toUpperCase();
 }
 
 export default async function StorePage({ params }: PageProps) {
@@ -51,177 +54,144 @@ export default async function StorePage({ params }: PageProps) {
   }
 
   const { store, categories } = catalog;
-  const theme = (store.theme_colors as unknown as StoreThemeColors) || {};
+  const theme = (store.theme_colors as StoreThemeColors | null) ?? {};
   const primaryColor = theme.primary || "#78232F";
   const contrastTextColor = getContrastTextColor(primaryColor);
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("es-AR", {
-      style: "currency",
-      currency: "ARS",
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
-
-  const getStoreInitials = (name: string) => {
-    const words = name.trim().split(/\s+/);
-    if (words.length >= 2) {
-      return (words[0][0] + words[1][0]).toUpperCase();
-    }
-    return name.slice(0, 2).toUpperCase();
-  };
+  const isOpen = store.is_open !== false;
+  const hasDeliveryCost = (store.delivery_cost ?? 0) > 0;
+  const hasMinOrder = (store.min_order_amount ?? 0) > 0;
 
   return (
-    <div
-      className="min-h-screen bg-[#FBF5EF] text-[#211B19]"
-      style={
-        {
-          "--store-primary": primaryColor,
-          "--store-primary-contrast": contrastTextColor,
-          "--store-primary-dark": `color-mix(in srgb, ${primaryColor} 70%, #000000)`,
-          "--store-primary-light": `color-mix(in srgb, ${primaryColor} 14%, #FFFCF8)`,
-          "--store-primary-subtle": `color-mix(in srgb, ${primaryColor} 6%, #FFFCF8)`,
-        } as React.CSSProperties
-      }
-    >
+    <div className="paper min-h-screen text-text-primary">
+      {/* Sólo se inyecta el color del local: las variantes (dark/light/subtle/fg)
+          se derivan en globals.css según el tema claro u oscuro activo. */}
       <style>{`
         :root {
           --store-primary: ${primaryColor};
           --store-primary-contrast: ${contrastTextColor};
-          --store-primary-dark: color-mix(in srgb, ${primaryColor} 70%, #000000);
-          --store-primary-light: color-mix(in srgb, ${primaryColor} 14%, #FFFCF8);
-          --store-primary-subtle: color-mix(in srgb, ${primaryColor} 6%, #FFFCF8);
         }
       `}</style>
-      {/* Header estilo Portada */}
-      <header className="relative bg-[#FFFCF8] border-b border-[#E9DAD2]">
-        {/* Banner horizontal con remate ondulado */}
-        <div className="relative w-full h-44 sm:h-56 md:h-64 overflow-hidden bg-[#F6EBE4]">
+
+      {/* ── Portada editorial ─────────────────────────────────────────────── */}
+      <header className="relative isolate overflow-hidden bg-brand">
+        <div className="relative h-[46vh] min-h-[320px] max-h-[480px]">
           {store.banner_url ? (
             <Image
               src={store.banner_url}
               alt={`Portada de ${store.name}`}
               fill
               priority
-              className="object-cover"
+              className="object-cover scale-[1.02]"
               sizes="100vw"
             />
           ) : (
+            // Sin foto: color del local con un halo de luz y la textura de papel
             <div
-              className="w-full h-full"
-              style={{ backgroundColor: primaryColor }}
+              className="absolute inset-0"
+              style={{
+                backgroundImage:
+                  "radial-gradient(120% 90% at 85% 0%, rgba(255,255,255,0.22), transparent 55%), var(--paper-grain)",
+              }}
             />
           )}
 
-          {/* Borde inferior ondulado artesanal */}
-          <div className="absolute -bottom-1 inset-x-0 overflow-hidden leading-none z-10 pointer-events-none">
-            <svg
-              className="relative block w-full h-4 sm:h-6 md:h-8 text-[#FFFCF8]"
-              viewBox="0 0 1440 80"
-              preserveAspectRatio="none"
-              aria-hidden="true"
-            >
-              <path
-                fill="currentColor"
-                d="M0,32 C240,75 480,85 720,50 C960,15 1200,65 1440,32 L1440,80 L0,80 Z"
-              />
-            </svg>
-          </div>
-        </div>
+          {/* Velo para que el texto blanco se lea sobre cualquier foto */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
 
-        {/* Identidad del local superpuesta y datos */}
-        <div className="max-w-2xl mx-auto px-4 pb-5">
-          {/* Logo circular superpuesto */}
-          <div className="flex justify-center">
-            <div className="relative -mt-12 sm:-mt-14 w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-[#FFFCF8] shadow-sm bg-[#FFFCF8] overflow-hidden z-20 flex items-center justify-center shrink-0">
-              {store.logo_url ? (
-                <Image
-                  src={store.logo_url}
-                  alt={store.name}
-                  fill
-                  priority
-                  className="object-cover"
-                  sizes="(max-width: 640px) 96px, 112px"
-                />
-              ) : (
-                <div
-                  className="w-full h-full flex items-center justify-center font-serif text-2xl sm:text-3xl font-bold tracking-wider"
-                  style={{
-                    backgroundColor: primaryColor,
-                    color: contrastTextColor,
-                  }}
-                >
-                  {getStoreInitials(store.name)}
+          <div className="absolute top-3 right-3 z-20">
+            <ThemeToggle variant="floating" />
+          </div>
+
+          <div className="absolute inset-x-0 bottom-0 z-10">
+            <div className="max-w-2xl mx-auto px-5 pb-7 sm:pb-9">
+              <div className="flex items-center gap-3 animate-rise">
+                <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden ring-2 ring-white/70 shadow-lg shrink-0 bg-surface">
+                  {store.logo_url ? (
+                    <Image
+                      src={store.logo_url}
+                      alt={store.name}
+                      fill
+                      priority
+                      className="object-cover"
+                      sizes="64px"
+                    />
+                  ) : (
+                    <div
+                      className="w-full h-full flex items-center justify-center font-serif text-xl"
+                      style={{ backgroundColor: primaryColor, color: contrastTextColor }}
+                    >
+                      {getStoreInitials(store.name)}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </div>
+                <div className="text-white/85">
+                  <p className="eyebrow">Carta digital</p>
+                  <p className="font-serif italic text-sm text-white/75">
+                    Pedí online, confirmá por WhatsApp
+                  </p>
+                </div>
+              </div>
 
-          {/* Nombre y Estado */}
-          <div className="mt-3 text-center">
-            <div className="flex items-center justify-center gap-2.5 flex-wrap">
-              <h1 className="font-serif text-2xl sm:text-3xl font-normal text-[#211B19] tracking-tight">
+              <h1
+                className="mt-4 font-serif text-[2.6rem] leading-[0.95] sm:text-6xl text-white tracking-tight text-balance animate-rise"
+                style={{ animationDelay: "80ms" }}
+              >
                 {store.name}
               </h1>
 
-              {/* Badge de estado: Abierto / Cerrado */}
-              <span
-                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border ${
-                  store.is_open
-                    ? "bg-[#E5F4E7] text-[#249653] border-[#C2E8C7]"
-                    : "bg-[#FDE8E7] text-[#C74742] border-[#FAC5C2]"
-                }`}
+              <div
+                className="mt-4 flex flex-wrap items-center gap-2 text-xs animate-rise"
+                style={{ animationDelay: "160ms" }}
               >
-                <span
-                  className={`w-2 h-2 rounded-full ${
-                    store.is_open ? "bg-[#249653]" : "bg-[#C74742]"
-                  }`}
-                />
-                {store.is_open ? "Abierto" : "Cerrado"}
-              </span>
-            </div>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-semibold bg-black/35 text-white border border-white/20 backdrop-blur-md">
+                  <span className="relative flex w-2 h-2">
+                    {isOpen && (
+                      <span className="absolute inline-flex h-full w-full rounded-full bg-success-solid opacity-60 animate-ping" />
+                    )}
+                    <span
+                      className={`relative inline-flex w-2 h-2 rounded-full ${
+                        isOpen ? "bg-success-solid" : "bg-error-solid"
+                      }`}
+                    />
+                  </span>
+                  {isOpen ? "Abierto ahora" : "Cerrado"}
+                </span>
 
-            {/* Información operativa: Envío y Mínimo */}
-            <div className="flex items-center justify-center gap-4 mt-2.5 text-xs text-[#74645E] flex-wrap">
-              <div className="flex items-center gap-1.5">
-                <Bike className="w-4 h-4 text-[#74645E]" />
-                <span>
-                  Envío:{" "}
-                  <strong className="text-[#211B19] font-medium tabular-nums">
-                    {store.delivery_cost && store.delivery_cost > 0
-                      ? formatPrice(store.delivery_cost)
-                      : "A convenir"}
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 text-white border border-white/20 backdrop-blur-md">
+                  <Bike className="w-3.5 h-3.5" />
+                  Envío{" "}
+                  <strong className="font-semibold tabular-nums">
+                    {hasDeliveryCost ? formatCurrencyARS(store.delivery_cost!) : "a convenir"}
                   </strong>
                 </span>
-              </div>
 
-              {store.min_order_amount && store.min_order_amount > 0 ? (
-                <div className="flex items-center gap-1.5">
-                  <Clock className="w-4 h-4 text-[#74645E]" />
-                  <span>
-                    Mínimo:{" "}
-                    <strong className="text-[#211B19] font-medium tabular-nums">
-                      {formatPrice(store.min_order_amount)}
+                {hasMinOrder && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 text-white border border-white/20 backdrop-blur-md">
+                    <Clock className="w-3.5 h-3.5" />
+                    Mínimo{" "}
+                    <strong className="font-semibold tabular-nums">
+                      {formatCurrencyARS(store.min_order_amount!)}
                     </strong>
                   </span>
-                </div>
-              ) : null}
-            </div>
-
-            {!store.is_open && (
-              <div className="mt-3.5 flex items-center justify-center gap-2 p-3 rounded-xl bg-[#FEF3E2] border border-[#FAD7A0] text-[#8C5815] text-xs max-w-md mx-auto text-left">
-                <AlertCircle className="w-4 h-4 shrink-0 text-[#E99B37]" />
-                <span>
-                  El local se encuentra cerrado en este momento. Podés recorrer la
-                  carta y armar tu pedido.
-                </span>
+                )}
               </div>
-            )}
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Catálogo Interactivo */}
+      {!isOpen && (
+        <div className="max-w-2xl mx-auto px-5 mt-5">
+          <div className="flex items-start gap-3 p-4 rounded-2xl bg-warning-soft border border-warning-border text-warning-fg text-sm">
+            <AlertCircle className="w-5 h-5 shrink-0 text-warning mt-0.5" />
+            <p>
+              <span className="font-semibold">El local está cerrado en este momento.</span>{" "}
+              Podés recorrer la carta; los pedidos se habilitan cuando vuelva a abrir.
+            </p>
+          </div>
+        </div>
+      )}
+
       <StoreCatalogView store={store} categories={categories} />
     </div>
   );

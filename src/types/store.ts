@@ -32,8 +32,6 @@ export type CategoryWithProducts = Category & {
 
 export interface StoreThemeColors {
   primary?: string;
-  secondary?: string;
-  accent?: string;
 }
 
 export interface CatalogData {
@@ -74,20 +72,11 @@ export interface CartItem {
 export type DeliveryType = "delivery" | "take_away";
 export type PaymentMethod = "cash" | "transfer" | "mercadopago";
 
-export interface CheckoutFormData {
-  customer_name: string;
-  customer_phone: string;
-  delivery_type: DeliveryType;
-  delivery_address: string;
-  payment_method: PaymentMethod;
-  notes: string;
-}
-
-export interface CheckoutPayload extends CheckoutFormData {
-  store_id: string;
-  store_slug: string;
-  items: CartItem[];
+/** Respuesta exitosa de POST /api/orders (totales recalculados en el servidor). */
+export interface CreateOrderResponse {
+  success: true;
+  orderId: number;
   subtotal: number;
-  delivery_fee: number;
+  deliveryFee: number;
   total: number;
 }

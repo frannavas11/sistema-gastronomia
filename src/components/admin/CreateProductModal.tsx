@@ -124,19 +124,19 @@ export function CreateProductModal({
           resetForm();
           setIsOpen(true);
         }}
-        className="min-h-[44px] inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-medium text-white bg-[#78232F] hover:bg-[#541923] transition-colors shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-[#78232F] focus-visible:ring-offset-2"
+        className="min-h-[44px] inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-medium text-white bg-brand hover:bg-brand-dark transition-colors shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
       >
         <Plus className="w-4 h-4" />
         <span>Nuevo Producto</span>
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/45 backdrop-blur-xs animate-fade-in">
-          <div className="bg-[#FFFCF8] border border-[#E9DAD2] rounded-2xl max-w-lg w-full p-6 shadow-xl relative text-[#211B19]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/45 backdrop-blur-xs animate-fade">
+          <div className="bg-surface border border-border rounded-2xl max-w-lg w-full p-6 shadow-xl relative text-text-primary">
             {/* Cabecera */}
-            <div className="flex items-center justify-between pb-4 border-b border-[#E9DAD2] mb-4">
+            <div className="flex items-center justify-between pb-4 border-b border-border mb-4">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-[#F6EBE4] text-[#78232F] flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-surface-2 text-brand-fg flex items-center justify-center">
                   {mode === "product" ? (
                     <Utensils className="w-4 h-4" />
                   ) : (
@@ -144,12 +144,12 @@ export function CreateProductModal({
                   )}
                 </div>
                 <div>
-                  <h3 className="font-serif text-lg font-normal text-[#211B19]">
+                  <h3 className="font-serif text-lg font-normal text-text-primary">
                     {mode === "product"
                       ? "Agregar Nuevo Producto"
                       : "Agregar Nueva Categoría"}
                   </h3>
-                  <p className="text-xs text-[#74645E]">
+                  <p className="text-xs text-text-secondary">
                     {mode === "product"
                       ? "Creá un plato o bebida para tu carta"
                       : "Organizá tus productos en una nueva sección"}
@@ -160,21 +160,21 @@ export function CreateProductModal({
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="min-h-[44px] min-w-[44px] rounded-full text-[#74645E] hover:text-[#211B19] hover:bg-[#F6EBE4] transition-colors flex items-center justify-center"
+                className="min-h-[44px] min-w-[44px] rounded-full text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors flex items-center justify-center"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Selector de modo (Producto / Categoría) */}
-            <div className="flex rounded-xl bg-[#F6EBE4] p-1 mb-4 border border-[#E9DAD2]">
+            <div className="flex rounded-xl bg-surface-2 p-1 mb-4 border border-border">
               <button
                 type="button"
                 onClick={() => setMode("product")}
                 className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   mode === "product"
-                    ? "bg-[#FFFCF8] text-[#78232F] shadow-xs font-semibold"
-                    : "text-[#74645E] hover:text-[#211B19]"
+                    ? "bg-surface text-brand-fg shadow-xs font-semibold"
+                    : "text-text-secondary hover:text-text-primary"
                 }`}
               >
                 Producto
@@ -184,8 +184,8 @@ export function CreateProductModal({
                 onClick={() => setMode("category")}
                 className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   mode === "category"
-                    ? "bg-[#FFFCF8] text-[#78232F] shadow-xs font-semibold"
-                    : "text-[#74645E] hover:text-[#211B19]"
+                    ? "bg-surface text-brand-fg shadow-xs font-semibold"
+                    : "text-text-secondary hover:text-text-primary"
                 }`}
               >
                 Categoría
@@ -193,7 +193,7 @@ export function CreateProductModal({
             </div>
 
             {error && (
-              <div className="mb-4 p-3 rounded-xl bg-[#FDE8E7] border border-[#FAC5C2] text-xs text-[#C74742]">
+              <div className="mb-4 p-3 rounded-xl bg-error-soft border border-error-border text-xs text-error">
                 {error}
               </div>
             )}
@@ -202,7 +202,7 @@ export function CreateProductModal({
             <form onSubmit={handleSubmit} className="space-y-4">
               {mode === "category" ? (
                 <div>
-                  <label className="block text-xs font-medium text-[#74645E] mb-1">
+                  <label className="block text-xs font-medium text-text-secondary mb-1">
                     Nombre de la Categoría
                   </label>
                   <input
@@ -211,23 +211,23 @@ export function CreateProductModal({
                     placeholder="Ej. Pizzas Especiales, Empanadas, Bebidas..."
                     value={newCategoryName}
                     onChange={(e) => setNewCategoryName(e.target.value)}
-                    className="w-full min-h-[44px] px-3.5 py-2.5 bg-[#FBF5EF] border border-[#E9DAD2] rounded-xl text-sm text-[#211B19] placeholder:text-[#A18A81] focus:outline-none focus:ring-2 focus:ring-[#78232F] focus:bg-[#FFFCF8]"
+                    className="w-full min-h-[44px] px-3.5 py-2.5 bg-background border border-border rounded-xl text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-brand focus:bg-surface"
                   />
-                  <p className="text-[11px] text-[#74645E] mt-1">
+                  <p className="text-[11px] text-text-secondary mt-1">
                     Al crear la categoría, podrás asociarle productos inmediatamente.
                   </p>
                 </div>
               ) : (
                 <>
                   <div>
-                    <label className="block text-xs font-medium text-[#74645E] mb-1">
+                    <label className="block text-xs font-medium text-text-secondary mb-1">
                       Categoría
                     </label>
                     {allCategories.length > 0 ? (
                       <select
                         value={activeCategoryId}
                         onChange={(e) => setSelectedCategoryId(e.target.value)}
-                        className="w-full min-h-[44px] px-3.5 py-2.5 bg-[#FBF5EF] border border-[#E9DAD2] rounded-xl text-sm text-[#211B19] focus:outline-none focus:ring-2 focus:ring-[#78232F] focus:bg-[#FFFCF8]"
+                        className="w-full min-h-[44px] px-3.5 py-2.5 bg-background border border-border rounded-xl text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand focus:bg-surface"
                       >
                         {allCategories.map((cat) => (
                           <option key={cat.id} value={cat.id}>
@@ -236,14 +236,14 @@ export function CreateProductModal({
                         ))}
                       </select>
                     ) : (
-                      <div className="p-3 rounded-xl bg-[#FEF3E2] border border-[#FAD7A0] text-xs text-[#8C5815]">
+                      <div className="p-3 rounded-xl bg-warning-soft border border-warning-border text-xs text-warning-fg">
                         No tenés categorías creadas. Cambiá a la pestaña &quot;Categoría&quot; arriba para crear la primera.
                       </div>
                     )}
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-[#74645E] mb-1">
+                    <label className="block text-xs font-medium text-text-secondary mb-1">
                       Nombre del Producto
                     </label>
                     <input
@@ -252,12 +252,12 @@ export function CreateProductModal({
                       placeholder="Ej. Pizza Napolitana Grande"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full min-h-[44px] px-3.5 py-2.5 bg-[#FBF5EF] border border-[#E9DAD2] rounded-xl text-sm text-[#211B19] placeholder:text-[#A18A81] focus:outline-none focus:ring-2 focus:ring-[#78232F] focus:bg-[#FFFCF8]"
+                      className="w-full min-h-[44px] px-3.5 py-2.5 bg-background border border-border rounded-xl text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-brand focus:bg-surface"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-[#74645E] mb-1">
+                    <label className="block text-xs font-medium text-text-secondary mb-1">
                       Descripción (opcional)
                     </label>
                     <textarea
@@ -265,12 +265,12 @@ export function CreateProductModal({
                       placeholder="Ej. Salsa de tomate casera, muzzarella y albahaca fresca."
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
-                      className="w-full px-3.5 py-2.5 bg-[#FBF5EF] border border-[#E9DAD2] rounded-xl text-sm text-[#211B19] placeholder:text-[#A18A81] focus:outline-none focus:ring-2 focus:ring-[#78232F] focus:bg-[#FFFCF8] resize-none"
+                      className="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-brand focus:bg-surface resize-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-[#74645E] mb-1">
+                    <label className="block text-xs font-medium text-text-secondary mb-1">
                       Precio Base ($)
                     </label>
                     <input
@@ -281,7 +281,7 @@ export function CreateProductModal({
                       placeholder="Ej. 9500"
                       value={basePrice}
                       onChange={(e) => setBasePrice(e.target.value)}
-                      className="w-full min-h-[44px] px-3.5 py-2.5 bg-[#FBF5EF] border border-[#E9DAD2] rounded-xl text-sm text-[#211B19] placeholder:text-[#A18A81] focus:outline-none focus:ring-2 focus:ring-[#78232F] focus:bg-[#FFFCF8] tabular-nums"
+                      className="w-full min-h-[44px] px-3.5 py-2.5 bg-background border border-border rounded-xl text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-brand focus:bg-surface tabular-nums"
                     />
                   </div>
 
@@ -293,19 +293,19 @@ export function CreateProductModal({
                 </>
               )}
 
-              <div className="pt-3 flex items-center justify-end gap-2 border-t border-[#E9DAD2]">
+              <div className="pt-3 flex items-center justify-end gap-2 border-t border-border">
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
                   disabled={loading}
-                  className="min-h-[44px] px-4 py-2 rounded-xl text-xs font-medium text-[#74645E] hover:text-[#211B19] hover:bg-[#F6EBE4] transition-colors"
+                  className="min-h-[44px] px-4 py-2 rounded-xl text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-2 transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={loading || (mode === "product" && allCategories.length === 0)}
-                  className="min-h-[44px] inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-medium text-white bg-[#78232F] hover:bg-[#541923] disabled:opacity-50 transition-colors shadow-xs"
+                  className="min-h-[44px] inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-medium text-white bg-brand hover:bg-brand-dark disabled:opacity-50 transition-colors shadow-xs"
                 >
                   {loading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   <span>{mode === "product" ? "Crear Producto" : "Crear Categoría"}</span>

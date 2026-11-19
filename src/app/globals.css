@@ -1,30 +1,55 @@
 @import "tailwindcss";
 
+/* Modo oscuro por clase: <html class="dark"> (lo aplica el script de tema en layout.tsx) */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
+  color-scheme: light;
+
   /* Marca principal (por defecto bordó artesanal profundo, personalizable por local) */
   --store-primary: #78232F;
   --store-primary-dark: color-mix(in srgb, var(--store-primary) 70%, #000000);
-  --store-primary-light: color-mix(in srgb, var(--store-primary) 12%, #FFFCF8);
-  --store-primary-subtle: color-mix(in srgb, var(--store-primary) 6%, #FFFCF8);
+  --store-primary-light: color-mix(in srgb, var(--store-primary) 12%, var(--surface));
+  --store-primary-subtle: color-mix(in srgb, var(--store-primary) 6%, var(--surface));
   --store-primary-contrast: #ffffff;
+  /* Color de marca usado como TEXTO/ícono sobre superficies del tema */
+  --brand-fg: var(--store-primary);
+  /* Fondo rosado suave para chips y selección */
+  --brand-tint: #F4E3E0;
 
   /* Superficies y Neutros Cálidos (fijos para todos los locales) */
   --background: #FBF5EF;
   --surface: #FFFCF8;
   --surface-2: #F6EBE4;
   --border: #E9DAD2;
+  --border-strong: #D5C2B8;
 
   /* Tipografía y Textos */
   --text-primary: #211B19;
   --text-secondary: #74645E;
+  --text-tertiary: #A18A81;
+
+  /* Botones neutros de alto contraste */
+  --ink: #211B19;
+  --ink-contrast: #ffffff;
+
+  /* Sidebar del panel admin */
+  --sidebar: #541923;
+  --sidebar-border: #42131C;
 
   /* Colores de Estado Semánticos */
   --success: #249653;
+  --success-solid: #249653;
   --success-soft: #E5F4E7;
+  --success-border: #C2E8C7;
   --error: #C74742;
+  --error-solid: #C74742;
   --error-soft: #FDE8E7;
+  --error-border: #FAC5C2;
   --warning: #E99B37;
+  --warning-fg: #8C5815;
   --warning-soft: #FEF3E2;
+  --warning-border: #FAD7A0;
 
   /* Radios y Sombras Discretas */
   --radius-sm: 0.375rem;
@@ -34,30 +59,188 @@
   --radius-2xl: 1.25rem;
 }
 
+/*
+ * Tema oscuro "espresso": mismos tonos cálidos (hue ~20°) del tema claro, invertidos en luminosidad.
+ * Contrastes (WCAG) sobre --surface #1C1714: text-primary 15:1, text-secondary 7.6:1,
+ * text-tertiary 4.5:1, brand-fg (bordó aclarado) ~7:1.
+ */
+.dark {
+  color-scheme: dark;
+
+  --background: #14100E;
+  --surface: #1C1714;
+  --surface-2: #27201C;
+  --border: #362D28;
+  --border-strong: #4A3E37;
+
+  --text-primary: #F4ECE6;
+  --text-secondary: #B9A9A1;
+  --text-tertiary: #8F7E76;
+
+  --ink: #F4ECE6;
+  --ink-contrast: #211B19;
+
+  /* En oscuro el hover de los botones de marca aclara en vez de oscurecer */
+  --store-primary-dark: color-mix(in srgb, var(--store-primary) 82%, #ffffff);
+  --store-primary-light: color-mix(in srgb, var(--store-primary) 24%, var(--surface));
+  --store-primary-subtle: color-mix(in srgb, var(--store-primary) 12%, var(--surface));
+  /* Fallback: mezcla con crema */
+  --brand-fg: color-mix(in oklab, var(--store-primary) 45%, #FCE9EC);
+  --brand-tint: color-mix(in srgb, var(--store-primary) 28%, var(--surface));
+
+  --sidebar: #2A1519;
+  --sidebar-border: #3B1D23;
+
+  --success: #4CC27E;
+  --success-solid: #2A9D5A;
+  --success-soft: #132A1C;
+  --success-border: #1F4A2E;
+  --error: #F07A74;
+  --error-solid: #C9504B;
+  --error-soft: #2F1514;
+  --error-border: #5C2623;
+  --warning: #F2AE57;
+  --warning-fg: #F3C47E;
+  --warning-soft: #2E2213;
+  --warning-border: #5A421F;
+}
+
+/* Navegadores modernos: mismo tono/croma del color del local, sólo sube la luminosidad */
+@supports (color: oklch(from red l c h)) {
+  .dark {
+    --brand-fg: oklch(from var(--store-primary) max(l, 0.76) c h);
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
 
   --color-brand: var(--store-primary);
   --color-brand-dark: var(--store-primary-dark);
   --color-brand-light: var(--store-primary-light);
   --color-brand-subtle: var(--store-primary-subtle);
   --color-brand-contrast: var(--store-primary-contrast);
+  --color-brand-fg: var(--brand-fg);
+  --color-brand-tint: var(--brand-tint);
 
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+
+  --color-ink: var(--ink);
+  --color-ink-contrast: var(--ink-contrast);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-border: var(--sidebar-border);
 
   --color-success: var(--success);
+  --color-success-solid: var(--success-solid);
   --color-success-soft: var(--success-soft);
+  --color-success-border: var(--success-border);
   --color-error: var(--error);
+  --color-error-solid: var(--error-solid);
   --color-error-soft: var(--error-soft);
+  --color-error-border: var(--error-border);
   --color-warning: var(--warning);
+  --color-warning-fg: var(--warning-fg);
   --color-warning-soft: var(--warning-soft);
+  --color-warning-border: var(--warning-border);
 
   --font-sans: var(--font-dm-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-serif: var(--font-dm-serif), Georgia, serif;
+
+  /* Entrada escalonada de bloques (bistró editorial) */
+  --animate-rise: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-fade: fade 0.4s ease-out both;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+/* ─── Sistema visual "bistró editorial" ─────────────────────────────────── */
+
+/* Rótulo pequeño en versalitas espaciadas (como el encabezado de una carta impresa) */
+@utility eyebrow {
+  font-size: 0.6875rem;
+  line-height: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* Línea punteada entre el nombre del plato y su precio */
+@utility leader {
+  flex: 1 1 1.5rem;
+  min-width: 1rem;
+  border-bottom: 1.5px dotted var(--border-strong);
+  transform: translateY(-0.28em);
+}
+
+/* Filete doble de imprenta */
+@utility rule-double {
+  height: 4px;
+  border-top: 1px solid var(--border-strong);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Textura de papel muy sutil sobre el fondo */
+@utility paper {
+  background-color: var(--background);
+  background-image: var(--paper-grain);
+  background-size: 180px 180px;
+}
+
+/* Perforado de ticket (se usa en la cuenta del checkout y las comandas) */
+@utility perforation {
+  height: 1px;
+  background-image: linear-gradient(to right, var(--border-strong) 50%, transparent 50%);
+  background-size: 10px 1px;
+}
+
+:root {
+  --paper-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.3 0 0 0 0 0.22 0 0 0 .055 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.dark {
+  --paper-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 0.92 0 0 0 0 0.85 0 0 0 .035 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@layer base {
+  /* El anillo de foco con offset usa el fondo del tema en lugar de blanco fijo */
+  * {
+    --tw-ring-offset-color: var(--background);
+  }
 }
 
 body {
